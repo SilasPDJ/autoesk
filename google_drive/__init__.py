@@ -20,6 +20,8 @@ class GDrive(WDShorcuts, SetPaths):
         super().__init__(driver=driver)
 
         driver.get('https://drive.google.com/drive/my-drive')
+        input('Já estou logado por causa do perfil')
+
 
     def test(self):
         print('teste')
