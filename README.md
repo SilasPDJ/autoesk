@@ -1,2 +1,2 @@
 # autoesk
- python+webdriver+smtp+oo+whatsappweb+ecac
+ python+webdriver+smtp+pyautogui+oo+utils
