@@ -23,5 +23,3 @@ class GDrive(WDShorcuts, SetPaths):
 
     def test(self):
         print('teste')
-
-
