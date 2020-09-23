@@ -3,7 +3,7 @@ import pandas as pd
 from time import sleep
 from default.webdriver_utilities import WDShorcuts
 # from smtp_project.init_email import JsonDateWithImprove
-from whatsapp import default_qrcode_driver
+from default.webdriver_utilities.pre_drivers import default_qrcode_driver
 from default.settings import SetPaths
 # from default.data_treatment import ExcelToData
 

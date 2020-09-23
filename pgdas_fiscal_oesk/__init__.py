@@ -2,11 +2,13 @@ import pandas as pd
 
 from time import sleep
 from default.webdriver_utilities import *
+from default.interact import *
 from smtp_project.init_email import JsonDateWithImprove
 
 from default.settings import SetPaths
 from default.data_treatment import ExcelToData
 
-from .rotina_pgdas import *
+from default.webdriver_utilities.pre_drivers import pgdas_driver
+from .rotina_pgdas import PgdasAnyCompt
 # outside
-# cópia de whatsapp consigo herdar a class
+# cópia, de whatsapp consigo herdar a class

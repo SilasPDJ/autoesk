@@ -18,22 +18,6 @@ class DownloadRotinaMamae(MainWP):
 
         self.quit_session()
 
-    @staticmethod
-    def continua_v3(key):
-        """
-        # # PRECISO COLOCAR ELE EM OUTRO LUGAR ############## CHECAR OS LUGARES EM Q ESTE METODO ESTÁ
-        :param key: é a key, presente no SemMov_fullSELENIUM
-        :return:
-        """
-        from keyboard import is_pressed
-        while True:
-            #
-            if is_pressed(key):
-                if is_pressed(key):
-                    return True
-            else:
-                ...
-
     def download_midias_audiovisuais(self, qtd):
         """
         :param qtd: n° / cont mais recente para mais antigo
@@ -118,7 +102,7 @@ class DownloadRotinaMamae(MainWP):
             sleep(1)
 
         print('TUDO BAIXADO, F7 para continuar')
-        self.continua_v3('f7')
+        press_key_b4('f7')
         # SE BAIXAR HABILITADO -> PVMjB
         # SE BAIXAR DESABILITADO -> PVMjB _2Pza8
 

@@ -2,6 +2,7 @@ import pandas as pd
 
 from time import sleep
 from default.webdriver_utilities import *
+from default.interact import *
 from smtp_project.init_email import JsonDateWithImprove
 
 from default.settings import SetPaths

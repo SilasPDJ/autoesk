@@ -25,20 +25,6 @@ class MainWP(WDShorcuts, SetPaths):
 
     @staticmethod
     def recria_padrao():
-        def continua_v3(key):
-            """
-            :param key: é a key, presente no SemMov_fullSELENIUM
-            :return:
-            """
-            from keyboard import is_pressed
-            while True:
-                #
-                if is_pressed(key):
-                    if is_pressed(key):
-                        return True
-                else:
-                    ...
-
         self = MainWP(None)
 
         print('\033[1;31m Parâmetro driver None, criando driver PADRÃO caso não exista em\033[m')
@@ -48,7 +34,7 @@ class MainWP(WDShorcuts, SetPaths):
         [(print(cont, 'ABORTE A QUALQUER MOEMNTO'), sleep(1)) for cont in range(10, 0, -1)]
         driver.get('https://web.whatsapp.com/')
         print('pressione enter após escanear')
-        continua_v3('enter')
+        press_key_b4('enter')
         [(print(f'-> {i}'), sleep(1)) for i in range(10, -1, -1)]
         self.quit_session()
         print('Driver closed')
@@ -250,34 +236,6 @@ class MainWP(WDShorcuts, SetPaths):
             if e > 0:
                 driver.implicitly_wait(2.5)
         action.perform()
-
-    def contains_text(self, item):
-        driver = self.driver
-        el = driver.find_element_by_xpath(f'//*[contains(text(),"{item}")]')
-        return el
-
-    def contains_title(self, item):
-        driver = self.driver
-        el =driver.find_element_by_css_selector(f"[title*='{item}']")
-        return el
-
-    def find_submit_form(self):
-        driver = self.driver
-        self.tags_wait('form')
-        sleep(3)
-        driver.find_element_by_tag_name("form").submit()
-
-    def get_sub_site(self, url, main_url):
-        """
-        :param url: / + get
-        :param main_url: url atual
-        :return:
-        """
-        # site dentro de site...
-        new_url = f'{main_url}{url}'.replace('//', '/')
-
-        driver = self.driver
-        driver.get(new_url)
 
     def whatsapp_DRIVER(self, client=None, padrao=False):
         # ############################################## CUIDADO COM PATH em download X sessão

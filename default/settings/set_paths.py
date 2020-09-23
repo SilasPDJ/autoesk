@@ -45,8 +45,7 @@ class SetPaths(Now):
 
     def compt_and_filename(self):
         """
-        :return: already set compt and file_names
-        :return: COMPT e file_names já programados antes vindos de um arquivo
+        :return: already set compt and file_names; COMPT e file_names já programados antes vindos de um arquivo
         ##########################################################################
         """
 
@@ -116,7 +115,7 @@ class SetPaths(Now):
 
         return compt, excel_file_path_updated
 
-    # @staticmethod -> desconsidera o self
+    # @staticmethod
     def get_last_business_day_of_month(self, month=None, year=None):
 
         from calendar import monthrange
@@ -143,7 +142,6 @@ class SetPaths(Now):
         """
         :param pasta_client: client_name
         :param year: True -> folder contains year, False -> folder DOES NOT contain year
-        :param tuple self_compt_name: self.get_atual_competencia
         :return:
         """
         import os

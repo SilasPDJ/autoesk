@@ -1,26 +1,30 @@
 from pgdas_fiscal_oesk import *
-# preciso editar ainda corrigir as funções, vou dormir
+from .relacao_nfs import tres_valores_faturados
+# from default import talk2cli
+
+VENCIMENTO_DAS = JsonDateWithImprove.vencimento_das()
 
 
-class ChecaMes04(WDShorcuts, SetPaths):
-    def __init__(self, sh_names):
-        super().__init__()
-        self.my_wised_check_path_file = f'{self.read_with_titlePATH(0)}/CERT_vs_LOGIN.xlsx'
-        # input(self.my_wised_check_path_file)
-        intelligence_existence = self.intelligence_existence_done(file_path_name=self.my_wised_check_path_file)
+class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
+    def __init__(self):
+        import pandas as pd
 
+        self.VENCIMENTO_DAS = VENCIMENTO_DAS
+        sh_names = 'sem_mov', 'G5_ISS', 'G5_ICMS'
+        compt, excel_file_name = self.get_atual_competencia(1)
+
+        intelligence_existence = self.intelligence_existence_done('CERT_vs_LOGIN.xlsx')
         inteligence_db = {'CLIENT': [],
                           'CERT x LOGIN': []
                           }
-
         client_db_name = inteligence_db['CLIENT']
         cert_x_login = inteligence_db['CERT x LOGIN']
-        import pandas as pd
         cont_inteligence = -1
+
         for sh_name in sh_names:
             # agora eu posso fazer downloalds sem me preocupar tendo a variável path
-            compt, excel_file_name = self.get_atual_competencia()
             mshExcelFile = pd.ExcelFile(excel_file_name)
+
             msh = mshExcelFile.parse(sheet_name=str(sh_name))
             col_str_dic = {column: str for column in list(msh)}
             msh = mshExcelFile.parse(sheet_name=str(sh_name), dtype=col_str_dic)
@@ -64,7 +68,7 @@ class ChecaMes04(WDShorcuts, SetPaths):
 
                         """
                         print(f'PRESSIONE ENTER P/ PROSSEGUIR, {CLIENTE}')
-                        WINDOW_MANAGEMENT.continua_v2()
+                        press_key_b4('enter')
                         while True:
                             try:
                                 driver.implicitly_wait(5)
@@ -94,9 +98,10 @@ class ChecaMes04(WDShorcuts, SetPaths):
                         pass
 
                 if isinstance(intelligence_existence, list) and JA_DECLARED not in ['S', 'OK', 'FORA'] and cont_inteligence >= 0:
-                    path_returned = self.files_path(CLIENTE)
-                    self.driver = self.DRIVER(path_returned)
+                    path_returned = self._files_path_v2(CLIENTE)
+                    self.driver = pgdas_driver(path_returned)
                     driver = self.driver
+                    super().__init__(driver)
 
                     driver.implicitly_wait(2)
                     # initial = driver.get_window_position()
@@ -110,7 +115,8 @@ class ChecaMes04(WDShorcuts, SetPaths):
                         print('FINISH')
                         break
                     # input(intelligence_existence[cont_inteligence][0]) # -> O NOME DO CLIENTE
-                    my_new_3valores = TresValoresFaturados(client=CLIENTE)
+                    my_new_3valores = tres_valores_faturados(path_returned)
+                    print(my_new_3valores, '----> my_new_3valores')
 
                     def return_valor():
                         if sh_names.index(sh_name) != 0:
@@ -187,8 +193,8 @@ class ChecaMes04(WDShorcuts, SetPaths):
                         # estou no sem movimento ---------> Está funcionando, porém desejo deixar mais responsivo
                         # appendando aquele arquivo, todo mundo menos (-) kong tem certif
                         print('estou em sem movimento, vou arrumar ainda')
-                        path_returned = self.files_path(CLIENTE)
-                        self.driver = self.DRIVER(path_returned)
+                        path_returned = self._files_path_v2(CLIENTE)
+                        self.driver = pgdas_driver(path_returned)
                         driver = self.driver
 
                         if CodSim != '-' or CodSim != '':
@@ -215,195 +221,6 @@ class ChecaMes04(WDShorcuts, SetPaths):
 
                 else:
                     print(f'{CLIENTE} \nJA DECLARADO: {JA_DECLARED}\n-----------------')
-        if not intelligence_existence:
-            df = pd.DataFrame(inteligence_db)
-            print(df)
-            print('-------\nCriando DF\n---------')
-            df.to_excel(self.my_wised_check_path_file, engine='xlsxwriter', index=False,
-                        sheet_name='my_inteligence')
-
-    def read_with_titlePATH(self, n=-1):
-        """
-        :param int n:
-        :return:
-        """
-        f = open('with_titlePATH.txt', 'r')
-        a = f.read()
-        a = a.split('/')
-        if n != 0:
-            a = a[:n]
-        else:
-            a = a[:]
-        a = '/'.join(a)
-        f.close()
-        return a
-
-    def get_atual_competencia(self, n=-1, file_type='xlsx'):
-        """
-        :param file_type:
-        :param n: quantos para trás? (0 atual)
-        :return: competencia & excel_path
-        """
-        if n > 0:
-            n *= -1
-
-        from datetime import datetime as dt
-        file = open('with_titlePATH.txt', 'r')
-        path = file.read()
-        month = dt.now().month + n
-        year = dt.now().year
-
-        compt = f'{month:02d}-{year}'
-        excel_file_path_updated = r'{}/{}.{}'.format(path, compt, file_type)
-        return compt, excel_file_path_updated
-
-    def get_last_day_of_month(self, month=None, year=None):
-
-        from calendar import monthrange
-        if month is None:
-            from datetime import datetime
-            month = datetime.now().month
-        if year is None:
-            from datetime import datetime
-            year = datetime.now().year
-
-        return monthrange(year, month)[1]
-
-    def le_excel_each_one(self, msh):
-        # msh = sheet_name inside sheet file
-        dict_written = {}
-        for en, header in enumerate(msh.columns):
-            title = msh[header].name
-
-            dict_written[title] = []
-            # dicionário sh_name tem o  dicionário title que tem a lista com os valores, muito bom
-
-            """
-            try:
-                list_written[title] = []
-            except KeyError:
-                ...
-            """
-            r_soc = msh[header].values
-            # if title == "Razão Social":
-            for name in r_soc:
-                dict_written[title].append(name)
-        return dict_written
-
-    def readnew_lista(self, READ, print_values=False):
-        """ TRANSFORMO EM DICIONÁRIO, CONTINUAR"""
-        get_all = {}
-        new_lista = []
-        for k, lista in READ.items():
-            for v in lista:
-                v = str(v)
-                v = v.replace(u'\xa0', u' ')
-                v = v.strip()
-                if str(v) == 'nan':
-                    v = ''
-                new_lista.append(v)
-            get_all[k] = new_lista[:]
-            new_lista.clear()
-        if print_values:
-            for k, v in get_all.items():
-                print(f'\033[1;32m{k}')
-                for vv in v:
-                    print(f'\033[m{vv}')
-        return get_all
-
-    def find_submit_form(self):
-        driver = self.driver
-        self.tags_wait('form')
-        sleep(3)
-        driver.find_element_by_tag_name("form").submit()
-
-    def get_sub_site(self, url, main_url):
-        """
-        :param url: / + get
-        :param main_url: url atual
-        :return:
-        """
-        # site dentro de site...
-        new_url = f'{main_url}{url}'.replace('//', '/')
-
-        driver = self.driver
-        driver.get(new_url)
-
-    def files_path(self, pasta_client):
-        """
-        :param pasta_client: client_name
-        :return:
-        """
-        import os
-        compt, excel_file_name = self.get_atual_competencia()
-        ano = [compt.split(v)[-1] for v in compt if not v.isdigit()]
-        ano = ano[0]
-
-        PATH = '/'.join(excel_file_name.split('/')[:-2])
-        pasta_client = pasta_client.strip()
-        volta = os.getcwd()
-        for folder in ['G5', 'passa_valor', 'sem_mov']:
-            try:
-                os.chdir(PATH)
-                os.chdir(r'{}'.format(folder))
-                os.chdir(r'{}/{}/{}'.format(pasta_client, ano, compt))
-                print('inside _path loop')
-                break
-            except FileNotFoundError:
-                pass
-
-        salva_path = os.getcwd()
-        # print(salva_path)
-        os.chdir(volta)
-        return salva_path
-
-    def certif_feito(self, compt, CLIENTE):
-        """
-        certificado de que está feito
-
-        :return: caminho+ nome_arquivo
-        """
-        nome_arquivo = f'{CLIENTE}-{compt}.png'
-
-        try:
-            save_path = self.files_path(CLIENTE)
-            save = r'{}\\SimplesNacionalDeclarado-{}'.format(save_path, nome_arquivo)
-            print(save, '---------> SAVE')
-            return save
-        except FileNotFoundError:
-            print('NÃO CONSEGUI RETORNAR SAVE')
-
-    def DRIVER(self, path=''):
-        """
-        :param path: default path atual
-        :return: o driver para fechar no loop
-        """
-
-        link = "Chromedriver/chromedriver.exe"
-        chrome_options = Options()
-        # chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--disable-notifications")
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--verbose')
-        # profile chrome_options.add_argument("user-data-dir=C:\\Users\\AtechM_03\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 2")
-        chrome_options.add_argument('--ignore-certificate-errors')
-        chrome_options.add_experimental_option("prefs", {
-            "download.default_directory": path,
-            "download.prompt_for_download": False,
-            "download.directory_upgrade": True,
-            "safebrowsing_for_trusted_sources_enabled": False,
-            "safebrowsing.enabled": False,
-            'profile.default_content_setting_values.automatic_downloads': 1
-
-        })
-
-        chromedriver = link
-        driver = webdriver.Chrome(executable_path=chromedriver, options=chrome_options)
-
-        # self.tags_wait('body', 'input', 'div')
-
-        # sleep(5)
-        return driver
 
     def loga_cert(self):
         """
@@ -423,7 +240,7 @@ class ChecaMes04(WDShorcuts, SetPaths):
             finally:
                 sleep(1)
 
-        self.activate_driver_window('eCAC - Centro Virtual de Atendimento')
+        activate_window('eCAC - Centro Virtual de Atendimento')
         """
         while True:
             try:
@@ -437,7 +254,9 @@ class ChecaMes04(WDShorcuts, SetPaths):
         """
         # initial = driver.find_element_by_id('caixa1-login-certificado')
         driver.get(
-            'https://sso.acesso.gov.br/authorize?response_type=code&client_id=cav.receita.fazenda.gov.br&scope=openid+govbr_recupera_certificadox509+govbr_confiabilidades&redirect_uri=https://cav.receita.fazenda.gov.br/autenticacao/login/govbrsso')
+            'https://sso.acesso.gov.br/authorize?response_type=code&client_id=cav.receita.fazenda.gov.br&'
+            'scope=openid+govbr_recupera_certificadox509+govbr_confiabilidades&'
+            'redirect_uri=https://cav.receita.fazenda.gov.br/autenticacao/login/govbrsso')
         initial = driver.find_element_by_link_text('Certificado digital')
 
         print('ativando janela acima, logando certificado abaixo, linhas 270')
@@ -451,51 +270,27 @@ class ChecaMes04(WDShorcuts, SetPaths):
         t2 = Thread(target=hotkey('enter'))
         t2.start()
 
-    def loga_simples(self, CNPJ, CPF, CodSim, CLIENTE):
-        driver = self.driver
-        driver.get(
-            'https://www8.receita.fazenda.gov.br/SimplesNacional/controleAcesso/Autentica.aspx?id=60')
+    def intelligence_existence_done(self, file: str):
+        """:param file: path_file_name, excel"""
+        try:
+            compt, path_name = self.compt_and_filename()
+            path_name = path_name.split('/')[:-1]
+            path_name = '/'.join(path_name)
+            path_name = f'{path_name}/{file}'
+            path_name = path_name.replace('//', '/')
+            print(path_name)
 
-        driver.get(
-            'https://www8.receita.fazenda.gov.br/SimplesNacional/controleAcesso/Autentica.aspx?id=60')
-        while str(driver.current_url.strip()).endswith('id=60'):
+            inteligence_done = pd.read_excel(path_name, dtype=str)
 
-            self.tags_wait('body')
-            self.tags_wait('html')
-            self.tags_wait('input')
+            df = inteligence_done.to_numpy().tolist()
+            for value in df:
+                # print(value)
+                pass
+            return df
+        except FileNotFoundError:
 
-            # driver.find_elements_by_xpath("//*[contains(text(), 'CNPJ:')]")[0].click()
-            # pygui.hotkey('tab', interval=0.5)
-            cpcp = driver.find_element_by_name('ctl00$ContentPlaceHolder$txtCNPJ')
-            cpcp.clear()
-            cpcp.send_keys(CNPJ)
-
-            cpfcpf = driver.find_element_by_name('ctl00$ContentPlaceHolder$txtCPFResponsavel')
-            cpfcpf.clear()
-            cpfcpf.send_keys(CPF)
-
-            cod = driver.find_element_by_name('ctl00$ContentPlaceHolder$txtCodigoAcesso')
-            cod.clear()
-            cod.send_keys(CodSim)
-
-            cod_caract = driver.find_element_by_id('txtTexto_captcha_serpro_gov_br')
-            btn_som = driver.find_element_by_id('btnTocarSom_captcha_serpro_gov_br')
-            sleep(2.5)
-            btn_som.click()
-            sleep(.5)
-            cod_caract.click()
-            print(f'PRESSIONE ENTER P/ PROSSEGUIR, {CLIENTE}')
-            WINDOW_MANAGEMENT.continua_v2()
-            while True:
-                try:
-                    submit = driver.find_element_by_xpath("//input[@type='submit']").click()
-                    break
-                except (NoSuchElementException, ElementClickInterceptedException):
-                    print('sleepin'
-                          'g, line 167. Cadê o submit?')
-                    driver.refresh()
-                    sleep(5)
-            sleep(5)
+            print('intelligence will be done')
+            return False
 
     def intelligence_cnpj_test_element(self, CNPJ):
         """:return: element
@@ -538,6 +333,52 @@ class ChecaMes04(WDShorcuts, SetPaths):
         driver.get(
             'https://sinac.cav.receita.fazenda.gov.br/simplesnacional/aplicacoes/atspo/pgdasd2018.app/')
         return element
+
+    def loga_simples(self, CNPJ, CPF, CodSim, CLIENTE):
+        driver = self.driver
+        driver.get(
+            'https://www8.receita.fazenda.gov.br/SimplesNacional/controleAcesso/Autentica.aspx?id=60')
+
+        driver.get(
+            'https://www8.receita.fazenda.gov.br/SimplesNacional/controleAcesso/Autentica.aspx?id=60')
+        while str(driver.current_url.strip()).endswith('id=60'):
+
+            self.tags_wait('body')
+            self.tags_wait('html')
+            self.tags_wait('input')
+
+            # driver.find_elements_by_xpath("//*[contains(text(), 'CNPJ:')]")[0].click()
+            # pygui.hotkey('tab', interval=0.5)
+            cpcp = driver.find_element_by_name('ctl00$ContentPlaceHolder$txtCNPJ')
+            cpcp.clear()
+            cpcp.send_keys(CNPJ)
+
+            cpfcpf = driver.find_element_by_name('ctl00$ContentPlaceHolder$txtCPFResponsavel')
+            cpfcpf.clear()
+            cpfcpf.send_keys(CPF)
+
+            cod = driver.find_element_by_name('ctl00$ContentPlaceHolder$txtCodigoAcesso')
+            cod.clear()
+            cod.send_keys(CodSim)
+
+            cod_caract = driver.find_element_by_id('txtTexto_captcha_serpro_gov_br')
+            btn_som = driver.find_element_by_id('btnTocarSom_captcha_serpro_gov_br')
+            sleep(2.5)
+            btn_som.click()
+            sleep(.5)
+            cod_caract.click()
+            print(f'PRESSIONE ENTER P/ PROSSEGUIR, {CLIENTE}')
+            press_key_b4('enter')
+            while True:
+                try:
+                    submit = driver.find_element_by_xpath("//input[@type='submit']").click()
+                    break
+                except (NoSuchElementException, ElementClickInterceptedException):
+                    print('sleepin'
+                          'g, line 167. Cadê o submit?')
+                    driver.refresh()
+                    sleep(5)
+            sleep(5)
 
     def change_ecac_client(self, CNPJ):
         """:return: vai até ao site de declaração do ECAC."""
@@ -585,7 +426,7 @@ class ChecaMes04(WDShorcuts, SetPaths):
                 break
             except ElementClickInterceptedException:
                 print('---> PRESSIONE ESC PARA CONTINUAR <--- glyphicon-off intercepted')
-                WINDOW_MANAGEMENT.continua_v3('esc')
+                press_key_b4('esc')
         sleep(3)
         driver.switch_to.default_content()
         """I GOT IT"""
@@ -603,11 +444,11 @@ class ChecaMes04(WDShorcuts, SetPaths):
         try:
             js_confirm = driver.find_element_by_id('jsMsgBoxConfirm')
 
-            self.mensagem('F2 para somente gerar os últimos 3 arquivos de declarações.\n F4 para RETIFICAR'
+            tk_msg('F2 para somente gerar os últimos 3 arquivos de declarações.\n F4 para RETIFICAR'
                           '\nF10 p/ consolidar para ultima data do mês\n\n'
                           'Espere ou clique OK', 10)
             # não consegui callback em mensagem
-            which_one = WINDOW_MANAGEMENT.continua_v4('f2', 'f4', 'f10')
+            which_one = press_keys_v4('f2', 'f4', 'f10')
             print(type(which_one))
             print(which_one)
 
@@ -747,12 +588,13 @@ class ChecaMes04(WDShorcuts, SetPaths):
             # engloba
             save = self.certif_feito(compt, declara_client)
             driver.save_screenshot(save)
+
             self.simples_and_ecac_utilities(2, compt)
             # gera protocolos de todo mundo
 
             # ######################################################
         # print('Esperando pressionar DOWN no excel...')
-        # WINDOW_MANAGEMENT.continua_v3('down')
+        # press_key_b4('down')
 
     def simples_and_ecac_utilities(self, option, compt):
         """
@@ -793,7 +635,7 @@ class ChecaMes04(WDShorcuts, SetPaths):
         elif option == 1:
             # gera das
             venc_month_compt = int(month_compt) + 1
-            venc = self.get_last_day_of_month(venc_month_compt, int(year_compt))
+            venc = self.get_last_business_day_of_month(venc_month_compt, int(year_compt))
             retifica_p_dia = f'{venc}{venc_month_compt:02d}{year_compt}'
             self.get_sub_site(link_gera_das, current_url)
             self.tags_wait('input')
@@ -822,158 +664,20 @@ class ChecaMes04(WDShorcuts, SetPaths):
             self.find_submit_form()
             # GERAR DAS
         else:
-            self.mensagem(f'Tente outra opção, linha 550 +-, opc: {option}')
+            tk_msg(f'Tente outra opção, linha 550 +-, opc: {option}')
 
-    def trata_money_excel(self, valor):
-
-        if valor == '' or valor in '0':
-            valor = ''
-        elif '.' not in valor:
-            valor = f'{valor},00'
-        else:
-            try:
-                valor = f'{float(valor):.2f}'
-                valor = str(valor).replace('.', ',')
-            except ValueError:
-                valor = ''
-
-        return valor
-
-    def tags_wait(self, *tags):
-        driver = self.driver
-        delay = 10
-        for tag in tags:
-            try:
-                my_elem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.TAG_NAME, tag)))
-                # print(f"\033[1;31m{tag.upper()}\033[m is ready!")
-            except TimeoutException:
-                print("Loading took too much time!")
-
-    def send_keys_anywhere(self, typed, times=1, pause=.13):
+    def certif_feito(self, compt, CLIENTE):
         """
-        :param typed: o que quero digitar EM QUALQUER LUGAR DO NAVEGADOR
-        :param pause: float interval
-        :param times: quantidade de vezes
-        :return: já digitado
+        certificado de que está feito
+
+        :return: caminho+ nome_arquivo
         """
+        nome_arquivo = f'{CLIENTE}-{compt}.png'
 
-        driver = self.driver
-        from selenium.webdriver.common.action_chains import ActionChains
-        actions = ActionChains(driver=driver)
-        for i in range(times):
-            # print('send keys')
-            actions.send_keys(typed)
-            actions.pause(pause)
-        actions.perform()
-        sleep(1)
-
-    def keys_action(self, *args, pause=1):
-        """
-        :param str args: keys or selenium keys
-        :param float pause: how long time to pause
-        """
-
-        driver = self.driver
-        from selenium.webdriver.common.action_chains import ActionChains
-        action = ActionChains(driver=driver)
-        for arg in args:
-            action.send_keys(arg)
-            action.pause(pause)
-
-        action.perform()
-        sleep(1)
-
-    def activate_driver_window(self, title):
-        """
-        :param title: título da janela
-        :return: última janela de um title específico ativada para manipular a princípio o diálogo do sistema operacional
-
-        # done
-        """
-        driver = self.driver
-
-        from pyautogui import getWindowsWithTitle, hotkey, getActiveWindow, keyUp, keyDown
-        # my_window = getWindowsAt(-1055, 0)[0]
-
-        window = getWindowsWithTitle(title)
-        window = window[0]
-
-        # print(window.right, window.top, '..', window.title)
-        # window.move(1055, 0)
-        sleep(2)
-        msg = f'Atenção, vou procurar a janela com o título \n{window.title}\n\n ESTOU NO CLIENTE {self.now_person}'
-        # self.mensagem(msg)
-        print(msg)
-        tabs = ['tab']
-        while True:
-
-            sleep(2.5)
-            try:
-                var = getActiveWindow().title
-                print(var, window.title)
-                if var == window.title:
-                    break
-                else:
-                    keyDown('alt')
-                    for tab in tabs:
-                        hotkey(tab)
-                    keyUp('alt')
-                    tabs.append('tab')
-            except AttributeError:
-                print('window not found')
-                pass
-
-    def mensagem(self, mensagem, time=7):
-        """
-        chamada em activate_driver_window
-        """
-        import tkinter as tk
-        class ExampleApp(tk.Tk):
-            def __init__(self):
-                tk.Tk.__init__(self)
-                tk.Label(text=mensagem, pady=10).pack()
-
-                tk.Button(self, text="OK", fg='white', bg='black', command=self.destroy, activeforeground="black",
-                          activebackground="green4", pady=10, width=10).pack()
-
-                self.label = tk.Label(self, text="", width=10)
-                self.label.pack()
-                self.remaining = 0
-                self.countdown(time)
-                # self.after(time * 1000, lambda: self.destroy())
-
-                self.geometry('500x250+1400+10')
-
-            def countdown(self, remaining=None):
-                if remaining is not None:
-                    self.remaining = remaining
-
-                if self.remaining <= 0:
-                    self.label.configure(text="000000")
-                    self.destroy()
-                else:
-                    self.label.configure(text="%d" % self.remaining)
-                    self.remaining = self.remaining - 1
-                    self.after(1000, self.countdown)
-
-        print('Mensagem: ', mensagem)
-        ExampleApp().mainloop()
-
-    def intelligence_existence_done(self, file_path_name):
-        """:param str file_path_name: path_file_name, excel"""
         try:
-            inteligence_done = pd.read_excel(file_path_name, dtype=str)
-
-            df = inteligence_done.to_numpy().tolist()
-            for value in df:
-                # print(value)
-                pass
-            return df
+            save_path = self._files_path_v2(CLIENTE)
+            save = r'{}\\SimplesNacionalDeclarado-{}'.format(save_path, nome_arquivo)
+            print(save, '---------> SAVE')
+            return save
         except FileNotFoundError:
-
-            print('intelligence will be done')
-            return False
-
-
-# as funções estão em ordem
-ChecaMes04(['sem_mov', 'G5_ISS', 'G5_ICMS'])
+            print('NÃO CONSEGUI RETORNAR SAVE')

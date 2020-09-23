@@ -63,3 +63,31 @@ class WDShorcuts:
                 # print(f"\033[1;31m{tag.upper()}\033[m is ready!")
             except TimeoutException:
                 print("Loading took too much time!")
+
+    def contains_text(self, item):
+        driver = self.arg_driver
+        el = driver.find_element_by_xpath(f'//*[contains(text(),"{item}")]')
+        return el
+
+    def contains_title(self, item):
+        driver = self.arg_driver
+        el =driver.find_element_by_css_selector(f"[title*='{item}']")
+        return el
+
+    def find_submit_form(self):
+        driver = self.arg_driver
+        self.tags_wait('form')
+        driver.implicitly_wait(5)
+        driver.find_element_by_tag_name("form").submit()
+
+    def get_sub_site(self, url, main_url):
+        """
+        :param url: / + get
+        :param main_url: url atual
+        :return:
+        """
+        # site dentro de site...
+        new_url = f'{main_url}{url}'.replace('//', '/')
+
+        driver = self.arg_driver
+        driver.get(new_url)
