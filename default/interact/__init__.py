@@ -1,7 +1,7 @@
 def press_key_b4(key: str):
     """
-    # # PRECISO COLOCAR ELE EM OUTRO LUGAR ############## CHECAR OS LUGARES EM Q ESTE METODO ESTÁ
-    :param key: é a key, presente no SemMov_fullSELENIUM
+    Só dá break quando uma tecla específica é pressionada, e então, continua o código
+    :param key:
     :return:
     """
     from keyboard import is_pressed

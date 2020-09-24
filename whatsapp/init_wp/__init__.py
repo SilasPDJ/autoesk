@@ -93,7 +93,7 @@ class MainWP(WDShorcuts, SetPaths):
         :return:
         """
         driver = self.driver
-        self.click_elements_anywhere('Procurar ou começar uma nova conversa')
+        self.click_elements_by_tt('Procurar ou começar uma nova conversa')
 
         self.send_keys_anywhere('')
         driver.implicitly_wait('2.5')
@@ -149,7 +149,7 @@ class MainWP(WDShorcuts, SetPaths):
                 msg += '\n'
             return msg
 
-        self.click_elements_anywhere('Digite uma mensagem')
+        self.click_elements_by_tt('Digite uma mensagem')
         for msg in mensagens:
             if isinstance(msg, list):
                 for v in msg:
@@ -203,7 +203,7 @@ class MainWP(WDShorcuts, SetPaths):
 
     def get_contatos_nomes(self):
         driver = self.driver
-        self.click_elements_anywhere('Nova conversa', tortil='title')
+        self.click_elements_by_tt('Nova conversa', tortil='title')
         driver.implicitly_wait(5)
         _only = driver.find_element_by_class_name('_2fpYo')
         contatos_nomes = _only.find_elements_by_css_selector('._3ko75._5h6Y_._3Whw5')
@@ -211,31 +211,43 @@ class MainWP(WDShorcuts, SetPaths):
             print(cont.text)
         print('NADA CERTO, EM ANDAMENTO')
 
-    def click_elements_anywhere(self, *args, tortil='text'):
+    def download_midias_audiovisuais(self, qtd):
         """
-        :param args: classes p/ find by text only
-        :param tortil: Optional text, or set title
-
-        *** with_text
+        :param qtd: n° / cont mais recente para mais antigo
         :return:
         """
-        from selenium.webdriver.common.action_chains import ActionChains
         driver = self.driver
 
-        action = ActionChains(driver=driver)
+        def vai_ou_volta(vv):
+            """
+            :param vv: 0 -> volta
+                       1 -> vai
 
-        for e, arg in enumerate(args):
-            if tortil == 'title':
-                elem = self.contains_title(arg)
-            else:
-                elem = self.contains_text(arg)
+            :return: usado p/ mídias p/ carregar.
+            """
 
-            x, y = xy = elem.location.values()
-            action.move_to_element(elem)
-            action.click()
-            if e > 0:
-                driver.implicitly_wait(2.5)
-        action.perform()
+            for e in range(qtd - 1):
+                # carrega midias
+                driver.implicitly_wait(5)
+
+                try:
+                    driver.find_element_by_tag_name('video')
+                    sl_t = 5
+                except NoSuchElementException:
+                    sl_t = 1
+                    print('Sleep 1, imagem')
+
+                if vv == 1:
+                    # vai até o mais antigo
+                    sleep(sl_t)
+                    self.send_keys_anywhere(Keys.LEFT)
+                elif vv == 0:
+                    # volta até o mais recente
+                    self.send_keys_anywhere(Keys.RIGHT)
+                    sleep(sl_t)
+                else:
+                    print('\nINVÁLIDO!!')
+                    raise IndexError
 
     def whatsapp_DRIVER(self, client=None, padrao=False):
         # ############################################## CUIDADO COM PATH em download X sessão

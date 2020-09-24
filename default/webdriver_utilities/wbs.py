@@ -25,6 +25,20 @@ class WDShorcuts:
         actions.perform()
         sleep(1)
 
+    def keys_action(self, *args, pause=1):
+        """
+        :param str args: keys or selenium keys
+        :param float pause: how long time to pause
+        """
+        driver = self.arg_driver
+        action = ActionChains(driver=driver)
+
+        action.send_keys(*args)
+        action.pause(pause)
+
+        action.perform()
+        driver.implicitly_wait(pause)
+
     def click_ac_elementors(self, *args, pause=1.5):
         """
         :param args: element already defined
@@ -40,19 +54,42 @@ class WDShorcuts:
         action.perform()
         driver.implicitly_wait(pause)
 
-    def keys_action(self, *args, pause=1):
+    def click_elements_by_tt(self, *args, tortil='text'):
+        # by_tt = by text or title
         """
-        :param str args: keys or selenium keys
-        :param float pause: how long time to pause
+        :param args: classes p/ find by text only
+        :param tortil: Optional text, or set title
+
+        *** with_text
+        :return:
         """
+        from selenium.webdriver.common.action_chains import ActionChains
         driver = self.arg_driver
+
         action = ActionChains(driver=driver)
 
-        action.send_keys(*args)
-        action.pause(pause)
+        for e, arg in enumerate(args):
+            if tortil == 'title':
+                elem = self.contains_title(arg)
+            else:
+                elem = self.contains_text(arg)
 
+            x, y = xy = elem.location.values()
+            action.move_to_element(elem)
+            action.click()
+            if e > 0:
+                driver.implicitly_wait(2.5)
         action.perform()
-        driver.implicitly_wait(pause)
+
+    def contains_text(self, item):
+        driver = self.arg_driver
+        el = driver.find_element_by_xpath(f'//*[contains(text(),"{item}")]')
+        return el
+
+    def contains_title(self, item):
+        driver = self.arg_driver
+        el = driver.find_element_by_css_selector(f"[title*='{item}']")
+        return el
 
     def tags_wait(self, *tags):
         driver = self.arg_driver
@@ -63,16 +100,6 @@ class WDShorcuts:
                 # print(f"\033[1;31m{tag.upper()}\033[m is ready!")
             except TimeoutException:
                 print("Loading took too much time!")
-
-    def contains_text(self, item):
-        driver = self.arg_driver
-        el = driver.find_element_by_xpath(f'//*[contains(text(),"{item}")]')
-        return el
-
-    def contains_title(self, item):
-        driver = self.arg_driver
-        el =driver.find_element_by_css_selector(f"[title*='{item}']")
-        return el
 
     def find_submit_form(self):
         driver = self.arg_driver

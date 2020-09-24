@@ -18,44 +18,6 @@ class DownloadRotinaMamae(MainWP):
 
         self.quit_session()
 
-    def download_midias_audiovisuais(self, qtd):
-        """
-        :param qtd: n° / cont mais recente para mais antigo
-        :return:
-        """
-        driver = self.driver
-
-        def vai_ou_volta(vv):
-            """
-            :param vv: 0 -> volta
-                       1 -> vai
-
-            :return: usado p/ mídias p/ carregar.
-            """
-
-            for e in range(qtd - 1):
-                # carrega midias
-                driver.implicitly_wait(5)
-
-                try:
-                    driver.find_element_by_tag_name('video')
-                    sl_t = 5
-                except NoSuchElementException:
-                    sl_t = 1
-                    print('Sleep 1, imagem')
-
-                if vv == 1:
-                    # vai até o mais antigo
-                    sleep(sl_t)
-                    self.send_keys_anywhere(Keys.LEFT)
-                elif vv == 0:
-                    # volta até o mais recente
-                    self.send_keys_anywhere(Keys.RIGHT)
-                    sleep(sl_t)
-                else:
-                    print('\nINVÁLIDO!!')
-                    raise IndexError
-
         driver.implicitly_wait(7)
 
         abre_perfil = driver.find_element_by_class_name('m7liR')
@@ -64,7 +26,7 @@ class DownloadRotinaMamae(MainWP):
         self.click_ac_elementors(abre_perfil)
         driver.implicitly_wait(12)
 
-        self.click_elements_anywhere('Mídia, links e docs', tortil='text')
+        self.click_elements_by_tt('Mídia, links e docs', tortil='text')
 
         videos_ic = driver.find_elements_by_class_name('_275OX')[0]
         self.click_ac_elementors(videos_ic, pause=2.5)
