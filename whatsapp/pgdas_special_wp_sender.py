@@ -88,6 +88,3 @@ class PgdasWP(MainWP, ExcelToData):
 
                 finally:
                     print(CLIENTE)
-
-
-

@@ -50,7 +50,7 @@ def tres_valores_faturados(path, excel_type='xlsx'):
                 excel_path += f'\\{file}'
         if excel_path:
             will_return = pandas(excel_path)
-            input(will_return)
+            print(will_return)
         else:
             will_return = False
 

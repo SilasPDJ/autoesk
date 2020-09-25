@@ -7,6 +7,7 @@ class PgDasmailSender(EmailExecutor):
 
     def __init__(self):
         import pandas as pd
+        from default.interact import press_keys_v4, press_key_b4
         super().__init__()
         venc = self.VENCIMENTO_DAS
         sh_names = 'sem_mov', 'G5_ISS', 'G5_ICMS'
@@ -49,8 +50,8 @@ class PgDasmailSender(EmailExecutor):
                     JA_FOI_ENV = 'OK'
                 else:
                     if now_email == '':
-                        print(f'-------------> PLANILHA {sh_name}')
-                        input('Enter p/ terminar')
+                        print(f'-------------> PLANILHA {sh_name}, F7 p/ terminar')
+                        press_key_b4('f7')
                         break
                         # raise KeyError
                     if JA_DECLARED in ['S', 'OK', 'FORA'] and JA_FOI_ENV not in ['S', 'OK']:

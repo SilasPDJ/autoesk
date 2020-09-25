@@ -302,8 +302,6 @@ class MainWP(WDShorcuts, SetPaths):
         # SE BAIXAR HABILITADO -> PVMjB
         # SE BAIXAR DESABILITADO -> PVMjB _2Pza8
 
-
-
     def whatsapp_DRIVER(self, client=None, padrao=False):
         # ############################################## CUIDADO COM PATH em download X sessão
         """

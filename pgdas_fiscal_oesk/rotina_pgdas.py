@@ -5,17 +5,20 @@ from smtp_project.init_email import JsonDateWithImprove
 from default.settings import SetPaths
 from default.data_treatment import ExcelToData
 
-from default.webdriver_utilities.pre_drivers import pgdas_driver
-from .relacao_nfs import tres_valores_faturados
-
 
 class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
-    def __init__(self):
+    def __init__(self, meses_atras=None):
+        """
+        :param meses_atras: custom = -1 // 1 month ago
+        # remember past_only arg from self.get_atual_competencia
+        """
         import pandas as pd
+        from default.webdriver_utilities.pre_drivers import pgdas_driver
+        from .relacao_nfs import tres_valores_faturados
 
         self.VENCIMENTO_DAS = JsonDateWithImprove.vencimento_das()
         sh_names = 'sem_mov', 'G5_ISS', 'G5_ICMS'
-        compt, excel_file_name = self.get_atual_competencia(1)
+        compt, excel_file_name = self.get_atual_competencia(meses_atras or 1)
 
         intelligence_existence = self.intelligence_existence_done('CERT_vs_LOGIN.xlsx')
         inteligence_db = {'CLIENT': [],
@@ -104,7 +107,6 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                         pass
 
                 if isinstance(intelligence_existence, list) and JA_DECLARED not in ['S', 'OK', 'FORA'] and cont_inteligence >= 0:
-
 
                     __client_path = self.client_path
                     self.driver = pgdas_driver(__client_path)
