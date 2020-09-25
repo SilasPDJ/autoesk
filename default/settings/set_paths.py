@@ -2,7 +2,6 @@ from .now import Now
 
 
 class SetPaths(Now):
-    # Now não está tanto em uso,
 
     def __get_atual_competencia_file(self):
         return 'get_atual_competencia.txt'

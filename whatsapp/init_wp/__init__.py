@@ -1,9 +1,12 @@
-from default.settings import SetPaths
 from default.webdriver_utilities import WDShorcuts
+from default.settings import SetPaths
 from whatsapp.dialog_profile_path import profiles_main_folder
 from default.webdriver_utilities import Options, WebDriverException, NoSuchElementException, Keys
 from time import sleep
-from whatsapp import *
+
+from default.webdriver_utilities import *
+from default.interact import *
+from smtp_project.init_email import JsonDateWithImprove
 
 
 class MainWP(WDShorcuts, SetPaths):
@@ -249,6 +252,58 @@ class MainWP(WDShorcuts, SetPaths):
                     print('\nINVÁLIDO!!')
                     raise IndexError
 
+        driver.implicitly_wait(7)
+
+        abre_perfil = driver.find_element_by_class_name('m7liR')
+        # abre_perfil.click()
+
+        self.click_ac_elementors(abre_perfil)
+        driver.implicitly_wait(12)
+
+        self.click_elements_by_tt('Mídia, links e docs', tortil='text')
+
+        videos_ic = driver.find_elements_by_class_name('_275OX')[0]
+        self.click_ac_elementors(videos_ic, pause=2.5)
+        # abre o primeiro vídeo da janela
+
+        vai_ou_volta(1)
+        # vou até o o mais antigo
+
+        driver.find_elements_by_class_name('PVMjB')
+
+        lengs = []
+        cont = 0
+        while True:
+            cont += 1
+            desabilitado = driver.find_elements_by_class_name('_2Pza8')
+            lend = len(desabilitado)
+            print(lend, '\n' if lend not in lengs else '', end='')
+            lengs.append(lend if lend not in lengs else '')
+            if len(desabilitado) == 0:
+                break
+            else:
+                vai_ou_volta(0)
+                # volto até o mais recente
+                vai_ou_volta(1)
+                # vou até o mais antigo
+            if cont == 3:
+                # pois provavelmente já carregou tudo
+                break
+        for n in range(qtd):
+            baixar = self.contains_title('Baixar')
+            self.click_ac_elementors(baixar)
+            self.send_keys_anywhere(Keys.RIGHT)
+            """acima e abaixo, dá na mesma"""
+            # self.click_elements_anywhere('Baixar', tortil='title')
+            sleep(1)
+
+        print('TUDO BAIXADO, F7 para continuar')
+        press_key_b4('f7')
+        # SE BAIXAR HABILITADO -> PVMjB
+        # SE BAIXAR DESABILITADO -> PVMjB _2Pza8
+
+
+
     def whatsapp_DRIVER(self, client=None, padrao=False):
         # ############################################## CUIDADO COM PATH em download X sessão
         """
@@ -275,7 +330,6 @@ class MainWP(WDShorcuts, SetPaths):
                 self.full_copy_dir(__padrao, profile_path)
             except FileExistsError:
                 print(f'perfil ATUAL já existente, segue o baile, cliente {client}')
-
 
         # chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-notifications")
@@ -308,6 +362,7 @@ class MainWP(WDShorcuts, SetPaths):
         chamada em activate_driver_window
         """
         import tkinter as tk
+
         class ExampleApp(tk.Tk):
             def __init__(self):
                 tk.Tk.__init__(self)

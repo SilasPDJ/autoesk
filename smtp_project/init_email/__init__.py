@@ -1,9 +1,6 @@
 import smtplib
 from .jsondate import *
-from smtp_project import SetPaths, ExcelToData
-
-# to brabo, tendeu?
-# organizar melhor, tá com muitas defs já, algumas só são utilizadas aqui dentro
+from default import SetPaths, ExcelToData
 
 
 class EmailExecutor(JsonDateWithImprove, SetPaths, ExcelToData):

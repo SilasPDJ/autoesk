@@ -1,6 +1,8 @@
+from default.webdriver_utilities import *
+from default.interact import press_keys_v4, press_key_b4
+from default.settings import SetPaths
+from default.data_treatment import ExcelToData
 
-from pgdas_fiscal_oesk import WDShorcuts, SetPaths, ExcelToData, Keys
-from pgdas_fiscal_oesk import NoSuchElementException, ElementClickInterceptedException, NoAlertPresentException
 from default.webdriver_utilities.pre_drivers import ginfess_driver
 
 

@@ -1,15 +1,19 @@
-from pgdas_fiscal_oesk import *
-from .relacao_nfs import tres_valores_faturados
-# from default import talk2cli
+from time import sleep
+from default.webdriver_utilities import *
+from default.interact import *
+from smtp_project.init_email import JsonDateWithImprove
+from default.settings import SetPaths
+from default.data_treatment import ExcelToData
 
-VENCIMENTO_DAS = JsonDateWithImprove.vencimento_das()
+from default.webdriver_utilities.pre_drivers import pgdas_driver
+from .relacao_nfs import tres_valores_faturados
 
 
 class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
     def __init__(self):
         import pandas as pd
 
-        self.VENCIMENTO_DAS = VENCIMENTO_DAS
+        self.VENCIMENTO_DAS = JsonDateWithImprove.vencimento_das()
         sh_names = 'sem_mov', 'G5_ISS', 'G5_ICMS'
         compt, excel_file_name = self.get_atual_competencia(1)
 

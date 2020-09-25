@@ -1,10 +1,16 @@
-from whatsapp import *
 from default import talk2cli
+from time import sleep
+from smtp_project.init_email import JsonDateWithImprove
+
+from default.data_treatment import ExcelToData
+from .init_wp import MainWP
 
 VENCIMENTO_DAS = JsonDateWithImprove.vencimento_das()
 
 
 class PgdasWP(MainWP, ExcelToData):
+    print('Este driver está localizado em MainWP, pois ele faz caminhos diferentes, checar depois')
+
     def __init__(self):
         import pandas as pd
         self.VENCIMENTO_DAS = VENCIMENTO_DAS
@@ -37,7 +43,6 @@ class PgdasWP(MainWP, ExcelToData):
                 CodSim = after_READ['Código Simples'][i]
                 CPF = after_READ['CPF'][i]
                 icms_or_iss = sh_names[sh_names.index(sh_name)]
-
 
                 hora_da_mensagem = talk2cli.hora_mensagem_default()
                 try:

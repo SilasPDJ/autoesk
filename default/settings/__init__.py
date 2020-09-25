@@ -1,2 +1,1 @@
-from .set_paths import *
-from .now import *
+from .set_paths import SetPaths

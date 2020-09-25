@@ -1,19 +1,4 @@
-import pandas as pd
+from whatsapp.init_wp import MainWP
 
-from time import sleep
-from default.webdriver_utilities import *
-from default.interact import *
-from smtp_project.init_email import JsonDateWithImprove
-
-from default.settings import SetPaths
-from default.data_treatment import ExcelToData
-from .init_wp import MainWP
-
-# MainWP herda tudo
-# agora sim, ------------> from default.webdriver_utilities import *
-
-
-# out
-# MainWP -> Main WhatsApp
-# inside
-# outside
+from whatsapp.pgdas_especiais_wp import PgdasWP
+from whatsapp.mamae_download import DownloadRotinaMamae
