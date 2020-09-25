@@ -189,12 +189,12 @@ class SetPaths(Now):
             if '/' == relative_path[0] or '/' == relative_path[-1]:
                 print('Não use "/" nem "\\" em path[0] or path[-1]')
                 raise AttributeError
-            res = self.new_path_set(f'{und_disco}:/{relative_path}/{date_folder}')
+            res = self.__new_path_set(f'{und_disco}:/{relative_path}/{date_folder}')
         else:
-            res = self.new_path_set(f'{und_disco}:/{date_folder}')
+            res = self.__new_path_set(f'{und_disco}:/{date_folder}')
         return res
 
-    def new_path_set(self, path=''):
+    def __new_path_set(self, path=''):
         """
         :param path: default path atual (downloads)
         :return: Se caminho não criado, ele cria
@@ -233,3 +233,42 @@ class SetPaths(Now):
         os.chdir(volta)
 
         return path
+
+    def certif_feito(self, client_name):
+        """
+        certificado de que está feito
+        :param client_name: nome da pasta antes de chegar à competência, vai passar por _files_path_v2
+        :return: caminho+ nome_arquivo
+        """
+        nome_arquivo = f'{client_name}.png'
+
+        try:
+            save_path = self._files_path_v2(client_name)
+            save = r'{}\\SimplesNacionalDeclarado-{}'.format(save_path, nome_arquivo)
+            print(save, '---------> SAVE')
+            return save
+        except FileNotFoundError:
+            print('NÃO CONSEGUI RETORNAR SAVE')
+
+    def unzipe_file(self, full_path, rm_zip=True):
+
+        """
+        :param full_path: caminho
+        :param rm_zip: True -> remove zip, False, não remove
+        :return: arquivo extraído e excluído o zip.
+        Ele faz isso com todos os zip
+        """
+        from time import sleep
+        from os import chdir, remove, listdir
+        from zipfile import ZipFile
+        chdir(full_path)
+        ls = listdir()
+        for file in ls:
+            print('Descompactando, ZIPs e excluíndo-os')
+            if file.endswith('.zip'):
+                zf = ZipFile(file, mode='r')
+                zf.extractall()
+                zf.close()
+                sleep(5)
+                if rm_zip:
+                    remove(file)

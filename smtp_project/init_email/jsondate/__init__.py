@@ -3,17 +3,22 @@ import json
 
 
 class JsonDateWithImprove:
-    def __init__(self):
+    def __init__(self, display=True):
+        """
+        :param display: display prints, USE FALSE FOR STATIC METHODS
+        """
         # se eu colocar a class parent de parâmetro no super, ele vai ignorar o init dela
-        self.last_portal_update()
         self.VENCIMENTO_DAS = self.das_venc_data()[0]
-        print(f'Data de vencimento (PGDAS): {self.VENCIMENTO_DAS} (JsonDateWithImprove)')
+        if display:
+            # Ao ser chamado, ele ta chamando 2x devido às instâncias, mas não se preocupe, só vencimento das passa False de argumento!
+            self.last_portal_update()
+            print(f'Data de vencimento (PGDAS): {self.VENCIMENTO_DAS} (JsonDateWithImprove)')
         # input(self.VENCIMENTO_DAS)
 
     @staticmethod
     def vencimento_das(n=0):
         # pega o vencimento do site pra puxar em outro lugar, muito legal
-        self = JsonDateWithImprove()
+        self = JsonDateWithImprove(False)
         return self.das_venc_data()[n]
 
     def inside_me_others(self, inside_me, *others):

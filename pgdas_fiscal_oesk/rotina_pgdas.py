@@ -586,7 +586,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
             # ~~~~~~~~~~~~~SEM-RETENÇÃO-universal~~~~~~~~~~~~~#
             print('AFTER IFs')
             # engloba
-            save = self.certif_feito(compt, declara_client)
+            save = self.certif_feito(declara_client)
             driver.save_screenshot(save)
 
             self.simples_and_ecac_utilities(2, compt)
@@ -665,19 +665,3 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
             # GERAR DAS
         else:
             tk_msg(f'Tente outra opção, linha 550 +-, opc: {option}')
-
-    def certif_feito(self, compt, CLIENTE):
-        """
-        certificado de que está feito
-
-        :return: caminho+ nome_arquivo
-        """
-        nome_arquivo = f'{CLIENTE}-{compt}.png'
-
-        try:
-            save_path = self._files_path_v2(CLIENTE)
-            save = r'{}\\SimplesNacionalDeclarado-{}'.format(save_path, nome_arquivo)
-            print(save, '---------> SAVE')
-            return save
-        except FileNotFoundError:
-            print('NÃO CONSEGUI RETORNAR SAVE')

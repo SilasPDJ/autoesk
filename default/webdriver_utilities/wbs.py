@@ -5,7 +5,7 @@ from default.webdriver_utilities import *
 
 class WDShorcuts:
     def __init__(self, driver):
-        self.arg_driver = driver
+        self.__arg_driver = driver
 
     def send_keys_anywhere(self, typed, times=1, pause=.13):
         """
@@ -16,7 +16,7 @@ class WDShorcuts:
         """
         from time import sleep
 
-        driver = self.arg_driver
+        driver = self.__arg_driver
         actions = ActionChains(driver=driver)
         for i in range(times):
             # print('send keys')
@@ -30,7 +30,7 @@ class WDShorcuts:
         :param str args: keys or selenium keys
         :param float pause: how long time to pause
         """
-        driver = self.arg_driver
+        driver = self.__arg_driver
         action = ActionChains(driver=driver)
 
         action.send_keys(*args)
@@ -45,7 +45,7 @@ class WDShorcuts:
         :param pause: pause between clicks and elements
         :return:
         """
-        driver = self.arg_driver
+        driver = self.__arg_driver
         action = ActionChains(driver=driver)
         for arg in args:
             action.move_to_element(arg)
@@ -64,7 +64,7 @@ class WDShorcuts:
         :return:
         """
         from selenium.webdriver.common.action_chains import ActionChains
-        driver = self.arg_driver
+        driver = self.__arg_driver
 
         action = ActionChains(driver=driver)
 
@@ -82,17 +82,17 @@ class WDShorcuts:
         action.perform()
 
     def contains_text(self, item):
-        driver = self.arg_driver
+        driver = self.__arg_driver
         el = driver.find_element_by_xpath(f'//*[contains(text(),"{item}")]')
         return el
 
     def contains_title(self, item):
-        driver = self.arg_driver
+        driver = self.__arg_driver
         el = driver.find_element_by_css_selector(f"[title*='{item}']")
         return el
 
     def tags_wait(self, *tags):
-        driver = self.arg_driver
+        driver = self.__arg_driver
         delay = 10
         for tag in tags:
             try:
@@ -102,7 +102,7 @@ class WDShorcuts:
                 print("Loading took too much time!")
 
     def find_submit_form(self):
-        driver = self.arg_driver
+        driver = self.__arg_driver
         self.tags_wait('form')
         driver.implicitly_wait(5)
         driver.find_element_by_tag_name("form").submit()
@@ -116,5 +116,23 @@ class WDShorcuts:
         # site dentro de site...
         new_url = f'{main_url}{url}'.replace('//', '/')
 
-        driver = self.arg_driver
+        driver = self.__arg_driver
         driver.get(new_url)
+
+    def del_dialog_box(self, class_name):
+        """
+        :param class_name: Deleta por Class, nome
+        :return: javascript
+
+        # GLÓRIA A DEUS
+        """
+        driver = self.__arg_driver
+
+        # driver.find_element_by_xpath('//div[@class=""')
+        try:
+            driver.implicitly_wait(10)
+            driver.execute_script(f"return document.getElementsByClassName('{class_name}')[0].remove();")
+        except JavascriptException:
+            print('Elemento não encontrado em self.del_dialog_box')
+        else:
+            print('certo')
