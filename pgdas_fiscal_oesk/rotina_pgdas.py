@@ -44,7 +44,9 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                 CodSim = after_READ['Código Simples'][i]
                 CPF = after_READ['CPF'][i]
                 cont_ret_n_ret = i
+
                 self.now_person = CLIENTE
+                self.client_path = self._files_path_v2(CLIENTE)
 
                 # if not existe o arquivo my_wised_check_path_file -> no momento atual, existe
                 def cria_inteligence():
@@ -98,8 +100,10 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                         pass
 
                 if isinstance(intelligence_existence, list) and JA_DECLARED not in ['S', 'OK', 'FORA'] and cont_inteligence >= 0:
-                    path_returned = self._files_path_v2(CLIENTE)
-                    self.driver = pgdas_driver(path_returned)
+
+
+                    __client_path = self.client_path
+                    self.driver = pgdas_driver(__client_path)
                     driver = self.driver
                     super().__init__(driver)
 
@@ -115,7 +119,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                         print('FINISH')
                         break
                     # input(intelligence_existence[cont_inteligence][0]) # -> O NOME DO CLIENTE
-                    my_new_3valores = tres_valores_faturados(path_returned)
+                    my_new_3valores = tres_valores_faturados(__client_path)
                     print(my_new_3valores, '----> my_new_3valores')
 
                     def return_valor():
@@ -190,11 +194,11 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
 
                 elif cont_inteligence == -1:
                     if JA_DECLARED not in ['S', 'OK']:
-                        # estou no sem movimento ---------> Está funcionando, porém desejo deixar mais responsivo
-                        # appendando aquele arquivo, todo mundo menos (-) kong tem certif
+
                         print('estou em sem movimento, vou arrumar ainda')
-                        path_returned = self._files_path_v2(CLIENTE)
-                        self.driver = pgdas_driver(path_returned)
+
+                        __client_path = self.client_path
+                        self.driver = pgdas_driver(__client_path)
                         driver = self.driver
 
                         if CodSim != '-' or CodSim != '':
@@ -436,7 +440,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
             'https://sinac.cav.receita.fazenda.gov.br/simplesnacional/aplicacoes/atspo/pgdasd2018.app/')
         driver.implicitly_wait(5)
 
-    def DECLARA(self, compt, sheet_id, VALOR, my_new_3valores, cont_ret_n_ret):
+    def DECLARA(self, compt, sheet_id, valor_declarado, my_new_3valores, cont_ret_n_ret):
         driver = self.driver
         after_READ = self.after_READ
         declara_client = self.now_person
@@ -471,17 +475,17 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
             sleep(2.5)
             inp = driver.find_elements_by_tag_name('input')[0]
             sleep(3)
-            print('R$', VALOR)
+            print('R$', valor_declarado)
 
             inp = driver.find_elements_by_tag_name('input')[0]
-            inp.send_keys(VALOR)
+            inp.send_keys(valor_declarado)
             for i in range(2):
                 inp.send_keys(Keys.TAB)
             self.find_submit_form()
             sleep(3)
-            print(f'{VALOR}, olha o valor aqui')
+            print(f'{valor_declarado}, olha o valor aqui')
 
-            if sheet_id == 0 or VALOR == '':
+            if sheet_id == 0 or valor_declarado == '':
                 for i in range(2):
                     self.tags_wait('form')
                     sleep(3)
@@ -508,7 +512,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                     self.send_keys_anywhere(Keys.ENTER)
                     self.find_submit_form()  # SUBMITA retenções s/ valor ainda
                     sleep(2.5)
-                    self.send_keys_anywhere(VALOR)
+                    self.send_keys_anywhere(valor_declarado)
                     self.send_keys_anywhere(Keys.ENTER)  # submita o valor
                     sleep(2.5)
 
@@ -534,7 +538,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                     sleep(2)
 
                 # o valor já tá sendo tratado acima no IF master, mas ok
-                if VALOR != '':
+                if valor_declarado != '':
                     sleep(.5)
                     driver.find_elements_by_class_name('btn-success')[1].click()
                     # self.GERA_PGDAS2 acima
@@ -563,12 +567,12 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                     self.send_keys_anywhere(Keys.ENTER)
 
                 # o valor já tá sendo tratado acima no IF master, mas ok
-                if VALOR != '':
+                if valor_declarado != '':
                     sleep(2)
                     self.find_submit_form()
                     self.tags_wait('body', 'input', 'form')
                     sleep(1.5)
-                    self.send_keys_anywhere(VALOR)
+                    self.send_keys_anywhere(valor_declarado)
                     sleep(1.5)
                     self.send_keys_anywhere(Keys.ENTER)  # calcular
                     sleep(2.5)
@@ -586,7 +590,8 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
             # ~~~~~~~~~~~~~SEM-RETENÇÃO-universal~~~~~~~~~~~~~#
             print('AFTER IFs')
             # engloba
-            save = self.certif_feito(declara_client)
+            add = '-SemMovimento' if valor_declarado == '' else ''
+            save = self.certif_feito(self.client_path, add=add)
             driver.save_screenshot(save)
 
             self.simples_and_ecac_utilities(2, compt)

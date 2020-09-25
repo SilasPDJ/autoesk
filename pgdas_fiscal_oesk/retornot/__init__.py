@@ -3,7 +3,7 @@ import pyautogui as pygui
 import pyperclip as ppclip
 
 
-class RETINDOS_N_RETIDOS():
+class RetidosNorRetidos():
     def __init__(self):
         sleep(2)
         pygui.hotkey('enter')
@@ -129,11 +129,12 @@ class RETINDOS_N_RETIDOS():
         pygui.write(')')
         sleep(.2)
         pygui.hotkey('enter')
+
     def somaSE_v2(self, ups, operador):
         """
         funções-self: foritab, ctrl_sfhit_arrow
         :param: ups -> a distância para pressionar up
-        :param oprador: >, <, <> =, excel.
+        :param operador: >, <, <> =, excel.
         :return:
         """
         """escreve formula"""
@@ -230,6 +231,7 @@ class RETINDOS_N_RETIDOS():
         pygui.write('15')
         sleep(.5)
         pygui.hotkey('enter')
+
     # ~~~~~~~~~~~~~~~ARROWS~~~~~~~~~~~~~ #
     def ctrl_shift_arrow(self, *arrows):
         # excel -> seleciona de várias em várias com valor
@@ -354,12 +356,12 @@ def save_after_changes(name):
     f.close()
 
 
-class RnrSo1(RETINDOS_N_RETIDOS):
+class RnrSo1(RetidosNorRetidos):
     # RETINDOS_N_RETIDOS só com 1 valor
 
     # it's omited but I don't want to call it.
     def __init__(self):
-        # super().__init__()
+        super(RnrSo1).__init__()
         sleep(2)
         sleep(.5)
         pygui.hotkey('ctrl', 'v')

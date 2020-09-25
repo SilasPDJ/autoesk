@@ -234,17 +234,17 @@ class SetPaths(Now):
 
         return path
 
-    def certif_feito(self, client_name):
+    def certif_feito(self, save_path, add=''):
         """
         certificado de que está feito
-        :param client_name: nome da pasta antes de chegar à competência, vai passar por _files_path_v2
-        :return: caminho+ nome_arquivo
+        :param save_path: nome da pasta vinda de _files_path_v2
+        :param add: um adicional no nome do arquivo
+        :return: caminho+ nome_arquivo jpeg
         """
-        nome_arquivo = f'{client_name}.png'
-
+        client_name = save_path[save_path.index('-')-2: save_path.index('-')+2]
+        type_arquivo = 'jpg'
         try:
-            save_path = self._files_path_v2(client_name)
-            save = r'{}\\SimplesNacionalDeclarado-{}'.format(save_path, nome_arquivo)
+            save = r'{}\\SimplesNacionalDeclarado{}.{}'.format(save_path, add, type_arquivo)
             print(save, '---------> SAVE')
             return save
         except FileNotFoundError:

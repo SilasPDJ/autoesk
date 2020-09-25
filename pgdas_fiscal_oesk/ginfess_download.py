@@ -14,22 +14,6 @@ class DownloadGinfess(WDShorcuts, SetPaths, ExcelToData):
         sh_names = ['G5_ISS']
         compt, excel_file_name = self.get_atual_competencia(1)
 
-        def certif_feito(save_path, mov=True):
-            """
-            :param save_path: onde procuro
-            :param mov: True -> com_mov, False -> sem_mov
-            :return:
-            """
-            nome_arquivo = 'ginfses_cert.png'
-            try:
-                if mov:
-                    is_saved = r'{}/{}'.format(save_path, nome_arquivo)
-                else:
-                    is_saved = r'{}/{}-sem_mov'.format(save_path, nome_arquivo)
-                return is_saved
-            except FileNotFoundError:
-                return nome_arquivo
-
         lugar_salvar = ''
         for sh_name in sh_names:
             mshExcelFile = pd.ExcelFile(excel_file_name)
@@ -59,6 +43,7 @@ class DownloadGinfess(WDShorcuts, SetPaths, ExcelToData):
     MUNICÍPIO: {_city}""")
                 print('~' * 60)
                 client_path = self._files_path_v2(_cliente)
+                self.client_path = client_path
 
                 # Checa se já existe certificado
                 chdir(volta)
@@ -69,7 +54,7 @@ class DownloadGinfess(WDShorcuts, SetPaths, ExcelToData):
                     # Checka o certificado ginfess, somente
 
                     # if city in 'ABC':
-                    self.driver = ginfess_driver(client_path)
+                    self.driver = ginfess_driver(self.client_path)
                     super().__init__(self.driver)
                     driver = self.driver
 
@@ -92,17 +77,16 @@ class DownloadGinfess(WDShorcuts, SetPaths, ExcelToData):
                             print('printscreen aqui')
 
                             self.download(_cliente)
-                            driver.implicity_wait(10)
+                            driver.implicitly_wait(5)
 
-                            codigo = self.get_all_nfs()
-                            self.arq_excel(_cliente, self.compt_and_filename()[0], codigo)
+                            self.cexcel_from_html_above_v1(_cliente, self.ginfess_table_valores_html_code())
                         except IndexError:
                             print('~' * 30)
                             print('não emitiu nenhuma nota'.upper())
                             print('~' * 30)
-                            save = certif_feito(False)
-                            input(f'Checa save: {save}')
-                            # self.prt_sc_before_restart(save)
+
+                        driver.save_screenshot(self.certif_feito(self.client_path))
+                        # coloquei tudo no dele
 
                     elif _city.upper() == 'TREM':
                         driver.implicity_wait(5)
@@ -149,7 +133,6 @@ class DownloadGinfess(WDShorcuts, SetPaths, ExcelToData):
                                 break
                             driver.implicity_wait(.25)
                         self.send_keys_anywhere(Keys.TAB)
-                        # input('PAREI AQUI')
                         self.send_keys_anywhere(Keys.ENTER)
                         self.send_keys_anywhere(Keys.UP)
                         self.send_keys_anywhere(Keys.ENTER)
@@ -177,7 +160,9 @@ class DownloadGinfess(WDShorcuts, SetPaths, ExcelToData):
                         path_zip = client_path
                         print(f'path_zip-> {path_zip}')
                         self.unzipe_file(path_zip)
-                        # self.prt_sc_before_restart(certif_feito())
+
+                        driver.save_screenshot(self.certif_feito(self.client_path))
+                        # coloquei tudo no deli
                     driver.close()
 
     def id_url(self, city):
@@ -337,7 +322,25 @@ class DownloadGinfess(WDShorcuts, SetPaths, ExcelToData):
         will_be = final
         return will_be
 
-    def get_all_nfs(self):
+    def download(self, city):
+        """
+        :city:
+        :return:
+        """
+        driver = self.driver
+
+        if city.strip().lower() not in ('trem', 'sp'):
+            try:
+                downloada_xml = driver.find_element_by_xpath('//img[@src="imgs/download.png"]')
+                downloada_xml.click()
+
+            except NoSuchElementException:
+                print('NÃO CONSEGUI FAZER DOWNLOAD...')
+        else:
+            if driver.current_url.lower() in 'sigiss':
+                pass
+
+    def ginfess_table_valores_html_code(self):
         """
         :return: (html_cod): código dele se existe a class ytb-text, scrap_it
         """
@@ -378,8 +381,6 @@ class DownloadGinfess(WDShorcuts, SetPaths, ExcelToData):
 
             wanted_wanted = driver.find_elements_by_xpath("//div[contains(@class, 'x-grid3-row')]")
             print(wanted_wanted[0].text)
-
-            # input()
             # table = wanted_wanted
 
             for w in wanted_wanted:
@@ -396,30 +397,12 @@ class DownloadGinfess(WDShorcuts, SetPaths, ExcelToData):
         return html_cod
         # de.send_keys(Keys.TAB)
 
-    def download(self, city):
-        """
-        :city:
-        :return:
-        """
-        driver = self.driver
-
-        if city.strip().lower() not in ('trem', 'sp'):
-            try:
-                downloada_xml = driver.find_element_by_xpath('//img[@src="imgs/download.png"]')
-                downloada_xml.click()
-                input('PRECISO DA FUNÇÃO DE CRIAR EXCEL, QUERO FAZER UMA CLASS DELA, ELA ESTÁ LOGO ABAIXO')
-            except NoSuchElementException:
-                print('NÃO CONSEGUI FAZER DOWNLOAD...')
-        else:
-            if driver.current_url.lower() in 'sigiss':
-                pass
-
-    def arq_excel(self, cliente, competencia, html_codigo):
+    def cexcel_from_html_above_v1(self, cliente, html_codigo):
         # # DEPOIS JUNTAR ELA COM GINFESS_SCRAP
         import os
         import pyautogui as pygui
         from pyperclip import paste, copy
-        from .autoret_or_not import RETINDOS_N_RETIDOS, RnrSo1
+        from .retornot import RetidosNorRetidos, RnrSo1
         from .ginfess_scrap import cria_site_v1
         from time import sleep
         """
@@ -428,6 +411,10 @@ class DownloadGinfess(WDShorcuts, SetPaths, ExcelToData):
          :param site_cria: (lugar_salvar)
          :return: return_full_path for with_titlePATH.txt
          """
+        if self.client_path is not None:
+            client_path = self.client_path
+        else:
+            client_path = self._files_path_v2(cliente)
         driver = self.driver
 
         qtd_nf = driver.find_element_by_class_name('x-paging-info')
@@ -444,10 +431,12 @@ class DownloadGinfess(WDShorcuts, SetPaths, ExcelToData):
         if _prossigo:
             arq = f'relação_notas_canceladas-{cliente}.xlsx'
             x, y = pygui.position()
-            arq = f'{self._files_path_v2(cliente)}/{arq}'
+            arq = f'{client_path}/{arq}' if '/' in client_path else f'{client_path}\\{arq}'
+            # not really necessary, but i want to
             try:
                 wb = Workbook()
-                ws1 = wb.create_sheet(competencia)
+                sh_name = client_path.split('/')[-1] if '\\' not in client_path else client_path.split('\\')[-1]
+                ws1 = wb.create_sheet(sh_name)
                 wb.remove(wb['Sheet'])
                 wb.save(arq)
             except FileExistsError:
@@ -471,7 +460,7 @@ class DownloadGinfess(WDShorcuts, SetPaths, ExcelToData):
                 # ########## ABRINDO #########
                 sleep(6)
                 if len_tables > 1:
-                    RETINDOS_N_RETIDOS()
+                    RetidosNorRetidos()
                 # input('RETIDOS N RETIDOS')
                     pygui.hotkey('alt', 'f4')
                     sleep(5)
