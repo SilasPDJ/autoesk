@@ -77,10 +77,10 @@ class SetPaths(Now):
         f.close()
         return a
 
-    def get_atual_competencia(self, m_cont=-1, y_cont=-1, past_only=True, file_type='xlsx'):
+    def get_atual_competencia(self, m_cont=-1, y_cont=0, past_only=True, file_type='xlsx'):
         """
         :param int m_cont: quantos meses para trás? (0 atual)
-        :param int y_cont: quantos anos para trás?
+        :param int y_cont: quantos anos para trás?  (0 atual)
         :param str file_type:
         :param bool past_only: True -> somente passado (multiplica por -1), False: não faz multiplicação
         :return: competencia & excel_path
@@ -88,24 +88,43 @@ class SetPaths(Now):
         # responsivo, retorna também o caminho e a competencia para a variável PATH de self._files_path_v2
 
         """
-        if m_cont > 0 and past_only:
-            m_cont *= -1
-
         from datetime import datetime as dt
         path = self.__read_with_titlePATH(0)
 
         mes_atual = dt.now().month
 
-        month = dt.now().month + m_cont
-        year = dt.now().year
+        month = dt.now().month
+        year = dt.now().year + y_cont
 
-        if mes_atual < month:
-            year -= y_cont
-            print('\0331[1;31mNÃO É UM ERRO, a competência é maior do que o mês atual. '
-                  f'Logo, vou considerar como sendo ano passado: {year}\033[m')
+        if past_only:
+            if m_cont > 0:
+                m_cont *= -1
+            if y_cont > 0:
+                y_cont *= -1
+        after12 = 0
+        if m_cont % 12 != 0:
+            y_partial_cont, m_partial_cont = int(), int()
+            acontdale = month + m_cont
+            for mm in range(0, acontdale+1):
+                if mm % 12 == 0 and mm != 0:
+                    y_partial_cont += 1
+                if mm > 12:
+                    after12 += 1
+            year += y_partial_cont
+            if y_partial_cont != 0:
+                # month = month % 12 if acontdale > 24 else after12
+                month = after12 % 12
+                if month == 0:
+                    month = 12
+            else:
+                print(f'\033[1;31mSó paro aqui se o parâmetro m_cont ({m_cont}) for menor do que 3...\033[m')
+                if m_cont != 0:
+                    month = acontdale
+        else:
+            year += int(m_cont / 12)
+            print('define year')
 
-            # Se a competência for do mês 12
-
+        month = month * -1 if month < 0 else month
         compt = f'{month:02d}-{year}'
         excel_file_path_updated = r'{}/{}.{}'.format(path, compt, file_type)
 

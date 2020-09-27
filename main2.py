@@ -8,5 +8,6 @@ from google_drive import GDrive
 from smtp_project import PgDasmailSender, SendDividas, EmailExecutor
 from whatsapp import PgdasWP
 
-PgdasAnyCompt(1)
+PgdasAnyCompt(1, True)
+# PastOnly
 # optional arg

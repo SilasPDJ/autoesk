@@ -7,9 +7,11 @@ from default.data_treatment import ExcelToData
 
 
 class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
-    def __init__(self, meses_atras=None):
+    def __init__(self, meses_atras, past_only=True):
         """
         :param meses_atras: custom = -1 // 1 month ago
+        :param past_only: True -> only past,  False-> past and future active
+
         # remember past_only arg from self.get_atual_competencia
         """
         import pandas as pd
@@ -18,8 +20,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
 
         self.VENCIMENTO_DAS = JsonDateWithImprove.vencimento_das()
         sh_names = 'sem_mov', 'G5_ISS', 'G5_ICMS'
-        compt, excel_file_name = self.get_atual_competencia(meses_atras or 1)
-
+        compt, excel_file_name = self.get_atual_competencia(meses_atras, past_only=past_only)
         intelligence_existence = self.intelligence_existence_done('CERT_vs_LOGIN.xlsx')
         inteligence_db = {'CLIENT': [],
                           'CERT x LOGIN': []
