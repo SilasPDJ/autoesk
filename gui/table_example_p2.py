@@ -3,8 +3,14 @@ from default.data_treatment import ExcelToData
 
 import sys
 import pandas as pd
-from PyQt5.QtWidgets import QApplication, QWidget, QTableWidget, QTableWidgetItem, QHeaderView
-from PyQt5.QtWidgets import QLineEdit, QPushButton, QItemDelegate, QVBoxLayout, QAbstractItemView, QGridLayout
+
+from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
+from PyQt5.QtWidgets import QItemDelegate, QVBoxLayout, QAbstractItemView, QGridLayout
+
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout
+from PyQt5.QtWidgets import QPushButton, QLineEdit, QSizePolicy
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QDoubleValidator
 
@@ -32,8 +38,25 @@ class DisplaySheets(QWidget, SetPaths, ExcelToData):
                 a = df1.to_csv()
 
 
-class MyTableWithIndex:
-    def __init__(self):
+class MyTableWithIndex(QMainWindow):
+    def __init__(self, parent=None):
+        super().__init__()
+        self.setWindowTitle('My Main Window At The Moment')
+        self.main_wid = QWidget()
+        self.grid = QGridLayout(self.main_wid)
+        self.setFixedSize(800, 600)
+        self.display = self.add_el(QLineEdit(), 0, 0, 1, 1)
+
+        self.display.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        self.display.setDisabled(True)
+        self.display_text_from_el(self.add_el(QPushButton('Simples Nacional'), 1, 0, 1, 1), self.display)
+
+        # btn = self.ad_el(QPushButton('Simples Nacional'), 1, 0, 1, 1, self.text_to_display(btn, self.display))
+        # btn = self.ad_el(QPushButton('Simples Nacional'), 1, 1, 1, 1)
+        # btn = self.ad_el(QPushButton('Simples Nacional'), 1, 0, 1, 1)
+        self.add_el(QPushButton('adasdsa'), 2, 0, 1, 1, print('test'), ed='clicked')
+        self.setCentralWidget(self.main_wid)
+
         class FloatDelegate(QItemDelegate):
             def __init__(self, parent=None):
                 super().__init__()
@@ -96,6 +119,7 @@ class MyTableWithIndex:
 
             def bt1(self):
                 pass
+
             def bt2_export_to_csv(self):
                 self.table.df.to_csv('Data export.csv', index=False)
                 print('CSV file exported.')
@@ -106,11 +130,50 @@ class MyTableWithIndex:
                 for r in rows:
                     print(r)
 
-        if __name__ == '__main__':
-            app = QApplication(sys.argv)
+    def add_el(self, el, row, col, rowspan, colspan, funcao=None, ed=None, style=None):
+        """
+        :param el: any PyQt5 element like button etc
+        :param row: grid
+        :param col: grid
+        :param rowspan: grid
+        :param colspan: grid
+        :param funcao: any function (with no lambda)
+        :param ed: event b4 connect
+        :param style:
+        :return:
+        """
+        self.grid.addWidget(el, row, col, rowspan, colspan)
+        if ed == 'clicked':
+            el.clicked.connect(lambda: funcao)
 
-            demo = DFEditor()
-            demo.show()
+        el.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        if style:
+            el.setStyleSheet(style)
+        return el
 
-            sys.exit(app.exec_())
-MyTableWithIndex()
+    def display_text_from_el(self, el, display, ed='clicked'):
+
+        if ed == 'clicked':
+            el.clicked.connect(
+                lambda: display.setText(
+
+                    display.text() + el.text()
+                )
+            )
+
+    """
+    if __name__ == '__main__':
+        app = QApplication(sys.argv)
+
+        demo = DFEditor()
+        demo.show()
+
+        sys.exit(app.exec_())
+    """
+
+
+if __name__ == '__main__':
+    qt = QApplication(sys.argv)
+    calc = MyTableWithIndex()
+    calc.show()
+    qt.exec_()

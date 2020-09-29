@@ -66,7 +66,12 @@ class SetPaths(Now):
         :param int n:
         :return:
         """
-        f = open('with_titlePATH.txt', 'r')
+        import os
+        volta = os.getcwd()
+        filepath = os.path.realpath(__file__)
+        os.chdir('\\'.join(filepath.split('\\')[:-1]))
+        # mudei o caminho para esse arquivo em específico e depois voltei
+        f = open('../../with_titlePATH.txt', 'r')
         a = f.read()
         a = a.split('/')
         if n != 0:
@@ -75,6 +80,7 @@ class SetPaths(Now):
             a = a[:]
         a = '/'.join(a)
         f.close()
+        os.chdir(volta)
         return a
 
     def get_atual_competencia(self, m_cont=-1, y_cont=0, past_only=True, file_type='xlsx'):
