@@ -15,7 +15,6 @@ class DownloadGinfess(WDShorcuts, SetPaths, ExcelToData):
         import pandas as pd
         sh_names = ['G5_ISS']
         compt, excel_file_name = self.get_atual_competencia(1)
-
         lugar_salvar = ''
         for sh_name in sh_names:
             mshExcelFile = pd.ExcelFile(excel_file_name)

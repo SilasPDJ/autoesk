@@ -55,7 +55,7 @@ class SetPaths(Now):
                 compt, excel_file_name = f.read().splitlines()
 
         except FileNotFoundError:
-            input('\033[1;31mINPUT line 138 file not existence\033[m')
+            raise FileNotFoundError('\033[1;31mfile not existence\033[m')
         finally:
             return compt, excel_file_name
 

@@ -9,9 +9,9 @@ VENCIMENTO_DAS = JsonDateWithImprove.vencimento_das()
 
 
 class PgdasWP(MainWP, ExcelToData):
-    print('Este driver está localizado em MainWP, pois ele faz caminhos diferentes, checar depois')
 
     def __init__(self):
+        print('Este driver está localizado em MainWP, pois ele faz caminhos diferentes, checar depois')
         import pandas as pd
         self.VENCIMENTO_DAS = VENCIMENTO_DAS
         # input(self.VENCIMENTO_DAS)
