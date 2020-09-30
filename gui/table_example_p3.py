@@ -5,7 +5,7 @@ import sys
 import pandas as pd
 
 from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
+from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QTableView
 from PyQt5.QtWidgets import QItemDelegate, QVBoxLayout, QAbstractItemView, QGridLayout
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout
@@ -16,7 +16,6 @@ from PyQt5.QtGui import QDoubleValidator
 
 
 class DisplaySheets(QWidget, SetPaths, ExcelToData):
-
     def __init__(self):
         """
         # remember past_only arg from self.get_atual_competencia
@@ -34,7 +33,7 @@ class DisplaySheets(QWidget, SetPaths, ExcelToData):
                 yield xls.parse(sh, dtype=str)
 
 
-class MyTableWithIndex(QMainWindow, DisplaySheets, ):
+class MyTableWithIndex(QMainWindow, DisplaySheets):
     def __init__(self, parent=None):
         super().__init__()
         self.setWindowTitle('My Main Window At The Moment')
@@ -42,54 +41,70 @@ class MyTableWithIndex(QMainWindow, DisplaySheets, ):
         self.grid = QGridLayout(self.main_wid)
         from pyautogui import size
         x, y = size()[0], size()[1]
-        self.setFixedSize(x, y)
-        self.display = self.add_el(QPlainTextEdit(), 0, 1, 2, 2)
-
+        self.resize(1200, 800)
+        self.display = self.add_el(QPlainTextEdit(), 6, 0, 2, 2)
+        test = 1, 0, 1, 1
         self.display.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         self.display.setDisabled(True)
-        self.display_text_from_el(self.add_el(QPushButton('Simples Nacional'), 1, 0, 1, 1), self.display, ed='clicked')
+        self.display_text_from_el(self.add_el(QPushButton('Simples NacionalA'), *test), self.display, ed='clicked')
+        self.display_text_from_el(self.add_el(QPushButton('Simples NacionalB'), 2, 0, 1, 1), self.display, ed='clicked')
+        self.display_text_from_el(self.add_el(QPushButton('Simples NacionalC'), 3, 0, 1, 1), self.display, ed='clicked')
+        self.display_text_from_el(self.add_el(QPushButton('Simples NacionalD'), 4, 0, 1, 1), self.display, ed='clicked')
+        self.display_text_from_el(self.add_el(QPushButton('Simples NacionalE'), 5, 0, 1, 1), self.display, ed='clicked')
+
 
         # btn = self.ad_el(QPushButton('Simples Nacional'), 1, 0, 1, 1, self.text_to_display(btn, self.display))
         # btn = self.ad_el(QPushButton('Simples Nacional'), 1, 1, 1, 1)
-        # btn = self.ad_el(QPushButton('Simples Nacional'), 1, 0, 1, 1)
 
-        self.add_table()
-        self.create_table()
+        # self.tableWidget = QTableWidget()
+        # self.create_tables(self.my_method())
 
-        self.add_el(self.tableWidget, 0, 2, 6, 6)
+        dfs = list(self.my_method())
+
+        iss_t = QTableWidget()
+        self.create_tables(iss_t, dfs[1])
+        self.add_el(iss_t, 0, 1, 3, 3)
+
+        icms_t = QTableWidget()
+        self.create_tables(icms_t, dfs[3])
+        self.add_el(icms_t, 3, 4, 3, 3)
 
         self.setCentralWidget(self.main_wid)
 
     def add_table(self):
-        bb = QTableWidget()
 
         for df in self.my_method():
             self.setStyleSheet('font-size: 12px;')
             print(df)
 
-    # Create table
-    def create_table(self):
-        self.tableWidget = QTableWidget()
-
+    # Create tables
+    def create_tables(self, table, dataframe):
         # Row count
-        self.tableWidget.setRowCount(4)
+        # self.tableWidget.setRowCount(30)
 
-        # Column count
-        self.tableWidget.setColumnCount(2)
+        # Column count]
+        self.tableWidget = table
+
+        self.tableWidget.setColumnCount(15)
         # ####################################### FAZER FOR LOOP NESSE 0 E 1 E ADICIONAR OS ELEMENTOS DO MEU PANDAS, EH ISTO
-        self.tableWidget.setItem(0, 0, QTableWidgetItem("Name"))
-        self.tableWidget.setItem(0, 1, QTableWidgetItem("City"))
-        self.tableWidget.setItem(1, 0, QTableWidgetItem("Aloysius"))
-        self.tableWidget.setItem(1, 1, QTableWidgetItem("Indore"))
-        self.tableWidget.setItem(2, 0, QTableWidgetItem("Alan"))
-        self.tableWidget.setItem(2, 1, QTableWidgetItem("Bhopal"))
-        self.tableWidget.setItem(3, 0, QTableWidgetItem("Arnavi"))
-        self.tableWidget.setItem(3, 1, QTableWidgetItem("Mandsaur"))
+        # for e, df in enumerate(dataframe):
+        tw, df = table, dataframe
+        dc_df = df.to_dict
+        n_rows = len(df.index)
+        n_columns = len(df.columns)
+        tw.setRowCount(n_rows)
+        tw.setColumnCount(n_columns)
+        # tw.setItemDelegate()
 
-        # Table will fit the screen horizontally
-        self.tableWidget.horizontalHeader().setStretchLastSection(True)
-        self.tableWidget.horizontalHeader().setSectionResizeMode(
-            QHeaderView.Stretch)
+        for i in range(tw.rowCount()):
+            for j in range(tw.columnCount()):
+                x = '{}'.format(df.iloc[i, j])
+                tw.setItem(i, j, QTableWidgetItem(x))
+
+        # tw.setItem(0, 0, QTableWidgetItem("Name"))
+            self.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
+            self.tableWidget.itemSelectionChanged.connect(lambda: self.index_for_data(self.tableWidget))
+
 
     def add_el(self, el, row, col, rowspan, colspan, funcao=None, ed=None, style=None):
         """
@@ -113,10 +128,22 @@ class MyTableWithIndex(QMainWindow, DisplaySheets, ):
         return el
 
     def display_text_from_el(self, el, display, ed='clicked'):
+        """
+        :param el: ELEMENT
+        :param display: WHERE IS IT DISPLAYED
+        :param ed: ELEMENT DIRECTION/EVENT
+        :return:
+        """
         txt = str(el.text())
         if ed == 'clicked':
             el.clicked.connect(
                 lambda: display.setPlainText(txt))
+
+    def index_for_data(self, table):
+        rows = (idx.row() for idx in table.selectionModel().selectedRows())
+        # tanto faz () or [], () ocupa menos espaço
+        for r in rows:
+            print(r)
 
     """
     if __name__ == '__main__':

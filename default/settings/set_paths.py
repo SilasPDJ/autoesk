@@ -71,17 +71,27 @@ class SetPaths(Now):
         filepath = os.path.realpath(__file__)
         os.chdir('\\'.join(filepath.split('\\')[:-1]))
         # mudei o caminho para esse arquivo em específico e depois voltei
-        f = open('../../with_titlePATH.txt', 'r')
-        a = f.read()
-        a = a.split('/')
-        if n != 0:
-            a = a[:n]
-        else:
-            a = a[:]
-        a = '/'.join(a)
-        f.close()
-        os.chdir(volta)
-        return a
+        try:
+            f = open('../../with_titlePATH.txt', 'r')
+            a = f.read()
+            a = a.split('/')
+            if n != 0:
+                a = a[:n]
+            else:
+                a = a[:]
+            a = '/'.join(a)
+            f.close()
+            os.chdir(volta)
+            return a
+        except FileNotFoundError:
+            from .main_excel_manager import exe as mk_exe, target, reset_mexendo
+            tt = target()
+            # preciso terminar essa parte
+            reset_mexendo()
+
+            mk_exe()
+            raise FileNotFoundError
+            pass
 
     def get_atual_competencia(self, m_cont=-1, y_cont=0, past_only=True, file_type='xlsx'):
         """
