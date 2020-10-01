@@ -130,7 +130,7 @@ class DownloadGinfess(WDShorcuts, SetPaths, ExcelToData):
                             self.send_keys_anywhere(Keys.TAB)
                             self.send_keys_anywhere(Keys.ENTER)
                             if i == 1:
-                                driver.find_element_by_id('main').click()
+                                driver.find_element_by_id('main_excel_manager').click()
                                 break
                             driver.implicity_wait(.25)
                         self.send_keys_anywhere(Keys.TAB)
@@ -256,7 +256,7 @@ class DownloadGinfess(WDShorcuts, SetPaths, ExcelToData):
 
         a_with_text("Consultar").click()
 
-        print('Waiting main tags')
+        print('Waiting main_excel_manager tags')
         wait_main_tags()
 
         period = label_with_text('Período')

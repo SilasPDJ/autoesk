@@ -207,6 +207,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                         __client_path = self.client_path
                         self.driver = pgdas_driver(__client_path)
                         driver = self.driver
+                        super().__init__(self.driver)
 
                         if CodSim != '-' or CodSim != '':
                             # Código simples existe # SEM MOVIMENTO

@@ -13,6 +13,8 @@ from smtp_project import PgDasmailSender, SendDividas, EmailExecutor
 from pgdas_fiscal_oesk import PgdasAnyCompt, DownloadGinfess
 from whatsapp import PgdasWP
 
+from pgdas_fiscal_oesk.main_excel_manager.main_excel_manager import SheetPathManager
+
 
 class DisplaySheets(QWidget, SetPaths, ExcelToData):
     def __init__(self):
@@ -113,9 +115,9 @@ class TuplasTabelas:
     def bts_b4mail(self):
         # 'Declara Giss Online' -> ainda sem
         #  'Open Excel File' -> AINDA SEM
-        names = 'Declara Simples Nacional', 'Download Ginfess',
-        callbacks = PgDasmailSender, DownloadGinfess
-        return names, callbacks
+        names = 'Declara Simples Nacional', 'Download Ginfess', 'Editar Planilha Excel'
+        callbacks = PgDasmailSender, DownloadGinfess, SheetPathManager.save_after_changes
+        return list(names), list(callbacks)
 
 
 class MainApp(QMainWindow, DisplaySheets, TuplasTabelas):
@@ -132,12 +134,20 @@ class MainApp(QMainWindow, DisplaySheets, TuplasTabelas):
         self.display.setDisabled(True)
 
         bts_b4mail, bts_callbacks = self.bts_b4mail()
+        bts_b4mail.append('Load Tables')
+        bts_callbacks.append(self.load_tables)
+
         for e, el_grid in enumerate(self.el_grid_setting(len(bts_b4mail), 0, mt=0)):
             # self.display_text_from_el(self.add_el(QPushButton('Simples NacionalA'), *el_grid), self.display, ed='clicked')
 
             self.display_text_from_el(self.add_el(QPushButton(bts_b4mail[e]), *el_grid, funcao=bts_callbacks[e]), self.display)
 
         # btn = self.ad_el(QPushButton('Simples Nacional'), 1, 0, 1, 1, self.text_to_display(btn, self.display))
+        # self.load_tables()
+
+        self.setCentralWidget(self.main_wid)
+
+    def load_tables(self):
         dfs = list(self.parse_sh_name())
         iss_t = QTableWidget()
         self.create_tables(iss_t, dfs[1])
@@ -146,8 +156,6 @@ class MainApp(QMainWindow, DisplaySheets, TuplasTabelas):
         icms_t = QTableWidget()
         self.create_tables(icms_t, dfs[3])
         self.add_el(icms_t, 3, 2, 3, 1)
-
-        self.setCentralWidget(self.main_wid)
 
     def add_el(self, el, row: int, col: int, rowspan: int, colspan: int, funcao=None, style=None, **kwargs):
         """

@@ -59,7 +59,7 @@ class SetPaths(Now):
         finally:
             return compt, excel_file_name
 
-    def __read_with_titlePATH(self, n=-1):
+    def __file_wtp_oesk(self, n=-1):
         """
         # not in use here
 
@@ -67,31 +67,35 @@ class SetPaths(Now):
         :return:
         """
         import os
-        volta = os.getcwd()
-        filepath = os.path.realpath(__file__)
-        os.chdir('\\'.join(filepath.split('\\')[:-1]))
-        # mudei o caminho para esse arquivo em específico e depois voltei
-        try:
-            f = open('../../with_titlePATH.txt', 'r')
-            a = f.read()
-            a = a.split('/')
-            if n != 0:
-                a = a[:n]
-            else:
-                a = a[:]
-            a = '/'.join(a)
-            f.close()
-            os.chdir(volta)
-            return a
-        except FileNotFoundError:
-            from .main_excel_manager import exe as mk_exe, target, reset_mexendo
-            tt = target()
-            # preciso terminar essa parte
-            reset_mexendo()
+        from pgdas_fiscal_oesk.main_excel_manager.main_excel_manager import SheetPathManager
 
-            mk_exe()
-            raise FileNotFoundError
-            pass
+        filepath = os.path.realpath(__file__)
+        os.path.join('\\'.join(filepath.split('\\')[:-1]))
+
+        file_with_name = 'with_titlePATH.txt'
+        sh_management = SheetPathManager(file_with_name)
+
+        while True:
+            try:
+                f = open(f'{file_with_name}', 'r')
+                a = f.read()
+                a = a.split('/')
+                if n != 0:
+                    a = a[:n]
+                else:
+                    a = a[:]
+                a = '/'.join(a)
+                returned = a
+                f.close()
+            except FileNotFoundError:
+                FileExistsError('WITH TITLE PATH NOT EXISTENTE ')
+                sh_management.select_sheets_path_if_not_exists()
+            else:
+                return returned
+            finally:
+                # executes even after return
+                sh_management.new_xlsxcompt_from_padrao_if_not_exists()
+                # Cria planilha se não existente
 
     def get_atual_competencia(self, m_cont=-1, y_cont=0, past_only=True, file_type='xlsx'):
         """
@@ -105,7 +109,7 @@ class SetPaths(Now):
 
         """
         from datetime import datetime as dt
-        path = self.__read_with_titlePATH(0)
+        path = self.__file_wtp_oesk(0)
 
         mes_atual = dt.now().month
 
@@ -146,6 +150,7 @@ class SetPaths(Now):
 
         with open(self.__get_atual_competencia_file(), 'w') as f:
             for line in [compt, excel_file_path_updated]:
+                print(compt)
                 f.write(line + '\n')
 
         return compt, excel_file_path_updated

@@ -1,5 +1,4 @@
 from default.webdriver_utilities import *
-
 # wbs = web driver shortcuts
 
 
