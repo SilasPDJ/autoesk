@@ -50,11 +50,8 @@ class PgDasmailSender(EmailExecutor):
                     JA_FOI_ENV = 'OK'
                 else:
                     if now_email == '':
-                        print(f'-------------> PLANILHA {sh_name}, F7 p/ terminar')
-                        press_key_b4('f7')
-                        break
-                        # raise KeyError
-                    if JA_DECLARED in ['S', 'OK', 'FORA'] and JA_FOI_ENV not in ['S', 'OK']:
+                        print('wtf')
+                    elif JA_DECLARED in ['S', 'OK', 'FORA'] and JA_FOI_ENV not in ['S', 'OK']:
                         print(now_email)
                         print(f'VALOR: {VALOR}')
                         print(f'CLIENTE: {CLIENTE}')
@@ -64,9 +61,12 @@ class PgDasmailSender(EmailExecutor):
                         das_message = self.write_message(message)
 
                         das_anx_files = self.files_get_anexos(CLIENTE)
-
-                        self.main_send_email(now_email, mail_header, das_message, das_anx_files)
+                        self.main_send_email('silsilinhas@gmail.com', mail_header, das_message, das_anx_files)
                         """a partir do terceiro argumento, só há mensagens attachedas"""
+
+            if sh_name == sh_names[-1]:
+                print('fim')
+                break
 
     def mail_pgdas_msg(self, client, cnpj, tipo_das, valor):
 

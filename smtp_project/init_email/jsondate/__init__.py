@@ -51,10 +51,12 @@ class JsonDateWithImprove:
         :param str file: file name
         :return: dict or list or tuple from json loaded
         """
-
-        with open(file, 'r') as f:
-            return json.load(f)
-
+        from json import decoder
+        try:
+            with open(file, 'r') as f:
+                return json.load(f)
+        except (decoder.JSONDecodeError, FileNotFoundError):
+            return False
     @staticmethod
     def dump_json(objeto, file, ensure_ascii=False):
         """

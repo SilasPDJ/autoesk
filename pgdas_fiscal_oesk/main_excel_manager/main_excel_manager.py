@@ -8,6 +8,7 @@ class SheetPathManager:
     from default.settings import SetPaths
     import os
     compt_and_filename = SetPaths().compt_and_filename()
+    modificador_file = r'C:\_SIMPLES\MEXENDO.xlsx'
 
     def __init__(self, w_path_file):
         self.compt_and_filename = self.SetPaths().compt_and_filename()
@@ -55,6 +56,7 @@ class SheetPathManager:
                 from shutil import copy2
 
                 copy2(default_file, excel_file_name)
+                copy2(default_file, self.modificador_file)
 
         except FileNotFoundError:
             raise FileNotFoundError(f'plan="{plan}" file não existente')
@@ -66,6 +68,7 @@ class SheetPathManager:
         self = SheetPathManager(None)
         compt, excel_file_name = self.compt_and_filename
 
-        os.system(r'C:\_SIMPLES\MEXENDO.xlsx')
+        os.system(self.modificador_file)
 
-        copy2(r'C:\_SIMPLES\MEXENDO.xlsx', excel_file_name)
+        copy2(self.modificador_file, excel_file_name)
+        print(f'{excel_file_name} atualizando por {self.modificador_file}')

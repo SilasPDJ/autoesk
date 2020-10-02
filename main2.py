@@ -1,5 +1,5 @@
 from google_drive import GDrive
-from pgdas_fiscal_oesk import DownloadGinfess, DownloadGinfessGui, PgdasAnyCompt
+from pgdas_fiscal_oesk import DownloadGinfessGui, PgdasAnyCompt
 from whatsapp.pgdas_special_wp_sender import PgdasWP
 
 

@@ -324,15 +324,19 @@ class SetPaths(Now):
         """
         from time import sleep
         from os import chdir, remove, listdir
-        from zipfile import ZipFile
+        from zipfile import ZipFile, BadZipFile
         chdir(full_path)
         ls = listdir()
         for file in ls:
             print('Descompactando, ZIPs e excluíndo-os')
             if file.endswith('.zip'):
-                zf = ZipFile(file, mode='r')
-                zf.extractall()
-                zf.close()
-                sleep(5)
-                if rm_zip:
-                    remove(file)
+                try:
+                    zf = ZipFile(file, mode='r')
+                    zf.extractall()
+                    zf.close()
+                except BadZipFile:
+                    print('Não deszipei')
+                finally:
+                    if rm_zip:
+                        sleep(5)
+                        remove(file)
