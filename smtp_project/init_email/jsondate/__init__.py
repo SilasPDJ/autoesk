@@ -45,7 +45,8 @@ class JsonDateWithImprove:
         r = f' style=color:{cor}'
         return r
 
-    def load_json(self, file):
+    @staticmethod
+    def load_json(file):
         """
         :param str file: file name
         :return: dict or list or tuple from json loaded
@@ -54,16 +55,21 @@ class JsonDateWithImprove:
         with open(file, 'r') as f:
             return json.load(f)
 
-    def dump_json(self, objeto, file):
+    @staticmethod
+    def dump_json(objeto, file, ensure_ascii=False):
         """
         :param object objeto:
         :param file:
+        :param ensure_ascii: False -> utf-8, True -> ensure-it
         :return:
 
         # object engloba list, tuple, dict
         """
         with open(file, 'w') as f:
-            json.dump(objeto, f)
+            if not ensure_ascii:
+                json.dump(objeto, f, ensure_ascii=False)
+            else:
+                json.dump(objeto, f)
 
     def das_venc_data(self):
         """

@@ -137,7 +137,7 @@ class SetPaths(Now):
                 if month == 0:
                     month = 12
             else:
-                print(f'\033[1;31mSó paro aqui se o parâmetro m_cont ({m_cont}) for menor do que 3...\033[m')
+                # print(f'\033[1;31mNOT A ERROR.\033[m Só paro aqui se o parâmetro m_cont ({m_cont}) for menor do que 3...\033[m')
                 if m_cont != 0:
                     month = acontdale
         else:
@@ -150,7 +150,7 @@ class SetPaths(Now):
 
         with open(self.__get_atual_competencia_file(), 'w') as f:
             for line in [compt, excel_file_path_updated]:
-                print(compt)
+                # print(compt)
                 f.write(line + '\n')
 
         return compt, excel_file_path_updated
@@ -177,6 +177,30 @@ class SetPaths(Now):
 
         returned = business_date.day
         return returned
+
+    def first_and_last_day_compt(self, sep='/'):
+        """
+        ELE JÁ PEGA O ANTERIOR MAIS PROX
+
+        # É necessario o will_be pois antes dele é botado ao contrário
+        # tipo: 20200430
+        # ano 2020, mes 04, dia 30... (exemplo)
+        :return: ÚLTIMO DIA DO MES
+        """
+        from datetime import date, timedelta
+
+        compt, file_name = self.compt_and_filename()
+        mes, ano = compt.split('-') if '-' in compt else '/'
+        mes, ano = int(mes) + 1, int(ano)
+
+        last_now = date(ano, mes, 1) - timedelta(days=1)
+        first_now = date(ano, mes-1, 1)
+
+        z, a = last_now, first_now
+        br1st = f'{a.day:02d}{sep}{a.month:02d}{sep}{a.year}'
+        brlast = f'{z.day:02d}{sep}{z.month:02d}{sep}{z.year}'
+        print(br1st, brlast)
+        return br1st, brlast
 
     def _files_path_v2(self, pasta_client, year=True):
         """
@@ -282,9 +306,9 @@ class SetPaths(Now):
         :return: caminho+ nome_arquivo jpeg
         """
         client_name = save_path[save_path.index('-')-2: save_path.index('-')+2]
-        type_arquivo = 'jpg'
+        type_arquivo = 'png'
         try:
-            save = r'{}\\SimplesNacionalDeclarado{}.{}'.format(save_path, add, type_arquivo)
+            save = r'{}\\{}-SimplesNacionalDeclarado.{}'.format(save_path, add, type_arquivo)
             print(save, '---------> SAVE')
             return save
         except FileNotFoundError:

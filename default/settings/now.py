@@ -18,4 +18,3 @@ class Now:
     @staticmethod
     def y():
         return dt.now().year
-

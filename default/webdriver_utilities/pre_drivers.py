@@ -5,6 +5,16 @@ from whatsapp.dialog_profile_path import profiles_main_folder
 # import QR code...
 # o outro driver "mais complexo" está somente dentro do projeto whatsapp
 
+import os
+volta = os.getcwd()
+# continuar a desenvolver a def real_path, p/ driver
+
+
+def real_path_for_chromedriver():
+    this_file_path = os.path.realpath(__file__)
+    path = '\\'.join(this_file_path.split('\\')[:-1])
+    os.chdir(path)
+
 
 def default_qrcode_driver(path=''):
     """
@@ -88,6 +98,7 @@ def ginfess_driver(path=''):
     :return: o driver para fechar no loop
     """
     print('\033[1;33m Headless\033[m')
+
     link = "Chromedriver/chromedriver.exe"
     chrome_options = Options()
 
@@ -113,7 +124,12 @@ def ginfess_driver(path=''):
     chrome_options.add_argument("safebrowsing-disable-extension-blacklist")
     # #################### Difference from above --> safe_browsing enabled
     chromedriver = link
+
+    real_path_for_chromedriver()
+    # chdir
+
     driver = webdriver.Chrome(executable_path=chromedriver, options=chrome_options)
+    os.chdir(volta)
     # self.tags_wait('body', 'input', 'div')
 
     # sleep(5)

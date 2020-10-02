@@ -55,3 +55,17 @@ class ExcelToData:
             faturado = faturado.replace(',', '.')
             faturado = faturado.replace('v', ',')
             return faturado
+
+    @staticmethod
+    def yield_json_1data(dic: dict):
+        """
+        :param dic:
+        :return:
+        """
+        print(dic)
+
+    @staticmethod
+    def any_to_str(*args):
+        for v in args:
+            yield "".join(v)
+
