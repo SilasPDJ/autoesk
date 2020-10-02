@@ -586,8 +586,12 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
                 driver = self.driver
 
                 id_url = self.id_url(_city)
-                self.driver.get(id_url)
-
+                try:
+                    self.driver.get(id_url)
+                except InvalidArgumentException:
+                    if int(eid)-1 == len(json_file.keys()):
+                        print('FIM')
+                        break
                 #for
                 if _city in ['A', 'B', 'C']:
                     # links das cidades
@@ -705,9 +709,13 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
         urls = 'https://tremembe.sigiss.com.br/tremembe/contribuinte/login.php', \
                'https://santoandre.ginfes.com.br/', 'https://nfse.isssbc.com.br/', 'https://saocaetano.ginfes.com.br/', \
                'https://nfe.prefeitura.sp.gov.br/login.aspx'
-        ind = cities.index(city)
+        try:
+            ind = cities.index(city)
+            return urls[ind]
+        except ValueError:
+            print(f'Cidade não cadastrada {city}')
         print(city)
-        return urls[ind]
+        return ''
 
     def wait_main_tags(self):
         self.tags_wait('body', 'div', 'table')
