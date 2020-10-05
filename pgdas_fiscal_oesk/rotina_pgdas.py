@@ -550,7 +550,7 @@ class OldPgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                     sleep(.5)
                     driver.find_elements_by_class_name('btn-success')[1].click()
                     # self.GERA_PGDAS2 acima
-                    sleep(2.5)
+                    driver.implicitly_wait(10)
                     self.find_submit_form()
                     # DOWNLOAD feito pois já está setado nos argumentos do driver
 
@@ -1180,6 +1180,10 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
 
             # ISS, index 1
             elif sheet_id == 1:
+                def trata_retencoes(v):
+                    if int(eval(v.replace(',', '.'))) == 0:
+                        return ''
+
                 if not my_new_3valores:
                     SemRetencao = self.trata_money_excel(after_READ['Sem Retenção'][cont_ret_n_ret])
                     ComRetencao = self.trata_money_excel(after_READ['Com Retenção'][cont_ret_n_ret])
@@ -1187,11 +1191,14 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                     SemRetencao = self.trata_money_excel([v for v in my_new_3valores[2].values()][0])
                     ComRetencao = self.trata_money_excel([v for v in my_new_3valores[1].values()][0])
 
+                ComRetencao = trata_retencoes(ComRetencao)
+                SemRetencao = trata_retencoes(SemRetencao)
                 print(f'Com Retenção: {ComRetencao}, Sem:{SemRetencao}')
                 self.tags_wait('a')
                 prestacao_serv = driver.find_element_by_id('btn-exibe-todos')
                 prestacao_serv.click()
                 sleep(2.5)
+
                 if SemRetencao != '' and ComRetencao == '':
                     print('Só teve SEM RETENÇÃO')
                     self.send_keys_anywhere(Keys.TAB, 17 + 1)
@@ -1219,6 +1226,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                     self.send_keys_anywhere(ComRetencao)
                     self.send_keys_anywhere(Keys.ENTER)  # calcular
                     sleep(2.5)
+
                     self.tags_wait('form')
                     self.find_submit_form()
                     sleep(2)

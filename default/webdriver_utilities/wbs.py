@@ -98,6 +98,8 @@ class WDShorcuts:
     def tags_wait(self, *tags):
         driver = self.__arg_driver
         delay = 10
+        from selenium.common.exceptions import WebDriverException, TimeoutException
+        from selenium.webdriver.support.ui import WebDriverWait
         for tag in tags:
             try:
                 my_elem = WebDriverWait(driver, delay).until(expected_conditions.presence_of_element_located((By.TAG_NAME, tag)))
