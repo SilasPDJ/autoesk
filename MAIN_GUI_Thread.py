@@ -156,7 +156,8 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
         JsonDateWithImprove.dump_json(ddict, self.now_selection_json_f_name)
         loadit = JsonDateWithImprove.load_json(self.now_selection_json_f_name)
 
-        self.add_thread(self.whenGinfessBt, DownloadGinfessGui, loadit)
+        self.add_thread(self.whenGinfessBt, DownloadGinfessGui, loadit, self.atual_compt_and_file)
+        # self.atual_compt_and_file = o próprio nome diz...
         self.add_thread(self.whenGissBt, GissGui, loadit)
 
     def add_thread(self, el, *action):
@@ -169,7 +170,7 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
         # for arg in args:
         try:
             el.clicked.disconnect()
-        except Exception as e:
+        except (TypeError, UnboundLocalError)as e:
             pass
 
         # b4 prosseguir
@@ -180,13 +181,6 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
         el.clicked.connect(lambda: self._manager.startislife(action))
         self._manager.started.connect(self.hide)
         self._manager.finished.connect(self.show)
-
-    def bts_b4mail(self):
-
-        names = 'Declara Simples Nacional', 'Editar Planilha Excel'
-
-        callbacks = lambda: PgdasAnyCompt(self.atual_compt_and_file), SheetPathManager.save_after_changes
-        return list(names), list(callbacks)
 
 
 class MainApp(MainDisplays, TuplasTabelas):
@@ -206,8 +200,7 @@ class MainApp(MainDisplays, TuplasTabelas):
 
         self.v_box = v_box
 
-        add_el = QtWidgets.QPushButton('add_el')
-        self.add_elingrid(add_el, 0, 6, 1, 1)
+        self.any_table = QTableWidget()
 
         self._loading_screen = LoadingScreen()
         self._manager = FunctionsManager()
@@ -231,8 +224,20 @@ class MainApp(MainDisplays, TuplasTabelas):
             new.clicked.connect(partial(self.load_tables, e))
             # self.add_thread(new, partial(self.load_tables, e))
 
-        el = QPushButton('ISS Download Ginfess')
-        generator_unpacking = list(self.el_grid_setting(1, 0, start_row=1))
+        generator_unpacking = self.el_grid_setting(1, 0, start_row=1)
+        generator_only1 = list(generator_unpacking)[0]
+        self.whenExcelEditBt = QPushButton('Editar Planilha Excel')
+        # self.whenExcelEditBt.setDisabled(False)
+        self.whenExcelEditBt = self.add_elingrid(self.whenExcelEditBt, *generator_only1, obj_name='bt_edit_plan')
+        self.add_thread(self.whenExcelEditBt, SheetPathManager.save_after_changes)
+
+        generator_unpacking = self.el_grid_setting(1, 0, start_row=2)
+        generator_only1 = list(generator_unpacking)[0]
+        self.whenGissBt = QPushButton('Encerra GISS ONLINE')
+        # self.whenGissBt.setDisabled(False)
+        self.whenGissBt = self.add_elingrid(self.whenGissBt, *generator_only1)
+
+        generator_unpacking = list(self.el_grid_setting(1, 0, start_row=3))
         generator_only1 = generator_unpacking[0]
         a, b, c, d = generator_only1
         self.whenGinfessBt = QPushButton('ISS Download Ginfess')
@@ -241,12 +246,14 @@ class MainApp(MainDisplays, TuplasTabelas):
         # self.add_thread(self.whenGinfessBt, DownloadGinfessGui, JsonDateWithImprove.load_json(self.now_selection_json_f_name))
         # being add in self.data_selection
 
-        generator_unpacking = self.el_grid_setting(1, 0, start_row=2)
+        generator_unpacking = self.el_grid_setting(1, 0, start_row=4)
         generator_only1 = list(generator_unpacking)[0]
-        self.whenGissBt = QPushButton('Encerra GISS ONLINE')
-        self.whenGissBt.setDisabled(False)
-        self.whenGissBt = self.add_elingrid(self.whenGissBt, *generator_only1)
+        self.whenSimplesNacional = QPushButton('Todos Simples Nacional')
+        # self.whenGissBt.setDisabled(False)
+        self.whenSimplesNacional = self.add_elingrid(self.whenSimplesNacional, *generator_only1, obj_name='btSimplesNacional')
 
+        # input('Estou tentando selecionar todos')
+        self.add_thread(self.whenSimplesNacional, PgdasAnyCompt, self.atual_compt_and_file)
 
     def center(self):
         qr = self.frameGeometry()
@@ -262,7 +269,7 @@ class MainApp(MainDisplays, TuplasTabelas):
 
         # ta dificl conseguir column values
 
-        any_table = QTableWidget()
+        any_table = self.any_table
         self.create_tables(any_table, dfs, table_id)
         self.v_box.addWidget(any_table)
         self.add_elingrid(any_table, 1, 1, 12, 12)
@@ -322,7 +329,18 @@ QPushButton {
 background-color: red;
 }
 
-QPushButton:hover, #bt_shnames:hover {
+#bt_edit_plan{
+background-color: green;
+}
+#bt_edit_plan:hover{
+background-color: gray;
+}
+#btSimplesNacional{
+background-color: orange;
+}
+
+
+QPushButton:hover, #bt_shnames:hover, #btSimplesNacional:hover {
     background-color: lightblue;
 }
 QPushButton:pressed, #bt_shnames:pressed {

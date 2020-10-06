@@ -10,9 +10,12 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
 
     # only static methods from JsonDateWithDataImprove
 
-    def __init__(self, json_file):
+    def __init__(self, json_file, compt_file):
         from time import sleep
-        compt, excel_file_name = self.get_atual_competencia(1)
+        if compt_file is None:
+            compt, excel_file_name = self.get_atual_competencia(1)
+        else:
+            compt, excel_file_name = compt_file
         # input(len(after_READ['CNPJ']))
         for eid in json_file.keys():
             print('~'*30)

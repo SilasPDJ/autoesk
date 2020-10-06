@@ -19,6 +19,8 @@ from whatsapp import PgdasWP
 from smtp_project import PgDasmailSender, SendDividas, EmailExecutor
 from pgdas_fiscal_oesk import PgdasAnyCompt
 from pgdas_fiscal_oesk import DownloadGinfessGui
+
+from pgdas_fiscal_oesk import GissGui
 from whatsapp import PgdasWP
 
 from pgdas_fiscal_oesk.main_excel_manager.main_excel_manager import SheetPathManager
@@ -126,6 +128,8 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
             if df_id == 3:
                 # GINFESS
                 self.whenGinfessBt.setDisabled(False)
+            else:
+                self.whenGinfessBt.setDisabled(True)
 
     def data_selection(self, table, df, df_id):
         rows = (idx.row() for idx in table.selectionModel().selectedRows())
@@ -150,7 +154,10 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
         print('\n', ddict)
 
         JsonDateWithImprove.dump_json(ddict, self.now_selection_json_f_name)
-        self.add_thread(self.whenGinfessBt, DownloadGinfessGui, JsonDateWithImprove.load_json(self.now_selection_json_f_name))
+        loadit = JsonDateWithImprove.load_json(self.now_selection_json_f_name)
+
+        self.add_thread(self.whenGinfessBt, DownloadGinfessGui, loadit)
+        self.add_thread(self.whenGissBt, GissGui, loadit)
 
     def add_thread(self, el, *action):
         """
@@ -162,7 +169,7 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
         # for arg in args:
         try:
             el.clicked.disconnect()
-        except:
+        except Exception as e:
             pass
 
         # b4 prosseguir
@@ -232,6 +239,14 @@ class MainApp(MainDisplays, TuplasTabelas):
         self.whenGinfessBt.setDisabled(True)
         self.whenGinfessBt = self.add_elingrid(self.whenGinfessBt, a, b, c, d)
         # self.add_thread(self.whenGinfessBt, DownloadGinfessGui, JsonDateWithImprove.load_json(self.now_selection_json_f_name))
+        # being add in self.data_selection
+
+        generator_unpacking = self.el_grid_setting(1, 0, start_row=2)
+        generator_only1 = list(generator_unpacking)[0]
+        self.whenGissBt = QPushButton('Encerra GISS ONLINE')
+        self.whenGissBt.setDisabled(False)
+        self.whenGissBt = self.add_elingrid(self.whenGissBt, *generator_only1)
+
 
     def center(self):
         qr = self.frameGeometry()
