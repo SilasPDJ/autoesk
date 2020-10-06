@@ -682,7 +682,7 @@ class OldPgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
 
 
 class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
-    def __init__(self, compt_file:tuple):
+    def __init__(self, compt_file: tuple):
         """
         :param meses_atras: custom = -1 // 1 month ago
         :param past_only: True -> only past,  False-> past and future active

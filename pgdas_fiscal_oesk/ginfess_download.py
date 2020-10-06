@@ -14,11 +14,10 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
         from time import sleep
         compt, excel_file_name = self.get_atual_competencia(1)
         # input(len(after_READ['CNPJ']))
-        print(json_file)
-
         for eid in json_file.keys():
-
+            print('~'*30)
             print(eid)
+            print('~' * 30)
             # print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'*10)
             # print(list_with_dict)
             list_with_dic = json_file[eid]

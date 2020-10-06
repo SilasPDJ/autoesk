@@ -48,9 +48,10 @@ class SetPaths(Now):
         :return: already set compt and file_names; COMPT e file_names já programados antes vindos de um arquivo
         ##########################################################################
         """
-
+        from time import sleep
         # compt, excel_file_name = 'biri', 'biri'
         try:
+            sleep(1)
             with open(self.__get_atual_competencia_file(), 'r') as f:
                 compt, excel_file_name = f.read().splitlines()
 
