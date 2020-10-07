@@ -61,14 +61,14 @@ class SheetPathManager:
         except FileNotFoundError:
             raise FileNotFoundError(f'plan="{plan}" file não existente')
 
-    @staticmethod
-    def save_after_changes():
+    @classmethod
+    def save_after_changes(cls):
         from shutil import copy2
         import os
-        self = SheetPathManager(None)
-        compt, excel_file_name = self.compt_and_filename
 
-        os.system(self.modificador_file)
+        compt, excel_file_name = cls.compt_and_filename
 
-        copy2(self.modificador_file, excel_file_name)
-        print(f'{excel_file_name} atualizando por {self.modificador_file}')
+        os.system(cls.modificador_file)
+
+        copy2(cls.modificador_file, excel_file_name)
+        print(f'{excel_file_name} atualizando por {cls.modificador_file}')
