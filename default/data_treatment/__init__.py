@@ -41,6 +41,16 @@ class ExcelToData:
                     print(f'\033[m{vv}')
         return get_all
 
+    @staticmethod
+    def readnew_lista_v_atual(json_part):
+        """ SUrgiu em send_pgdasmail"""
+        new_dict = {}
+
+        for all_items in json_part:
+            for k, v in all_items.items():
+                new_dict[k] = v
+        return new_dict
+
     def trata_money_excel(self, faturado):
         try:
             faturado = f'{float(faturado):,.2f}'
@@ -61,3 +71,19 @@ class ExcelToData:
         for v in args:
             yield "".join(v)
 
+    def parse_sh_name(self, tup, data_required=True):
+        """
+        :param tup: compt and excel_file_name from self._atual_compt_and_file
+        :param data_required: data_Required
+        :return:
+        """
+        import pandas as pd
+        compt, excel_file_name = tup
+        xls = pd.ExcelFile(excel_file_name)
+        sheet_names = iter(xls.sheet_names)
+        for e, sh in enumerate(sheet_names):
+            # if e > 0:
+            if data_required:
+                yield xls.parse(sh, dtype=str)
+            else:
+                yield sh

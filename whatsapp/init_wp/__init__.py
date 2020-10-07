@@ -26,8 +26,8 @@ class MainWP(WDShorcuts, SetPaths):
 
         # depois eu vou fazer um json do for loop xD
 
-    @staticmethod
-    def recria_padrao():
+    @classmethod
+    def recria_padrao(cls):
         self = MainWP(None)
 
         print('\033[1;31m Parâmetro driver None, criando driver PADRÃO caso não exista em\033[m')

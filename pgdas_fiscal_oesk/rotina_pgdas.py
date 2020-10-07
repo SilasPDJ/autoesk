@@ -9,8 +9,7 @@ from default.data_treatment import ExcelToData
 class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
     def __init__(self, compt_file: tuple):
         """
-        :param meses_atras: custom = -1 // 1 month ago
-        :param past_only: True -> only past,  False-> past and future active
+        :param compt_file: from GUI
 
         # remember past_only arg from self.get_atual_competencia
         """
@@ -519,8 +518,13 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                         return v
 
                 if not my_new_3valores:
-                    SemRetencao = self.trata_money_excel(my_new_3valores['RETIDO'][cont_ret_n_ret])
-                    ComRetencao = self.trata_money_excel(my_new_3valores['NÃO RETIDO'][cont_ret_n_ret])
+                    """
+                    SemRetencao = self.trata_money_excel(after_READ['NÃO RETIDO'][cont_ret_n_ret])
+                    ComRetencao = self.trata_money_excel(after_READ['RETIDO'][cont_ret_n_ret])
+                    # padronizar essa parte
+                    """
+                    SemRetencao = self.trata_money_excel(after_READ['Sem Retenção'][cont_ret_n_ret])
+                    ComRetencao = self.trata_money_excel(after_READ['Com Retenção'][cont_ret_n_ret])
                     # input('if not')
                 else:
                     SemRetencao = self.trata_money_excel([v for v in my_new_3valores[2].values()][0])

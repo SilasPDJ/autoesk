@@ -10,7 +10,7 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
 
     # only static methods from JsonDateWithDataImprove
 
-    def __init__(self, json_file, compt_file):
+    def __init__(self, json_file, compt_file: tuple):
         from time import sleep
         if compt_file is None:
             compt, excel_file_name = self.get_atual_competencia(1)
@@ -27,8 +27,8 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
 
             values = [v.values() for v in list_with_dic[:]]
             # padrão
-            _cliente, _cnpj, _cpf, COD_SIMPLES, _ja_declared = self.any_to_str(*values[:5])
-            print(_cliente, _cnpj, _cpf, COD_SIMPLES, _ja_declared)
+            _cliente, _cnpj, _cpf, _cod_simples, _ja_declared = self.any_to_str(*values[:5])
+            print(_cliente, _cnpj, _cpf, _cod_simples, _ja_declared)
 
             _ginfess_cod = ''.join(values[-5])
 

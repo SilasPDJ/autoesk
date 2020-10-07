@@ -16,9 +16,10 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout
 from PyQt5.QtWidgets import QPushButton, QLineEdit, QSizePolicy, QPlainTextEdit
 
 from whatsapp import PgdasWP
-from smtp_project import PgDasmailSender, SendDividas, EmailExecutor
+from smtp_project import PgDasmailSender, SendDividas
 from pgdas_fiscal_oesk import PgdasAnyCompt
 from pgdas_fiscal_oesk import DownloadGinfessGui
+
 
 from pgdas_fiscal_oesk import GissGui
 from whatsapp import PgdasWP
@@ -79,20 +80,11 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
         super().__init__()
         self.now_selection_json_f_name = 'pgdas_fiscal_oesk/data_clients_files/clients_now_selection.json'
 
-        self.atual_compt_and_file = self.get_atual_competencia(1, past_only=True)
-        self.sh_names_only = list(self.parse_sh_name(False))
+        self._this_compt_and_file = self.get_atual_competencia(1, past_only=True)
+        # self.compt_and_filename() ################################################ ELA LÊ O QUE JÁ EXISTE
+        # ########################################################################## DIFERENTE DA DE CIMA QUE CONFIGURA
 
-    def parse_sh_name(self, data_required=True):
-
-        compt, excel_file_name = self.atual_compt_and_file
-        xls = pd.ExcelFile(excel_file_name)
-        sheet_names = iter(xls.sheet_names)
-        for e, sh in enumerate(sheet_names):
-            # if e > 0:
-            if data_required:
-                yield xls.parse(sh, dtype=str)
-            else:
-                yield sh
+        self.sh_names_only = list(self.parse_sh_name(self._this_compt_and_file, False))
 
     # Create tables
     def create_tables(self, table, dataframes, df_id):
@@ -151,14 +143,16 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
                 my_values_only = str(df.iloc[i, j]).strip()
                 h_mvo = {headers[j]: my_values_only}
                 ddict[i].append(h_mvo)
+            ddict[i].append({'spreadsheet': my_sh_name})
         print('\n', ddict)
 
         JsonDateWithImprove.dump_json(ddict, self.now_selection_json_f_name)
         loadit = JsonDateWithImprove.load_json(self.now_selection_json_f_name)
 
-        self.add_thread(self.whenGinfessBt, DownloadGinfessGui, loadit, self.atual_compt_and_file)
+        self.add_thread(self.whenGinfessBt, DownloadGinfessGui, loadit, self._this_compt_and_file)
         # self.atual_compt_and_file = o próprio nome diz...
         self.add_thread(self.whenGissBt, GissGui, loadit)
+        self.add_thread(self.whenMailSenderBt, PgDasmailSender, loadit, self._this_compt_and_file)
 
     def add_thread(self, el, *action):
         """
@@ -214,7 +208,7 @@ class MainApp(MainDisplays, TuplasTabelas):
         self.load_tables(0)
         # para já começar estilizado, nice
 
-        bts_plans = list(self.parse_sh_name(data_required=False))
+        bts_plans = list(self.parse_sh_name(self._this_compt_and_file, data_required=False))
         for e, el_grid in enumerate(self.el_grid_setting(0, len(bts_plans), mt=1, start_row=0, start_col=1)):
             sh_ui_name = bts_plans[e]
             sh_ui_nowbt = QPushButton(sh_ui_name)
@@ -243,17 +237,21 @@ class MainApp(MainDisplays, TuplasTabelas):
         self.whenGinfessBt = QPushButton('ISS Download Ginfess')
         self.whenGinfessBt.setDisabled(True)
         self.whenGinfessBt = self.add_elingrid(self.whenGinfessBt, a, b, c, d)
-        # self.add_thread(self.whenGinfessBt, DownloadGinfessGui, JsonDateWithImprove.load_json(self.now_selection_json_f_name))
-        # being add in self.data_selection
+        #
 
         generator_unpacking = self.el_grid_setting(1, 0, start_row=4)
         generator_only1 = list(generator_unpacking)[0]
-        self.whenSimplesNacional = QPushButton('Todos Simples Nacional')
+        self.whenSimplesNacionalBt = QPushButton('Todos Simples Nacional')
         # self.whenGissBt.setDisabled(False)
-        self.whenSimplesNacional = self.add_elingrid(self.whenSimplesNacional, *generator_only1, obj_name='btSimplesNacional')
-
+        self.whenSimplesNacionalBt = self.add_elingrid(self.whenSimplesNacionalBt, *generator_only1, obj_name='btSimplesNacional')
         # input('Estou tentando selecionar todos')
-        self.add_thread(self.whenSimplesNacional, PgdasAnyCompt, self.atual_compt_and_file)
+        self.add_thread(self.whenSimplesNacionalBt, PgdasAnyCompt, self._this_compt_and_file)
+
+        generator_unpacking = self.el_grid_setting(1, 0, start_row=5)
+        generator_only1 = list(generator_unpacking)[0]
+        self.whenMailSenderBt = QPushButton('ISS emails')
+        self.whenMailSenderBt = self.add_elingrid(self.whenMailSenderBt, *generator_only1)
+        # add_thread in data_selection
 
     def center(self):
         qr = self.frameGeometry()
@@ -265,7 +263,7 @@ class MainApp(MainDisplays, TuplasTabelas):
         from PyQt5.QtWidgets import QTableWidget
         if table_id is None:
             table_id = 0
-        dfs = self.parse_sh_name()
+        dfs = self.parse_sh_name(self._this_compt_and_file)
 
         # ta dificl conseguir column values
 
