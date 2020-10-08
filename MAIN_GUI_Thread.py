@@ -88,6 +88,9 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
 
     # Create tables
     def create_tables(self, table, dataframes, df_id):
+
+
+        table.clearSelection()
         tw, df = table, list(dataframes)[df_id]
         # print(type(df))
         headers = df.columns.values
@@ -105,23 +108,32 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
         for i in range(tw.rowCount()):
             for j in range(tw.columnCount()):
                 x = '{}'.format(df.iloc[i, j])
+                x = x.strip()
                 tw.setItem(i, j, QTableWidgetItem(x))
+
         tw.setHorizontalHeaderLabels(headers)
         # tw.setItem(0, 0, QTableWidgetItem("Name"))
-
         table.setSelectionBehavior(QAbstractItemView.SelectRows)
-        table.itemSelectionChanged.connect(lambda: [self.data_selection(table, df, df_id), self.check_json_af_tb_change(table, df, df_id)])
 
-    def check_json_af_tb_change(self, table, df, df_id):
-        jsonfile = JsonDateWithImprove.load_json(self.now_selection_json_f_name)
-        if jsonfile:
-            """# ###################################### checka se o json_file contém dados e se os dados são p/ GINFESS"""
-            my_sh_name = self.sh_names_only[df_id]
-            if df_id == 3:
-                # GINFESS
-                self.whenGinfessBt.setDisabled(False)
-            else:
-                self.whenGinfessBt.setDisabled(True)
+        table.itemSelectionChanged.connect(lambda: self.data_selection(table, df, df_id))
+
+    def wexplorer(self):
+        """
+        :return:
+        """
+        json_file = JsonDateWithImprove.load_json(self.now_selection_json_f_name)
+        from subprocess import Popen
+        # Popen(r'explorer "C:\path\of\folder"')
+        for eid in json_file.keys():
+            after_json = self.readnew_lista_v_atual(json_file[eid])
+
+            custom_values = [v.values() for v in json_file[eid]]
+            # print(custom_values[0])
+            _cliente = ''.join(custom_values[0])
+            # input(_cliente)
+            op_path = self._files_path_v2(_cliente)
+            Popen(f'explorer "{op_path}"')
+            # exec(b)
 
     def data_selection(self, table, df, df_id):
         rows = (idx.row() for idx in table.selectionModel().selectedRows())
@@ -136,6 +148,8 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
 
         # print(dc_df, type(dc_df)
         ddict = {}
+        # J -> ROWS, I-> COLOUNS
+
         for i in rows:
             ddict[i] = []
             for j in range(n_tot_columns):
@@ -143,6 +157,7 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
                 my_values_only = str(df.iloc[i, j]).strip()
                 h_mvo = {headers[j]: my_values_only}
                 ddict[i].append(h_mvo)
+
             ddict[i].append({'spreadsheet': my_sh_name})
         print('\n', ddict)
 
@@ -252,6 +267,13 @@ class MainApp(MainDisplays, TuplasTabelas):
         self.whenMailSenderBt = QPushButton('ISS emails')
         self.whenMailSenderBt = self.add_elingrid(self.whenMailSenderBt, *generator_only1)
         # add_thread in data_selection
+
+        generator_unpacking = self.el_grid_setting(1, 0, start_row=6)
+        generator_only1 = list(generator_unpacking)[0]
+        self.whenExplorerBt = QPushButton('Abre Pasta Explorer')
+        self.whenExplorerBt = self.add_elingrid(self.whenExplorerBt, *generator_only1)
+        self.add_thread(self.whenExplorerBt, lambda: self.wexplorer())
+
 
     def center(self):
         qr = self.frameGeometry()

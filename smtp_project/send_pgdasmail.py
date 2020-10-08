@@ -168,7 +168,7 @@ class PgDasmailSender(EmailExecutor):
                     das_message = self.write_message(message)
 
                     das_anx_files = self.files_get_anexos(_cliente)
-                    self.main_send_email('silsilinhas@gmail.com', mail_header, das_message, das_anx_files)
+                    self.main_send_email(now_email, mail_header, das_message, das_anx_files)
                     """a partir do terceiro argumento, só há mensagens attachedas"""
 
     def mail_pgdas_msg(self, client, cnpj, tipo_das, valor):
