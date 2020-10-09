@@ -30,7 +30,7 @@ class GissGui(WDShorcuts, SetPaths, ExcelToData):
     def __init__(self, json_file):
         from os import chdir, path, getcwd
         from time import sleep
-        compt, excel_file_name = self.get_atual_competencia(1)
+        compt, excel_file_name = self.get_atual_compt_set(1)
         # input(len(after_READ['CNPJ']))
         for eid in json_file.keys():
             print('~'*30)

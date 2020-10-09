@@ -20,7 +20,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
         self.VENCIMENTO_DAS = JsonDateWithImprove.vencimento_das()
         sh_names = 'sem_mov', 'G5_ISS', 'G5_ICMS'
         if compt_file is None:
-            compt, excel_file_name = self.get_atual_competencia(1)
+            compt, excel_file_name = self.get_atual_compt_set(1)
         else:
             compt, excel_file_name = compt_file
         intelligence_existence = self.intelligence_existence_done('CERT_vs_LOGIN.xlsx')

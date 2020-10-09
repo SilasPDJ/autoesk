@@ -8,7 +8,7 @@ class SendDividas(EmailExecutor):
         super().__init__()
         # venc_dividas = self.das_venc_data()[3]
 
-        excel_compt, excel_file_name = self.get_atual_competencia(-1)
+        excel_compt, excel_file_name = self.get_atual_compt_set(-1)
         go_get = excel_compt, excel_file_name
         self.venc_boletos = self.get_vencimento()
 

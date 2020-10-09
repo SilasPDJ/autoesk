@@ -17,7 +17,7 @@ class PgdasWP(MainWP, ExcelToData):
         # input(self.VENCIMENTO_DAS)
         sh_names = 'sem_mov', 'G5_ISS', 'G5_ICMS'
 
-        compt, excel_file_name = self.get_atual_competencia(1)
+        compt, excel_file_name = self.get_atual_compt_set(1)
         # posso mudar os argumentos de get_atual_competencia, ele já tem padrão, mas coloquei pra lembrar
         # responsivo...
 

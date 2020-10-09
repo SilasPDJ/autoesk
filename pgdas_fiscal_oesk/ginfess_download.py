@@ -13,7 +13,7 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
     def __init__(self, json_file, compt_file: tuple):
         from time import sleep
         if compt_file is None:
-            compt, excel_file_name = self.get_atual_competencia(1)
+            compt, excel_file_name = self.get_atual_compt_set(1)
         else:
             compt, excel_file_name = compt_file
         # input(len(after_READ['CNPJ']))

@@ -12,7 +12,7 @@ class OldPgDasmailSender(EmailExecutor):
         venc = self.VENCIMENTO_DAS
         sh_names = 'sem_mov', 'G5_ISS', 'G5_ICMS'
 
-        compt, excel_file_name = self.get_atual_competencia(1)
+        compt, excel_file_name = self.get_atual_compt_set(1)
         # posso mudar os argumentos de get_atual_competencia, ele já tem padrão, mas coloquei pra lembrar
 
         mail_header = f"Fechamentos para apuração do imposto PGDAS, competência: {compt.replace('-', '/')}"
@@ -128,7 +128,7 @@ class PgDasmailSender(EmailExecutor):
         # sh_names = 'sem_mov', 'G5_ISS', 'G5_ICMS'
 
         if compt_file is None:
-            compt, excel_file_name = self.get_atual_competencia(1)
+            compt, excel_file_name = self.get_atual_compt_set(1)
         else:
             compt, excel_file_name = compt_file
         # posso mudar os argumentos de get_atual_competencia, ele já tem padrão, mas coloquei pra lembrar

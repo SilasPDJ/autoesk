@@ -30,7 +30,7 @@ class DisplaySheets(QWidget, SetPaths, ExcelToData):
 
     def parse_sh_name(self, data_required=True):
 
-        compt, excel_file_name = self.get_atual_competencia(1, past_only=True)
+        compt, excel_file_name = self.get_atual_compt_set(1, past_only=True)
         xls = pd.ExcelFile(excel_file_name)
         sheet_names = iter(xls.sheet_names)
         for e, sh in enumerate(sheet_names):
