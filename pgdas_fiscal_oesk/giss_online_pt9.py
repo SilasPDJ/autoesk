@@ -41,7 +41,7 @@ class GissGui(WDShorcuts, SetPaths, ExcelToData):
             list_with_dic = json_file[eid]
 
             values = [v.values() for v in list_with_dic[:]]
-            _cliente, _feito, _logar, self._construcao, _notes = self.any_to_str(*values[:-2])
+            _cliente, _feito, _logar, self._construcao, _notes = self.any_to_str(*values[:5])
 
             client_path = self._files_path_v2(_cliente)
             self.client_path = client_path
@@ -95,6 +95,7 @@ class GissGui(WDShorcuts, SetPaths, ExcelToData):
                     self.fazendo_principal(True)
                 else:
                     self.fazendo_principal()
+        print('GISS encerrado!')
 
     def readnew_lista(self, READ, print_values=False):
         """ TRANSFORMO EM DICIONÁRIO, CONTINUAR"""

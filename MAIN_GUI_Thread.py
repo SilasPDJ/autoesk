@@ -85,8 +85,6 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
 
     # Create tables
     def create_tables(self, table, dataframes, df_id):
-
-
         table.clearSelection()
         tw, df = table, list(dataframes)[df_id]
         # print(type(df))
@@ -119,6 +117,8 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
         :return:
         """
         json_file = JsonDateWithImprove.load_json(self.now_selection_json_f_name)
+        print('wexplorer')
+
         from subprocess import Popen
         # Popen(r'explorer "C:\path\of\folder"')
         for eid in json_file.keys():
@@ -128,8 +128,10 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
             # print(custom_values[0])
             _cliente = ''.join(custom_values[0])
             # input(_cliente)
-            op_path = self._files_path_v2(_cliente)
+            self.rotines_update()
+            op_path = self._files_path_v2(_cliente, wexplorer_tup=self._this_compt_and_file)
             Popen(f'explorer "{op_path}"')
+
             # exec(b)
 
     def data_selection(self, table, df, df_id):
@@ -159,32 +161,6 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
         # print('\n', ddict)
 
         JsonDateWithImprove.dump_json(ddict, self.now_selection_json_f_name)
-        self.rotines_update()
-
-    def _gui_cb_set_compt(self, new):
-        """
-        :param new: from signal [str]
-        :return:
-        """
-        print('whatever', new)
-
-        self._this_compt_and_file = list(self._this_compt_and_file)
-        compt, filetc = self._this_compt_and_file
-        filetc = filetc.replace(compt, str(new))
-        compt = new
-        self._this_compt_and_file = compt, filetc
-        # '08-2020' está em '08-2020.xlsx'
-
-        self.rotines_update()
-
-    def rotines_update(self):
-        loadit = JsonDateWithImprove.load_json(self.now_selection_json_f_name)
-        self.add_thread(self.whenGinfessBt, DownloadGinfessGui, loadit, self._this_compt_and_file)
-        self.add_thread(self.whenGissBt, GissGui, loadit)
-        self.add_thread(self.whenMailSenderBt, PgDasmailSender, loadit, self._this_compt_and_file)
-
-        self.add_thread(self.whenSimplesNacionalBt, PgdasAnyCompt, self._this_compt_and_file)
-        # sem o json file
 
     def add_thread(self, el, *action):
         """
@@ -232,16 +208,19 @@ class MainApp(MainDisplays, TuplasTabelas):
         self._manager = FunctionsManager()
         # exec() é o eval que eu procurava
         self.load_tables(0)
+
         # para já começar estilizado, nice
 
         bts_plans = list(self.parse_sh_name(self._this_compt_and_file, data_required=False))
+        self.sheetBtsList = []
         for e, el_grid in enumerate(self.el_grid_setting(0, len(bts_plans), mt=1, start_row=0, start_col=1)):
             sh_ui_name = bts_plans[e]
             sh_ui_nowbt = QPushButton(sh_ui_name)
             # new == sh_ui_nowbt
             new = self.add_elingrid(sh_ui_nowbt, *el_grid, obj_name='bt_shnames')
-
             new.clicked.connect(partial(self.load_tables, e))
+            self.sheetBtsList.append(new)
+            # (self.sheetsBtsList) começa no init, antes de chamar em baixo a function dele...
 
         generator_unpacking = self.el_grid_setting(1, 0, start_row=0)
         generator_only1 = list(generator_unpacking)[0]
@@ -250,8 +229,10 @@ class MainApp(MainDisplays, TuplasTabelas):
             compt, file = self.get_atual_compt_set(i, past_only=True)
             self.whenChangeComptCB.addItem(compt)
         self.whenChangeComptCB.activated[str].connect(self._gui_cb_set_compt)
-        self.whenChangeComptCB = self.add_elingrid(self.whenChangeComptCB, *generator_only1, obj_name='bt_edit_plan')
-
+        self.whenChangeComptCB.activated.connect(self.rotines_update)
+        # two connections
+        self.whenChangeComptCB = self.add_elingrid(self.whenChangeComptCB, *generator_only1)
+        # self.whenChangeComptCB.setCurrentIndex(2)
 
         generator_unpacking = self.el_grid_setting(1, 0, start_row=1)
         generator_only1 = list(generator_unpacking)[0]
@@ -293,7 +274,34 @@ class MainApp(MainDisplays, TuplasTabelas):
         generator_only1 = list(generator_unpacking)[0]
         self.whenExplorerBt = QPushButton('Abre Pasta Explorer')
         self.whenExplorerBt = self.add_elingrid(self.whenExplorerBt, *generator_only1)
-        self.add_thread(self.whenExplorerBt, lambda: self.wexplorer())
+        self.add_thread(self.whenExplorerBt, self.wexplorer)
+
+    def _gui_cb_set_compt(self, new):
+        """
+        :param new: from signal [str]
+        :return:
+        """
+        print('whatever', new)
+
+        self._this_compt_and_file = list(self._this_compt_and_file)
+        compt, filetc = self._this_compt_and_file
+        filetc = filetc.replace(compt, str(new))
+        compt = new
+        self._this_compt_and_file = compt, filetc
+        self.rotines_update()
+        # '08-2020' está em '08-2020.xlsx'
+
+    def rotines_update(self):
+        print('estou sendo chamada')
+        loadit = JsonDateWithImprove.load_json(self.now_selection_json_f_name)
+        self.add_thread(self.whenGinfessBt, DownloadGinfessGui, loadit, self._this_compt_and_file)
+        self.add_thread(self.whenGissBt, GissGui, loadit)
+        self.add_thread(self.whenMailSenderBt, PgDasmailSender, loadit, self._this_compt_and_file)
+
+        self.add_thread(self.whenSimplesNacionalBt, PgdasAnyCompt, self._this_compt_and_file)
+        for e, new in enumerate(self.sheetBtsList):
+            new.disconnect()
+            new.clicked.connect(partial(self.load_tables, e))
 
     def center(self):
         qr = self.frameGeometry()
@@ -306,7 +314,6 @@ class MainApp(MainDisplays, TuplasTabelas):
         if table_id is None:
             table_id = 0
         dfs = self.parse_sh_name(self._this_compt_and_file)
-
         # ta dificl conseguir column values
 
         any_table = self.any_table

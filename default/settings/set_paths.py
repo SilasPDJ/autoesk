@@ -178,15 +178,18 @@ class SetPaths(Now):
         print(br1st, brlast)
         return br1st, brlast
 
-    def _files_path_v2(self, pasta_client, year=True):
+    def _files_path_v2(self, pasta_client, year=True, wexplorer_tup=None):
         """
         :param pasta_client: client_name
         :param year: True -> folder contains year, False -> folder DOES NOT contain year
-        :return:
+        :param wexplorer_tup: the tuple containing the self.compt_and_file_name()
+        :return: salva_path (save_path)
         """
         import os
-        compt, excel_file_name = self.compt_and_filename()
-
+        if wexplorer_tup is None:
+            compt, excel_file_name = self.compt_and_filename()
+        else:
+            compt, excel_file_name = wexplorer_tup
         ano = [compt.split(v)[-1] for v in compt if not v.isdigit()]
         ano = ano[0]
 
