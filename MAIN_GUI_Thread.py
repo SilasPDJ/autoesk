@@ -79,10 +79,7 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
         import pandas as pd
         super().__init__()
         self.now_selection_json_f_name = 'pgdas_fiscal_oesk/data_clients_files/clients_now_selection.json'
-
-        self._this_compt_and_file = self.get_atual_competencia(1, past_only=True)
-        # self.compt_and_filename() ################################################ ELA LÊ O QUE JÁ EXISTE
-        # ########################################################################## DIFERENTE DA DE CIMA QUE CONFIGURA
+        self._this_compt_and_file = self.get_atual_compt_set(1, past_only=True)
 
         self.sh_names_only = list(self.parse_sh_name(self._this_compt_and_file, False))
 
@@ -159,15 +156,35 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
                 ddict[i].append(h_mvo)
 
             ddict[i].append({'spreadsheet': my_sh_name})
-        print('\n', ddict)
+        # print('\n', ddict)
 
         JsonDateWithImprove.dump_json(ddict, self.now_selection_json_f_name)
-        loadit = JsonDateWithImprove.load_json(self.now_selection_json_f_name)
+        self.rotines_update()
 
+    def _gui_cb_set_compt(self, new):
+        """
+        :param new: from signal [str]
+        :return:
+        """
+        print('whatever', new)
+
+        self._this_compt_and_file = list(self._this_compt_and_file)
+        compt, filetc = self._this_compt_and_file
+        filetc = filetc.replace(compt, str(new))
+        compt = new
+        self._this_compt_and_file = compt, filetc
+        # '08-2020' está em '08-2020.xlsx'
+
+        self.rotines_update()
+
+    def rotines_update(self):
+        loadit = JsonDateWithImprove.load_json(self.now_selection_json_f_name)
         self.add_thread(self.whenGinfessBt, DownloadGinfessGui, loadit, self._this_compt_and_file)
-        # self.atual_compt_and_file = o próprio nome diz...
         self.add_thread(self.whenGissBt, GissGui, loadit)
         self.add_thread(self.whenMailSenderBt, PgDasmailSender, loadit, self._this_compt_and_file)
+
+        self.add_thread(self.whenSimplesNacionalBt, PgdasAnyCompt, self._this_compt_and_file)
+        # sem o json file
 
     def add_thread(self, el, *action):
         """
@@ -213,12 +230,6 @@ class MainApp(MainDisplays, TuplasTabelas):
 
         self._loading_screen = LoadingScreen()
         self._manager = FunctionsManager()
-        """
-        self.add_thread(add_el, partial(print, 'Seu perdão vai além dos céus...',
-                                        '\nNem um monte é tão alto'
-                                        '\n Nem um vale tão profundo'
-                                        '\nComo o amor de nosso DEUS'))
-        """
         # exec() é o eval que eu procurava
         self.load_tables(0)
         # para já começar estilizado, nice
@@ -231,7 +242,16 @@ class MainApp(MainDisplays, TuplasTabelas):
             new = self.add_elingrid(sh_ui_nowbt, *el_grid, obj_name='bt_shnames')
 
             new.clicked.connect(partial(self.load_tables, e))
-            # self.add_thread(new, partial(self.load_tables, e))
+
+        generator_unpacking = self.el_grid_setting(1, 0, start_row=0)
+        generator_only1 = list(generator_unpacking)[0]
+        self.whenChangeComptCB = QtWidgets.QComboBox()
+        for i in range(1, 5):
+            compt, file = self.get_atual_compt_set(i, past_only=True)
+            self.whenChangeComptCB.addItem(compt)
+        self.whenChangeComptCB.activated[str].connect(self._gui_cb_set_compt)
+        self.whenChangeComptCB = self.add_elingrid(self.whenChangeComptCB, *generator_only1, obj_name='bt_edit_plan')
+
 
         generator_unpacking = self.el_grid_setting(1, 0, start_row=1)
         generator_only1 = list(generator_unpacking)[0]
@@ -259,8 +279,9 @@ class MainApp(MainDisplays, TuplasTabelas):
         self.whenSimplesNacionalBt = QPushButton('Todos Simples Nacional')
         # self.whenGissBt.setDisabled(False)
         self.whenSimplesNacionalBt = self.add_elingrid(self.whenSimplesNacionalBt, *generator_only1, obj_name='btSimplesNacional')
-        # input('Estou tentando selecionar todos')
+        """este add_thread abaixo está em rotines_update também"""
         self.add_thread(self.whenSimplesNacionalBt, PgdasAnyCompt, self._this_compt_and_file)
+        #
 
         generator_unpacking = self.el_grid_setting(1, 0, start_row=5)
         generator_only1 = list(generator_unpacking)[0]
@@ -273,7 +294,6 @@ class MainApp(MainDisplays, TuplasTabelas):
         self.whenExplorerBt = QPushButton('Abre Pasta Explorer')
         self.whenExplorerBt = self.add_elingrid(self.whenExplorerBt, *generator_only1)
         self.add_thread(self.whenExplorerBt, lambda: self.wexplorer())
-
 
     def center(self):
         qr = self.frameGeometry()

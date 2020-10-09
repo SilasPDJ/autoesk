@@ -29,7 +29,7 @@ class DisplaySheets(QWidget, SetPaths, ExcelToData):
         super().__init__()
         self.now_selection_json_f_name = 'clients_now_selection.json'
 
-        self.atual_compt_and_file = self.get_atual_competencia(1, past_only=True)
+        self.atual_compt_and_file = self.get_atual_compt_set(1, past_only=True)
         self.sh_names_only = list(self.parse_sh_name(False))
 
     def parse_sh_name(self, data_required=True):

@@ -62,10 +62,8 @@ class SetPaths(Now):
 
     def __file_wtp_oesk(self, n=-1):
         """
-        # not in use here
-
         :param int n:
-        :return:
+        :return: Create sheets path if not exists and new oesk_compt_excel file from the default if not exists also
         """
         import os
         from pgdas_fiscal_oesk.main_excel_manager.main_excel_manager import SheetPathManager
@@ -98,7 +96,7 @@ class SetPaths(Now):
                 sh_management.new_xlsxcompt_from_padrao_if_not_exists()
                 # Cria planilha se não existente
 
-    def get_atual_competencia(self, m_cont=-1, y_cont=0, past_only=True, file_type='xlsx'):
+    def get_atual_compt_set(self, m_cont=-1, y_cont=0, past_only=True, file_type='xlsx'):
         """
         :param int m_cont: quantos meses para trás? (0 atual)
         :param int y_cont: quantos anos para trás?  (0 atual)
@@ -110,42 +108,19 @@ class SetPaths(Now):
 
         """
         from datetime import datetime as dt
-        path = self.__file_wtp_oesk(0)
-
-        mes_atual = dt.now().month
-
         month = dt.now().month
-        year = dt.now().year + y_cont
-
+        year = dt.now().year
+        path = self.__file_wtp_oesk(0)
         if past_only:
-            if m_cont > 0:
-                m_cont *= -1
-            if y_cont > 0:
-                y_cont *= -1
-        after12 = 0
-        if m_cont % 12 != 0:
-            y_partial_cont, m_partial_cont = int(), int()
-            acontdale = month + m_cont
-            for mm in range(0, acontdale+1):
-                if mm % 12 == 0 and mm != 0:
-                    y_partial_cont += 1
-                if mm > 12:
-                    after12 += 1
-            year += y_partial_cont
-            if y_partial_cont != 0:
-                # month = month % 12 if acontdale > 24 else after12
-                month = after12 % 12
-                if month == 0:
-                    month = 12
-            else:
-                # print(f'\033[1;31mNOT A ERROR.\033[m Só paro aqui se o parâmetro m_cont ({m_cont}) for menor do que 3...\033[m')
-                if m_cont != 0:
-                    month = acontdale
-        else:
-            year += int(m_cont / 12)
-            print('define year')
+            m_cont = m_cont * (-1) if m_cont > 0 else m_cont
+            y_cont = y_cont * (-1) if y_cont > 0 else y_cont
+            # force to be negative
+        month = month + m_cont if m_cont < month and 0 < (m_cont + month) <= 12 \
+            else IndexError('m_cont must not be greater than 12 nor greater than dt.now().month')
+        if not isinstance(month, int):
+            raise month
 
-        month = month * -1 if month < 0 else month
+        year += y_cont
         compt = f'{month:02d}-{year}'
         excel_file_path_updated = r'{}/{}.{}'.format(path, compt, file_type)
 
