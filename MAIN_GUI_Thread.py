@@ -299,6 +299,7 @@ class MainApp(MainDisplays, TuplasTabelas):
         filetc = filetc.replace(compt, str(new))
         compt = new
         self._this_compt_and_file = compt, filetc
+        self.rotines_update()
         # '08-2020' está em '08-2020.xlsx'
 
     def rotines_update(self):
@@ -309,7 +310,7 @@ class MainApp(MainDisplays, TuplasTabelas):
         self.add_thread(self.whenMailSenderBt, PgDasmailSender, loadit, self._this_compt_and_file)
 
         self.add_thread(self.whenSimplesNacionalBt, PgdasAnyCompt, self._this_compt_and_file)
-        print('self_this_compt_and_file', self._this_compt_and_file)
+
         self.add_thread(self.whenExcelEditBt, SheetPathManager.save_after_changes, self._this_compt_and_file)
 
         for e, new in enumerate(self.sheetBtsList):

@@ -4,10 +4,8 @@ from smtp_project.init_email import JsonDateWithImprove
 
 from default.data_treatment import ExcelToData
 from .init_wp import MainWP
-try:
-    VENCIMENTO_DAS = JsonDateWithImprove.vencimento_das()
-except:
-    VENCIMENTO_DAS = input('Vencimento DAS: ')
+VENCIMENTO_DAS = JsonDateWithImprove.vencimento_das()
+
 
 class PgdasWP(MainWP, ExcelToData):
 
