@@ -246,7 +246,6 @@ class MainApp(MainDisplays, TuplasTabelas):
         self.whenExcelEditBt = self.add_elingrid(self.whenExcelEditBt, *generator_only1, obj_name='bt_edit_plan')
         # TALVEZ COLOCANDO JUNTO COM AS THREADS RESOLVA
 
-
         generator_unpacking = self.el_grid_setting(1, 0, start_row=2)
         generator_only1 = list(generator_unpacking)[0]
         self.whenGissBt = QPushButton('Encerra GISS ONLINE')
@@ -300,7 +299,6 @@ class MainApp(MainDisplays, TuplasTabelas):
         compt = new
         self._this_compt_and_file = compt, filetc
         self.rotines_update()
-        # '08-2020' está em '08-2020.xlsx'
 
     def rotines_update(self):
         # print('estou sendo chamada')
@@ -317,6 +315,8 @@ class MainApp(MainDisplays, TuplasTabelas):
             new.disconnect()
             new.clicked.connect(partial(self.load_tables, e))
 
+        self.load_tables(self.activated_tableId)
+
     def center(self):
         qr = self.frameGeometry()
         cp = QtWidgets.QDesktopWidget().availableGeometry().center()
@@ -327,6 +327,7 @@ class MainApp(MainDisplays, TuplasTabelas):
         from PyQt5.QtWidgets import QTableWidget
         if table_id is None:
             table_id = 0
+        self.activated_tableId = table_id
         dfs = self.parse_sh_name(self._this_compt_and_file)
         # ta dificl conseguir column values
 
