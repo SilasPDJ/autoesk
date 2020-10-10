@@ -11,7 +11,6 @@ class SheetPathManager:
     modificador_file = r'C:\_SIMPLES\MEXENDO.xlsx'
 
     def __init__(self, w_path_file):
-        self.compt_and_filename = self.SetPaths().compt_and_filename()
         if w_path_file is not None:
             self.w_path_file = w_path_file
         "# static methods"
@@ -62,11 +61,11 @@ class SheetPathManager:
             raise FileNotFoundError(f'plan="{plan}" file não existente')
 
     @classmethod
-    def save_after_changes(cls):
+    def save_after_changes(cls, the_famous_tup):
         from shutil import copy2
         import os
 
-        compt, excel_file_name = cls.compt_and_filename
+        compt, excel_file_name = the_famous_tup
 
         os.system(cls.modificador_file)
 

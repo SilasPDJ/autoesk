@@ -20,9 +20,9 @@ class SetPaths(Now):
         import os
         from email.mime.application import MIMEApplication
 
-        compt, excel_file_name = self.compt_and_filename()
-        path = self._files_path_v2(client, year=year)
-
+        # compt, excel_file_name = self.compt_and_filename()
+        compt_and_file = self.compt_and_filename()
+        path = self._files_path_v2(client, year=year, wexplorer_tup=compt_and_file)
         # print(path, '\nPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATH', year)
         volta = os.getcwd()
 

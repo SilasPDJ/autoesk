@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QAbstractItemView
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout
 from PyQt5.QtWidgets import QPushButton, QLineEdit, QSizePolicy, QPlainTextEdit
 
-from whatsapp import PgdasWP
+# from whatsapp import PgdasWP
 from smtp_project import PgDasmailSender, SendDividas
 from pgdas_fiscal_oesk import PgdasAnyCompt
 from pgdas_fiscal_oesk import DownloadGinfessGui
@@ -213,14 +213,19 @@ class MainApp(MainDisplays, TuplasTabelas):
 
         bts_plans = list(self.parse_sh_name(self._this_compt_and_file, data_required=False))
         self.sheetBtsList = []
-        for e, el_grid in enumerate(self.el_grid_setting(0, len(bts_plans), mt=1, start_row=0, start_col=1)):
-            sh_ui_name = bts_plans[e]
-            sh_ui_nowbt = QPushButton(sh_ui_name)
-            # new == sh_ui_nowbt
-            new = self.add_elingrid(sh_ui_nowbt, *el_grid, obj_name='bt_shnames')
-            new.clicked.connect(partial(self.load_tables, e))
-            self.sheetBtsList.append(new)
-            # (self.sheetsBtsList) começa no init, antes de chamar em baixo a function dele...
+        for e, el_grid in enumerate(self.el_grid_setting(0, len(bts_plans)+1, mt=1, start_row=0, start_col=1)):
+            if e > 0:
+                sh_ui_name = bts_plans[e-1]
+                sh_ui_nowbt = QPushButton(sh_ui_name)
+                # new == sh_ui_nowbt
+                new = self.add_elingrid(sh_ui_nowbt, *el_grid, obj_name='bt_shnames')
+                new.clicked.connect(partial(self.load_tables, e-1))
+                self.sheetBtsList.append(new)
+
+            else:
+                addcompt_bt = QPushButton('Adiciona Compt')
+                addcompt_bt = self.add_elingrid(addcompt_bt, *el_grid, obj_name='bt_new_compt')
+                addcompt_bt.clicked.connect(self.add_compt_bt)
 
         generator_unpacking = self.el_grid_setting(1, 0, start_row=0)
         generator_only1 = list(generator_unpacking)[0]
@@ -239,7 +244,8 @@ class MainApp(MainDisplays, TuplasTabelas):
         self.whenExcelEditBt = QPushButton('Editar Planilha Excel')
         # self.whenExcelEditBt.setDisabled(False)
         self.whenExcelEditBt = self.add_elingrid(self.whenExcelEditBt, *generator_only1, obj_name='bt_edit_plan')
-        self.add_thread(self.whenExcelEditBt, SheetPathManager.save_after_changes)
+        # TALVEZ COLOCANDO JUNTO COM AS THREADS RESOLVA
+
 
         generator_unpacking = self.el_grid_setting(1, 0, start_row=2)
         generator_only1 = list(generator_unpacking)[0]
@@ -251,7 +257,7 @@ class MainApp(MainDisplays, TuplasTabelas):
         generator_only1 = generator_unpacking[0]
         a, b, c, d = generator_only1
         self.whenGinfessBt = QPushButton('ISS Download Ginfess')
-        self.whenGinfessBt.setDisabled(True)
+        # self.whenGinfessBt.setDisabled(True)
         self.whenGinfessBt = self.add_elingrid(self.whenGinfessBt, a, b, c, d)
         #
 
@@ -276,6 +282,11 @@ class MainApp(MainDisplays, TuplasTabelas):
         self.whenExplorerBt = self.add_elingrid(self.whenExplorerBt, *generator_only1)
         self.add_thread(self.whenExplorerBt, self.wexplorer)
 
+        self.rotines_update()
+
+    def add_compt_bt(self):
+        self.whenChangeComptCB.addItem('teste')
+
     def _gui_cb_set_compt(self, new):
         """
         :param new: from signal [str]
@@ -288,17 +299,19 @@ class MainApp(MainDisplays, TuplasTabelas):
         filetc = filetc.replace(compt, str(new))
         compt = new
         self._this_compt_and_file = compt, filetc
-        self.rotines_update()
         # '08-2020' está em '08-2020.xlsx'
 
     def rotines_update(self):
-        print('estou sendo chamada')
+        # print('estou sendo chamada')
         loadit = JsonDateWithImprove.load_json(self.now_selection_json_f_name)
         self.add_thread(self.whenGinfessBt, DownloadGinfessGui, loadit, self._this_compt_and_file)
         self.add_thread(self.whenGissBt, GissGui, loadit)
         self.add_thread(self.whenMailSenderBt, PgDasmailSender, loadit, self._this_compt_and_file)
 
         self.add_thread(self.whenSimplesNacionalBt, PgdasAnyCompt, self._this_compt_and_file)
+        print('self_this_compt_and_file', self._this_compt_and_file)
+        self.add_thread(self.whenExcelEditBt, SheetPathManager.save_after_changes, self._this_compt_and_file)
+
         for e, new in enumerate(self.sheetBtsList):
             new.disconnect()
             new.clicked.connect(partial(self.load_tables, e))
@@ -361,10 +374,8 @@ QLabel {
     color: #006325;     
 }        
 QPushButton {
-    min-width:  70px;
-    max-width:  120px;
-    min-height: 70px;
-    max-height: 120px;
+    min-width:  50px;
+    min-height: 25px;
     background-color: lightgreen;
 
     border-radius: 5px;        
@@ -376,8 +387,9 @@ QPushButton {
 background-color: red;
 }
 
-#bt_edit_plan{
+#bt_edit_plan, #bt_new_compt:hover{
 background-color: green;
+color:black;
 }
 #bt_edit_plan:hover{
 background-color: gray;
@@ -386,14 +398,14 @@ background-color: gray;
 background-color: orange;
 }
 
-
-QPushButton:hover, #bt_shnames:hover, #btSimplesNacional:hover {
+QPushButton:hover, #bt_shnames:hover, #btSimplesNacional:hover{
+    color:black;
     background-color: lightblue;
 }
-QPushButton:pressed, #bt_shnames:pressed {
+QPushButton:pressed, #bt_shnames:pressed,  #bt_new_compt {
     color: white;
     background-color: black;
-}   
+}
 '''
 
 if __name__ == '__main__':

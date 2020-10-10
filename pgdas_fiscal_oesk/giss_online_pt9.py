@@ -27,10 +27,12 @@ sh_name = 'GISS'
 class GissGui(WDShorcuts, SetPaths, ExcelToData):
     from selenium.webdriver.common.by import By
 
-    def __init__(self, json_file):
+    def __init__(self, json_file, compt_file=None):
         from os import chdir, path, getcwd
         from time import sleep
-        compt, excel_file_name = self.get_atual_compt_set(1)
+        if compt_file is None:
+            # compt, excel_file_name = self.get_atual_compt_set(1)
+            compt_file = self.get_atual_compt_set(1)
         # input(len(after_READ['CNPJ']))
         for eid in json_file.keys():
             print('~'*30)
@@ -43,7 +45,7 @@ class GissGui(WDShorcuts, SetPaths, ExcelToData):
             values = [v.values() for v in list_with_dic[:]]
             _cliente, _feito, _logar, self._construcao, _notes = self.any_to_str(*values[:5])
 
-            client_path = self._files_path_v2(_cliente)
+            client_path = self._files_path_v2(_cliente, wexplorer_tup=compt_file)
             self.client_path = client_path
             self.volta = getcwd()
 
@@ -55,46 +57,46 @@ class GissGui(WDShorcuts, SetPaths, ExcelToData):
             [print(s) for s in __senhas]
             print('~'*30, 'SENHAS')
 
-            if _feito not in ["checkar", "ok"]:
-                self.driver = webdriver.Chrome(link)
-                super().__init__(self.driver)
-                driver = self.driver
-                driver.get(weblink)
-                chrome = driver
-                cont_senha = 0
-                while True:
-                    # TxtIdent
-                    driver.find_element_by_xpath('//input[@name="TxtIdent"]').send_keys(_logar)
-                    driver.find_element_by_xpath('//input[@name="TxtSenha"]').send_keys(__senhas[cont_senha])
-                    print(f'Senha: {__senhas[cont_senha]}', end=' ')
-                    cont_senha += 1
-                    driver.find_element_by_link_text("Acessar").click()
-                    try:
-                        WebDriverWait(chrome, 5).until(expected_conditions.alert_is_present(),
-                                                       'Timed out waiting for PA creation ' +
-                                                       'confirmation popup to appear.')
-                        alert = chrome.switch_to.alert
-                        alert.accept()
-                        print("estou no try")
-                        driver.execute_script("window.history.go(-1)")
-                    except TimeoutException:
-                        print("no alert, sem alerta, exceptado")
-                        break
-                        # holy
-                iframe = driver.find_element_by_xpath("//iframe[@name='header']")
-                driver.switch_to.frame(iframe)
-                if self._construcao.lower().strip() != 'sim':
-                    driver.find_element_by_xpath("//img[contains(@src,'images/bt_menu__05_off.jpg')]").click()
+            # if _feito not in ["checkar", "ok"]:
+            self.driver = webdriver.Chrome(link)
+            super().__init__(self.driver)
+            driver = self.driver
+            driver.get(weblink)
+            chrome = driver
+            cont_senha = 0
+            while True:
+                # TxtIdent
+                driver.find_element_by_xpath('//input[@name="TxtIdent"]').send_keys(_logar)
+                driver.find_element_by_xpath('//input[@name="TxtSenha"]').send_keys(__senhas[cont_senha])
+                print(f'Senha: {__senhas[cont_senha]}', end=' ')
+                cont_senha += 1
+                driver.find_element_by_link_text("Acessar").click()
+                try:
+                    WebDriverWait(chrome, 5).until(expected_conditions.alert_is_present(),
+                                                   'Timed out waiting for PA creation ' +
+                                                   'confirmation popup to appear.')
+                    alert = chrome.switch_to.alert
+                    alert.accept()
+                    print("estou no try")
+                    driver.execute_script("window.history.go(-1)")
+                except TimeoutException:
+                    print("no alert, sem alerta, exceptado")
+                    break
+                    # holy
+            iframe = driver.find_element_by_xpath("//iframe[@name='header']")
+            driver.switch_to.frame(iframe)
+            if self._construcao.lower().strip() != 'sim':
+                driver.find_element_by_xpath("//img[contains(@src,'images/bt_menu__05_off.jpg')]").click()
 
-                else:
-                    print('Construção Civil?')
-                    self.constr_civil()
-                driver.switch_to.default_content()
-                sleep(3.5)
-                if self._construcao.lower() == 'sim':
-                    self.fazendo_principal(True)
-                else:
-                    self.fazendo_principal()
+            else:
+                print('Construção Civil?')
+                self.constr_civil()
+            driver.switch_to.default_content()
+            sleep(3.5)
+            if self._construcao.lower() == 'sim':
+                self.fazendo_principal(True)
+            else:
+                self.fazendo_principal()
         print('GISS encerrado!')
 
     def readnew_lista(self, READ, print_values=False):

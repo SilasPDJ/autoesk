@@ -7,7 +7,7 @@ from default.data_treatment import ExcelToData
 
 
 class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
-    def __init__(self, compt_file: tuple):
+    def __init__(self, compt_file=None):
         """
         :param compt_file: from GUI
 
@@ -16,13 +16,17 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
         import pandas as pd
         from default.webdriver_utilities.pre_drivers import pgdas_driver
         from .relacao_nfs import tres_valores_faturados
+        # O vencimento DAS(seja pra qual for a compt) está certo, haja vista que se trata do mes atual
 
         self.VENCIMENTO_DAS = JsonDateWithImprove.vencimento_das()
         sh_names = 'sem_mov', 'G5_ISS', 'G5_ICMS'
         if compt_file is None:
-            compt, excel_file_name = self.get_atual_compt_set(1)
+            # compt, excel_file_name = self.get_atual_compt_set(1)
+            compt_file = self.compt_and_filename()
+            compt, excel_file_name = compt_file
         else:
             compt, excel_file_name = compt_file
+
         intelligence_existence = self.intelligence_existence_done('CERT_vs_LOGIN.xlsx')
         inteligence_db = {'CLIENT': [],
                           'CERT x LOGIN': []
@@ -56,7 +60,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                 cont_ret_n_ret = i
 
                 self.now_person = CLIENTE
-                self.client_path = self._files_path_v2(CLIENTE)
+                self.client_path = self._files_path_v2(CLIENTE, wexplorer_tup=compt_file)
 
                 # if not existe o arquivo my_wised_check_path_file -> no momento atual, existe
                 def cria_inteligence():

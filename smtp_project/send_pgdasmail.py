@@ -128,11 +128,12 @@ class PgDasmailSender(EmailExecutor):
         # sh_names = 'sem_mov', 'G5_ISS', 'G5_ICMS'
 
         if compt_file is None:
-            compt, excel_file_name = self.get_atual_compt_set(1)
+            # compt, excel_file_name = self.get_atual_compt_set(1)
+            compt_file = self.compt_and_filename()
+            compt, excel_file_name = compt_file
         else:
             compt, excel_file_name = compt_file
         # posso mudar os argumentos de get_atual_competencia, ele já tem padrão, mas coloquei pra lembrar
-
         mail_header = f"Fechamentos para apuração do imposto PGDAS, competência: {compt.replace('-', '/')}"
         print('titulo: ', mail_header)
         # é o meu teste
@@ -168,8 +169,10 @@ class PgDasmailSender(EmailExecutor):
                     das_message = self.write_message(message)
 
                     das_anx_files = self.files_get_anexos(_cliente)
+                    # self.main_send_email(now_email, mail_header, das_message, das_anx_files)
                     self.main_send_email(now_email, mail_header, das_message, das_anx_files)
                     """a partir do terceiro argumento, só há mensagens attachedas"""
+                    print('Enviado...')
 
     def mail_pgdas_msg(self, client, cnpj, tipo_das, valor):
 

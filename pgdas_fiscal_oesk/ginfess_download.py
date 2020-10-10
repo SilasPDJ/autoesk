@@ -10,12 +10,12 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
 
     # only static methods from JsonDateWithDataImprove
 
-    def __init__(self, json_file, compt_file: tuple):
+    def __init__(self, json_file, compt_file=None):
         from time import sleep
         if compt_file is None:
-            compt, excel_file_name = self.get_atual_compt_set(1)
-        else:
-            compt, excel_file_name = compt_file
+            # compt, excel_file_name = self.get_atual_compt_set(1)
+            compt_file = self.get_atual_compt_set(1)
+
         # input(len(after_READ['CNPJ']))
         for eid in json_file.keys():
             print('~'*30)
@@ -29,13 +29,12 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
             # padrão
             _cliente, _cnpj, _cpf, _cod_simples, _ja_declared = self.any_to_str(*values[:5])
             print(_cliente, _cnpj, _cpf, _cod_simples, _ja_declared)
-
-            _ginfess_cod = ''.join(values[-5])
-
-            _city = ''.join(values[-3])
+            _ginfess_cod = ''.join(values[-6])
+            _city = ''.join(values[-4])
+            print(_ginfess_cod, _city)
             # mesma coisa de self.any_to_str, só que ele aceita args desempacotados
 
-            client_path = self._files_path_v2(_cliente)
+            client_path = self._files_path_v2(_cliente, wexplorer_tup=compt_file)
             self.client_path = client_path
 
             # Checa se já existe certificado
@@ -419,6 +418,7 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
         import os
         import pyautogui as pygui
         from pyperclip import paste, copy
+        from time import sleep
         from .retornot import RetidosNorRetidos, RnrSo1
         from .ginfess_scrap import cria_site_v1
 
@@ -428,10 +428,8 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
          :param site_cria: (lugar_salvar)
          :return: return_full_path for with_titlePATH.txt
          """
-        if self.client_path is not None:
-            client_path = self.client_path
-        else:
-            client_path = self._files_path_v2(cliente)
+        client_path = self.client_path
+        # impossível ser None
         driver = self.driver
 
         qtd_nf = driver.find_element_by_class_name('x-paging-info')
