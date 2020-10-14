@@ -8,7 +8,7 @@ class SendDividas(EmailExecutor):
         super().__init__()
         # venc_dividas = self.das_venc_data()[3]
 
-        excel_compt, excel_file_name = self.get_atual_compt_set(-1)
+        excel_compt, excel_file_name = self.set_get_compt_file(-1)
         go_get = excel_compt, excel_file_name
         self.venc_boletos = self.get_vencimento()
 
@@ -43,22 +43,28 @@ class SendDividas(EmailExecutor):
                     # print(f'VALOR: {VALOR}')
                     print(f'CLIENTE: {CLIENTE}')
 
-                    dividas_pdf_files = self.files_get_anexos(CLIENTE, year=False, file_type='pdf')
+                    dividas_pdf_files = self.files_get_anexos_v2(CLIENTE, year=False, file_type='pdf',
+                                                                 wexplorer_tup=(self.set_compt_only(0), excel_file_name))
+                    # o arg do param em wexplorer_tup (0) significa o mes atual.
+                    dividas_png_files = self.files_get_anexos_v2(CLIENTE, year=False, file_type='png',
+                                                                 wexplorer_tup=(self.set_compt_only(0), excel_file_name), upload=True)
+                    # Na dúvida, melhor settar...
+                    # após anexar...
+
                     qtd_arquivos = len(dividas_pdf_files)
                     mail_header = f"com vencimento previsto para o dia: {self.venc_boletos.replace('-', '/')}"
                     mail_header = f"Parcelamentos, {'boleto' if qtd_arquivos == 1 else 'boletos'} {mail_header}"
                     print('titulo: ', mail_header)
 
+                    list_imgs = self.dividas_mime_img(dividas_png_files)
                     message = self.mail_dividas_msg(CLIENTE, CNPJ, len(dividas_pdf_files))
                     print(message)
                     das_message = self.write_message(message)
 
-                    # input(len(dividas_pdf_files))
-
-                    # input('camdaprotetora')
-
+                    dividas_files = dividas_pdf_files + list_imgs
                     # self.main_send_email(now_email, mail_header, das_message, dividas_pdf_files)
-                    self.main_send_email(now_email, mail_header, das_message, dividas_pdf_files)
+                    # 'silsilinhas@gmail.com'
+                    self.main_send_email('silsilinhas@gmail.com', mail_header, das_message, dividas_files)
 
                     """a partir do terceiro argumento, só há mensagens attachedas"""
 
@@ -105,4 +111,13 @@ Este e-mail é automático. Por gentileza, cheque o nome e o CNPJ ({ntt('span'+r
 
         return venc
 
+    def dividas_mime_img(self, dividas_png_files: list):
+        from email.mime.image import MIMEImage
+        imgsimgs = []
+        for png in dividas_png_files:
+            print(png)
+            with open(png, 'rb') as pf:
+                img = MIMEImage(pf.read())
+                imgsimgs.append(img)
+        return imgsimgs
 # depois o send email vai emglobar tudo que ta em package init_email... # no projeto final

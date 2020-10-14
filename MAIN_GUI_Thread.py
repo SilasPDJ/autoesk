@@ -79,7 +79,7 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
         import pandas as pd
         super().__init__()
         self.now_selection_json_f_name = 'pgdas_fiscal_oesk/data_clients_files/clients_now_selection.json'
-        self._this_compt_and_file = self.get_atual_compt_set(1, past_only=True)
+        self._this_compt_and_file = self.set_get_compt_file(1, past_only=True)
 
         self.sh_names_only = list(self.parse_sh_name(self._this_compt_and_file, False))
 
@@ -126,13 +126,12 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
 
             custom_values = [v.values() for v in json_file[eid]]
             # print(custom_values[0])
-            _cliente = ''.join(custom_values[0])
+            w_cliente = ''.join(custom_values[0])
             # input(_cliente)
-            self.rotines_update()
-            op_path = self._files_path_v2(_cliente, wexplorer_tup=self._this_compt_and_file)
-            Popen(f'explorer "{op_path}"')
 
-            # exec(b)
+            op_path = self._files_path_v2(w_cliente, wexplorer_tup=self._this_compt_and_file)
+            Popen(f'explorer "{op_path}"')
+        print('Fim')
 
     def data_selection(self, table, df, df_id):
         rows = (idx.row() for idx in table.selectionModel().selectedRows())
@@ -231,7 +230,7 @@ class MainApp(MainDisplays, TuplasTabelas):
         generator_only1 = list(generator_unpacking)[0]
         self.whenChangeComptCB = QtWidgets.QComboBox()
         for i in range(1, 5):
-            compt, file = self.get_atual_compt_set(i, past_only=True)
+            compt, file = self.set_get_compt_file(i, past_only=True)
             self.whenChangeComptCB.addItem(compt)
         self.whenChangeComptCB.activated[str].connect(self._gui_cb_set_compt)
         self.whenChangeComptCB.activated.connect(self.rotines_update)
@@ -280,6 +279,12 @@ class MainApp(MainDisplays, TuplasTabelas):
         self.whenExplorerBt = QPushButton('Abre Pasta Explorer')
         self.whenExplorerBt = self.add_elingrid(self.whenExplorerBt, *generator_only1)
         self.add_thread(self.whenExplorerBt, self.wexplorer)
+
+        generator_unpacking = self.el_grid_setting(1, 0, start_row=7)
+        generator_only1 = list(generator_unpacking)[0]
+        self.whenDividasBt = QPushButton('Todos _DÍVIDAS')
+        self.whenDividasBt = self.add_elingrid(self.whenDividasBt, *generator_only1, obj_name='btSimplesNacional')
+        self.add_thread(self.whenDividasBt, SendDividas)
 
         self.rotines_update()
 

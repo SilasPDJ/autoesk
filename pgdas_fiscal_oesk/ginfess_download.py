@@ -14,7 +14,7 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
         from time import sleep
         if compt_file is None:
             # compt, excel_file_name = self.get_atual_compt_set(1)
-            compt_file = self.get_atual_compt_set(1)
+            compt_file = self.set_get_compt_file(1)
 
         # input(len(after_READ['CNPJ']))
         for eid in json_file.keys():

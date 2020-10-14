@@ -43,6 +43,46 @@ class SetPaths(Now):
         print(os.getcwd())
         return pdf_files
 
+    def files_get_anexos_v2(self, client, file_type='pdf', wexplorer_tup=None, year=True, upload=False):
+        """
+        :param client: nome da pasta onde estão os arquivos organizados por data dd-mm-yyyy
+        :param year: True -> folder contains year, False -> folder DOES NOT contain year
+        :param file_type: file annexed type
+        :param wexplorer_tup: ... ctrl+F me
+        :param upload: False -> email it! True: upload it!
+        :return: pdf_files or whatever
+
+        # _files_path
+        """
+        import os
+        from email.mime.application import MIMEApplication
+
+        # compt, excel_file_name = self.compt_and_filename()
+        if wexplorer_tup is None:
+            compt_and_file_anexos = self.compt_and_filename()
+        else:
+            compt_and_file_anexos = wexplorer_tup
+        path = self._files_path_v2(client, year=year, wexplorer_tup=compt_and_file_anexos)
+        # print(path, '\nPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATH', year)
+        volta = os.getcwd()
+
+        os.chdir(path)
+
+        list_returned = os.listdir()
+        pdf_files = list()
+
+        for fname in list_returned:
+            if fname.lower().endswith(f'.{file_type}'):
+                if not upload:
+                    file_opened = MIMEApplication(open(fname, 'rb').read())
+                    file_opened.add_header('Content-Disposition', 'attachment', filename=fname)
+                    pdf_files.append(file_opened)
+                else:
+                    pdf_files.append(f'{os.getcwd()}\\{fname}')
+        os.chdir(volta)
+        print(os.getcwd())
+        return pdf_files
+
     def compt_and_filename(self):
         """
         :return: already set compt and file_names; COMPT e file_names já programados antes vindos de um arquivo
@@ -96,7 +136,7 @@ class SetPaths(Now):
                 sh_management.new_xlsxcompt_from_padrao_if_not_exists()
                 # Cria planilha se não existente
 
-    def get_atual_compt_set(self, m_cont=-1, y_cont=0, past_only=True, file_type='xlsx'):
+    def set_get_compt_file(self, m_cont=-1, y_cont=0, past_only=True, file_type='xlsx'):
         """
         :param int m_cont: quantos meses para trás? (0 atual)
         :param int y_cont: quantos anos para trás?  (0 atual)
@@ -130,6 +170,24 @@ class SetPaths(Now):
                 f.write(line + '\n')
 
         return compt, excel_file_path_updated
+
+    def set_compt_only(self, m_cont=-1, y_cont=0, past_only=True, sep='-'):
+        from datetime import datetime as dt
+        month = dt.now().month
+        year = dt.now().year
+        if past_only:
+            m_cont = m_cont * (-1) if m_cont > 0 else m_cont
+            y_cont = y_cont * (-1) if y_cont > 0 else y_cont
+            # force to be negative
+        month = month + m_cont if m_cont < month and 0 < (m_cont + month) <= 12 \
+            else IndexError('m_cont must not be greater than 12 nor greater than dt.now().month')
+        if not isinstance(month, int):
+            raise month
+
+        year += y_cont
+        compt = f'{month:02d}{sep}{year}'
+        return compt
+
 
     # @staticmethod
     def get_last_business_day_of_month(self, month=None, year=None):
