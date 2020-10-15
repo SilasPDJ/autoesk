@@ -125,7 +125,7 @@ class MainWP(WDShorcuts, SetPaths):
         driver.implicitly_wait(5)
 
         for file in files:
-            driver.find_element_by_css_selector("span[data-icon='clip']").click()
+            self.click_ac_elementors(driver.find_element_by_css_selector("span[data-icon='clip']"))
             anx = driver.find_element_by_css_selector("input[type='file']")
 
             anx.send_keys(r'{}'.format(file))

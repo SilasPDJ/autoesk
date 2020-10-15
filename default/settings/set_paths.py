@@ -266,6 +266,7 @@ class SetPaths(Now):
                 else:
                     os.chdir(r'{}/{}'.format(pasta_client, compt))
                 # print('inside _path loop')
+                print(os.getcwd())
                 break
             except FileNotFoundError:
                 pass

@@ -7,6 +7,7 @@ class OldPgDasmailSender(EmailExecutor):
 
     def __init__(self):
         import pandas as pd
+        from smtp_project.init_email import JsonDateWithImprove as Jj
         from default.interact import press_keys_v4, press_key_b4
         super().__init__()
         venc = self.VENCIMENTO_DAS
@@ -116,12 +117,12 @@ Este e-mail é automático. Por gentileza, cheque o nome e o CNPJ ({ntt('span'+r
 
 class PgDasmailSender(EmailExecutor):
 
-    def __init__(self, json_file, compt_file: tuple):
+    def __init__(self, fname, compt_file: tuple):
         """
 
         :param compt_file:
         """
-        import pandas as pd
+        from smtp_project.init_email import JsonDateWithImprove as Jj
         from default.interact import press_keys_v4, press_key_b4
         super().__init__()
         venc = self.VENCIMENTO_DAS
@@ -137,7 +138,7 @@ class PgDasmailSender(EmailExecutor):
         mail_header = f"Fechamentos para apuração do imposto PGDAS, competência: {compt.replace('-', '/')}"
         print('titulo: ', mail_header)
         # é o meu teste
-
+        json_file = Jj.load_json(fname)
         # for eid in range(len(json_file.keys()))
         for eid in json_file.keys():
             after_json = self.readnew_lista_v_atual(json_file[eid])
@@ -170,8 +171,9 @@ class PgDasmailSender(EmailExecutor):
 
                     das_anx_files = self.files_get_anexos(_cliente)
                     # self.main_send_email(now_email, mail_header, das_message, das_anx_files)
-                    self.main_send_email(now_email, mail_header, das_message, das_anx_files)
+                    self.main_send_email('silsilinhas@gmail.com', mail_header, das_message, das_anx_files)
                     """a partir do terceiro argumento, só há mensagens attachedas"""
+
                     print('Enviado...')
 
     def mail_pgdas_msg(self, client, cnpj, tipo_das, valor):

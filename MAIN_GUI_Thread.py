@@ -282,11 +282,17 @@ class MainApp(MainDisplays, TuplasTabelas):
 
         generator_unpacking = self.el_grid_setting(1, 0, start_row=7)
         generator_only1 = list(generator_unpacking)[0]
-        self.whenDividasBt = QPushButton('Todos _DÍVIDAS')
+        self.whenDividasBt = QPushButton('Todos Email_DÍVIDAS')
         self.whenDividasBt = self.add_elingrid(self.whenDividasBt, *generator_only1, obj_name='btSimplesNacional')
         self.add_thread(self.whenDividasBt, SendDividas)
 
-        self.rotines_update()
+        generator_unpacking = self.el_grid_setting(1, 0, start_row=8)
+        generator_only1 = list(generator_unpacking)[0]
+        self.whenWhatsappClientsBt = QPushButton('Whatsapp Send PGDAS')
+        self.whenWhatsappClientsBt = self.add_elingrid(self.whenWhatsappClientsBt, *generator_only1, obj_name='')
+        self.add_thread(self.whenWhatsappClientsBt, PgdasWP)
+
+        self.rotines_update(v=0)
 
     def add_compt_bt(self):
         self.whenChangeComptCB.addItem('teste')
@@ -303,14 +309,19 @@ class MainApp(MainDisplays, TuplasTabelas):
         filetc = filetc.replace(compt, str(new))
         compt = new
         self._this_compt_and_file = compt, filetc
+
         self.rotines_update()
 
-    def rotines_update(self):
+    def rotines_update(self, v=None):
+        """
+        :param v: From self.whenChangeComptCB Signal
+        :return:
+        """
         # print('estou sendo chamada')
         loadit = JsonDateWithImprove.load_json(self.now_selection_json_f_name)
-        self.add_thread(self.whenGinfessBt, DownloadGinfessGui, loadit, self._this_compt_and_file)
+        self.add_thread(self.whenGinfessBt, DownloadGinfessGui, self.now_selection_json_f_name, self._this_compt_and_file)
         self.add_thread(self.whenGissBt, GissGui, loadit)
-        self.add_thread(self.whenMailSenderBt, PgDasmailSender, loadit, self._this_compt_and_file)
+        self.add_thread(self.whenMailSenderBt, PgDasmailSender, self.now_selection_json_f_name, self._this_compt_and_file)
 
         self.add_thread(self.whenSimplesNacionalBt, PgdasAnyCompt, self._this_compt_and_file)
 
@@ -321,6 +332,9 @@ class MainApp(MainDisplays, TuplasTabelas):
             new.clicked.connect(partial(self.load_tables, e))
 
         self.load_tables(self.activated_tableId)
+        if v is not None:
+            # print(f'Oi, sou o número da competência que errei: {v}')
+            self.set_get_compt_file(v+1)
 
     def center(self):
         qr = self.frameGeometry()

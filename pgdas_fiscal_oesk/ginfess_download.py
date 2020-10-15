@@ -10,13 +10,18 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
 
     # only static methods from JsonDateWithDataImprove
 
-    def __init__(self, json_file, compt_file=None):
+    def __init__(self, fname, compt_file=None,):
         from time import sleep
+        from smtp_project.init_email import JsonDateWithImprove as Jj
+
         if compt_file is None:
-            # compt, excel_file_name = self.get_atual_compt_set(1)
+            # compt, excel_file_name = self.set_get_compt_file(1)
             compt_file = self.set_get_compt_file(1)
 
+        json_file = Jj.load_json(fname)
         # input(len(after_READ['CNPJ']))
+        print(json_file)
+        input('Json_file')
         for eid in json_file.keys():
             print('~'*30)
             print(eid)
@@ -33,7 +38,6 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
             _city = ''.join(values[-4])
             print(_ginfess_cod, _city)
             # mesma coisa de self.any_to_str, só que ele aceita args desempacotados
-
             client_path = self._files_path_v2(_cliente, wexplorer_tup=compt_file)
             self.client_path = client_path
 

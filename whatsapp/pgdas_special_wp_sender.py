@@ -14,9 +14,9 @@ class PgdasWP(MainWP, ExcelToData):
         import pandas as pd
         self.VENCIMENTO_DAS = VENCIMENTO_DAS
         # input(self.VENCIMENTO_DAS)
-        sh_names = 'sem_mov', 'G5_ISS', 'G5_ICMS'
+        sh_names = 'G5_ISS', 'G5_ICMS'
 
-        compt, excel_file_name = self.get_atual_compt_set(1)
+        compt, excel_file_name = self.set_get_compt_file(1)
         # posso mudar os argumentos de get_atual_competencia, ele já tem padrão, mas coloquei pra lembrar
         # responsivo...
 
@@ -47,6 +47,13 @@ class PgdasWP(MainWP, ExcelToData):
                 try:
                     wp = after_READ['whatsapp'][i].upper().strip()
                     wpenv = after_READ['wpenv'][i].upper().strip()
+                    __valor = after_READ['Valor'][i]
+                    try:
+                        __valor = float(__valor)
+                        __valor = f'R${__valor:.2f}'.replace('.', ',')
+                    except ValueError:
+                        pass
+
                     # campo no excel do cliente,  eu vou transformar isso tudo em json mais pra frente
                     if wp == 'WP':
 
@@ -59,7 +66,7 @@ class PgdasWP(MainWP, ExcelToData):
                             print(responsavel)
 
                         if JA_DECLARED in ['S', 'OK'] and wpenv not in ['S', 'OK']:
-
+                            # responsavel = 'Monique'
                             self.driver = self.whatsapp_DRIVER(CLIENTE)
 
                             driver = self.driver
@@ -67,16 +74,17 @@ class PgdasWP(MainWP, ExcelToData):
                             print(f'\033[1;34mCLIENTE: {CLIENTE}\033[m')
                             pdf_files = self.files_get_anexos(CLIENTE, year=True, file_type='pdf', upload=True)
                             print(len(pdf_files))
+                            input(pdf_files)
                             print(pdf_files)
 
                             self.access_whatsapp_site()
-
+                            responsavel = 'Monique'
                             self.search_and_open(responsavel)
 
                             self.write_wp_msg(f'{hora_da_mensagem}, {CLIENTE}! Sou da OESK Contábil, contador Osiel. '
                                               f'Esta mensagem é referente à apuração da competência {compt}',
-                                              f'Segue boleto PGDAS a vencer no dia {self.VENCIMENTO_DAS},'
-                                              f'segue também protocolos sobre a declaração. ATT')
+                                              f'Segue boleto PGDAS a vencer no dia {self.VENCIMENTO_DAS}, sobre valor de {__valor}. '
+                                              f'Segue também protocolos sobre a declaração. ATT')
 
                             self.anexa_wp_files(*pdf_files)
                             sleep(5)
