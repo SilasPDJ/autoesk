@@ -334,6 +334,7 @@ class MainApp(MainDisplays, TuplasTabelas):
         self.load_tables(self.activated_tableId)
         if v is not None:
             # print(f'Oi, sou o número da competência que errei: {v}')
+            # observação, se o mês atual for adicionado, remove esse "+1"
             self.set_get_compt_file(v+1)
 
     def center(self):
