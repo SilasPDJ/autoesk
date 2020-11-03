@@ -506,7 +506,10 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                 for i in range(2):
                     self.tags_wait('form')
                     sleep(3)
-                    driver.find_element_by_tag_name("form").submit()
+                    try:
+                        self.find_submit_form()
+                    except NoSuchElementException:
+                        driver.find_elements_by_class_name('btn-success')[1].click()
                     # em teste
 
             # ISS, index 1
@@ -586,7 +589,12 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                     driver.find_elements_by_class_name('btn-success')[1].click()
                     # self.GERA_PGDAS2 acima
                     sleep(3.5)
-                    self.find_submit_form()
+                    driver.implicitly_wait(5)
+                    try:
+                        self.find_submit_form()
+                    except NoSuchElementException:
+                        driver.find_elements_by_class_name('btn-success')[1].click()
+
                     # DOWNLOAD feito pois já está setado nos argumentos do driver
 
             elif sheet_id == 2:

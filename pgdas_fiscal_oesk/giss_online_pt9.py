@@ -27,12 +27,16 @@ sh_name = 'GISS'
 class GissGui(WDShorcuts, SetPaths, ExcelToData):
     from selenium.webdriver.common.by import By
 
-    def __init__(self, json_file, compt_file=None):
+    def __init__(self, fname, compt_file=None):
         from os import chdir, path, getcwd
         from time import sleep
+        from smtp_project.init_email import JsonDateWithImprove as Jj
+
         if compt_file is None:
             # compt, excel_file_name = self.get_atual_compt_set(1)
             compt_file = self.set_get_compt_file(1)
+
+        json_file = Jj.load_json(fname)
         # input(len(after_READ['CNPJ']))
         for eid in json_file.keys():
             print('~'*30)

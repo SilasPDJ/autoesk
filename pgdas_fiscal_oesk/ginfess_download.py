@@ -20,8 +20,10 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
 
         json_file = Jj.load_json(fname)
         # input(len(after_READ['CNPJ']))
+        print('-='*30)
+        print(f'{"Ginfess Download":^30}')
         print(json_file)
-        input('Json_file')
+        print('-='*30)
         for eid in json_file.keys():
             print('~'*30)
             print(eid)
