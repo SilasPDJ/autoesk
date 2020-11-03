@@ -93,7 +93,9 @@ class JsonDateWithImprove:
             return btf
 
         # bto é btf
-        req = requests.get('http://www8.receita.fazenda.gov.br/SimplesNacional/Agenda/Agenda.aspx').text
+        req = requests.get('http://www8.receita.fazenda.gov.br/SimplesNacional/Agenda/Agenda.aspx')
+        req.encoding = 'utf-8'
+        req = req.text
         btinit = soup(req)
         # btinit = BeautifulSoup(rq, "html.parser")
         # aqui é o início, a soup vai ser com os elementos vindos daqui

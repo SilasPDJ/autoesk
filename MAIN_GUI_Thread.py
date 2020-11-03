@@ -318,9 +318,9 @@ class MainApp(MainDisplays, TuplasTabelas):
         :return:
         """
         # print('estou sendo chamada')
-        loadit = JsonDateWithImprove.load_json(self.now_selection_json_f_name)
+        
         self.add_thread(self.whenGinfessBt, DownloadGinfessGui, self.now_selection_json_f_name, self._this_compt_and_file)
-        self.add_thread(self.whenGissBt, GissGui, loadit)
+        self.add_thread(self.whenGissBt, GissGui, self.now_selection_json_f_name)
         self.add_thread(self.whenMailSenderBt, PgDasmailSender, self.now_selection_json_f_name, self._this_compt_and_file)
 
         self.add_thread(self.whenSimplesNacionalBt, PgdasAnyCompt, self._this_compt_and_file)

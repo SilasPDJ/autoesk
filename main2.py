@@ -10,6 +10,7 @@ from whatsapp import PgdasWP
 
 # PgdasAnyCompt(2, True)
 from smtp_project.init_email.jsondate import JsonDateWithImprove
-DownloadGinfessGui(JsonDateWithImprove.load_json('pgdas_fiscal_oesk/data_clients_files/clients_now_selection.json'), compt_file=None)
+# DownloadGinfessGui(JsonDateWithImprove.load_json('pgdas_fiscal_oesk/data_clients_files/clients_now_selection.json'), compt_file=None)
+PgdasAnyCompt()
 # PastOnly
 # optional arg
