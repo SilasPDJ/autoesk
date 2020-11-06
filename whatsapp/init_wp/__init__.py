@@ -21,7 +21,7 @@ class MainWP(WDShorcuts, SetPaths):
         if driver is not None:
             super().__init__(driver)
         else:
-            self.recria_padrao()
+            # self.recria_padrao
             pass
 
         # depois eu vou fazer um json do for loop xD
@@ -39,7 +39,11 @@ class MainWP(WDShorcuts, SetPaths):
         print('pressione enter após escanear')
         press_key_b4('enter')
         [(print(f'-> {i}'), sleep(1)) for i in range(10, -1, -1)]
-        self.quit_session()
+        try:
+            self.driver.close()
+            self.driver.quit()
+        except WebDriverException:
+            print('Não existe driver ativo')
         print('Driver closed')
 
     def quit_session(self):

@@ -413,7 +413,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
         sleep(5)
         # nextcl = elem_with_text("span", "Alterar perfil de acesso")
         # nextcl.click()
-        driver.find_element_by_id('btnPerfil').click()
+        self.click_ac_elementors(driver.find_element_by_id('btnPerfil'))
         # altera perfil e manda o cnpj
         self.tags_wait('label')
 
