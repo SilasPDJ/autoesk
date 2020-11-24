@@ -62,7 +62,8 @@ class OldPgDasmailSender(EmailExecutor):
                         das_message = self.write_message(message)
 
                         das_anx_files = self.files_get_anexos(CLIENTE)
-                        self.main_send_email('silsilinhas@gmail.com', mail_header, das_message, das_anx_files)
+                        # self.main_send_email('silsilinhas@gmail.com', mail_header, das_message, das_anx_files)
+                        self.main_send_email(now_email, mail_header, das_message, das_anx_files)
                         """a partir do terceiro argumento, só há mensagens attachedas"""
 
             if sh_name == sh_names[-1]:
@@ -160,7 +161,7 @@ class PgDasmailSender(EmailExecutor):
             else:
                 if now_email == '':
                     print('wtf')
-                elif _ja_declared in ['S', 'OK', 'FORA'] and _ja_foi_env not in ['S', 'OK']:
+                elif _ja_declared in ['S', 'FORA'] and _ja_foi_env not in ['S', 'OK']:
                     print(now_email)
                     print(f'VALOR: {_valor}')
                     print(f'CLIENTE: {_cliente}')
@@ -170,8 +171,8 @@ class PgDasmailSender(EmailExecutor):
                     das_message = self.write_message(message)
 
                     das_anx_files = self.files_get_anexos(_cliente)
-                    # self.main_send_email(now_email, mail_header, das_message, das_anx_files)
-                    self.main_send_email('silsilinhas@gmail.com', mail_header, das_message, das_anx_files)
+                    self.main_send_email(now_email, mail_header, das_message, das_anx_files)
+                    # self.main_send_email('silsilinhas@gmail.com', mail_header, das_message, das_anx_files)
                     """a partir do terceiro argumento, só há mensagens attachedas"""
 
                     print('Enviado...')

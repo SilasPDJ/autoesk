@@ -33,7 +33,7 @@ class FunctionsManager(QtCore.QObject):
     started = QtCore.pyqtSignal()
     finished = QtCore.pyqtSignal()
 
-    def startislife(self, *args, max_threads=5):
+    def startislife(self, *args, max_threads=10):
         """
         :param args: must be functional (methods)
         :param max_threads: ...

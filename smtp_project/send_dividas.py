@@ -62,9 +62,9 @@ class SendDividas(EmailExecutor):
                     das_message = self.write_message(message)
 
                     dividas_files = dividas_pdf_files + list_imgs
-                    # self.main_send_email(now_email, mail_header, das_message, dividas_pdf_files)
+                    self.main_send_email(now_email, mail_header, das_message, dividas_pdf_files)
                     # 'silsilinhas@gmail.com'
-                    self.main_send_email('silsilinhas@gmail.com', mail_header, das_message, dividas_files)
+                    # self.main_send_email('silsilinhas@gmail.com', mail_header, das_message, dividas_files)
 
                     """a partir do terceiro argumento, só há mensagens attachedas"""
 

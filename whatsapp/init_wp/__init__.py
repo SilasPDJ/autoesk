@@ -33,6 +33,7 @@ class MainWP(WDShorcuts, SetPaths):
         print('\033[1;31m Parâmetro driver None, criando driver PADRÃO caso não exista em\033[m')
 
         driver = self.whatsapp_DRIVER(padrao=self.padrao)
+        self = MainWP(driver)
 
         [(print(cont, 'ABORTE A QUALQUER MOEMNTO'), sleep(1)) for cont in range(10, 0, -1)]
         driver.get('https://web.whatsapp.com/')

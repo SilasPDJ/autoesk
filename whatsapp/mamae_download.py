@@ -4,7 +4,7 @@ from default.webdriver_utilities import Keys
 
 class DownloadRotinaMamae(MainWP):
 
-    def __init__(self, qtd_midias):
+    def __init__(self, qtd_midias, contato='Mãe'):
         from default.webdriver_utilities.pre_drivers import default_qrcode_driver
         """
         :param qtd_midias: qtd photos/videos download
@@ -18,7 +18,7 @@ class DownloadRotinaMamae(MainWP):
 
         self.access_whatsapp_site()
 
-        self.search_and_open('Mãe')
+        self.search_and_open(contato)
         self.download_midias_audiovisuais(qtd_midias)
         driver.implicitly_wait(7)
         self.quit_session()

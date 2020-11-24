@@ -140,7 +140,7 @@ class SetPaths(Now):
         """
         :param int m_cont: quantos meses para trás? (0 atual)
         :param int y_cont: quantos anos para trás?  (0 atual)
-        :param str file_type:
+        :param any file_type: None -> (((DOES NOT))) update self.__get_atual_competencia_file
         :param bool past_only: True -> somente passado (multiplica por -1), False: não faz multiplicação
         :return: competencia & excel_path
 
@@ -162,14 +162,14 @@ class SetPaths(Now):
 
         year += y_cont
         compt = f'{month:02d}-{year}'
-        excel_file_path_updated = r'{}/{}.{}'.format(path, compt, file_type)
-
-        with open(self.__get_atual_competencia_file(), 'w') as f:
-            for line in [compt, excel_file_path_updated]:
-                # print(compt)
-                f.write(line + '\n')
-
-        return compt, excel_file_path_updated
+        if file_type:
+            excel_file_path_updated = r'{}/{}.{}'.format(path, compt, file_type)
+            with open(self.__get_atual_competencia_file(), 'w') as f:
+                for line in [compt, excel_file_path_updated]:
+                    # print(compt)
+                    f.write(line + '\n')
+            return compt, excel_file_path_updated
+        return compt
 
     def set_compt_only(self, m_cont=-1, y_cont=0, past_only=True, sep='-'):
         from datetime import datetime as dt
