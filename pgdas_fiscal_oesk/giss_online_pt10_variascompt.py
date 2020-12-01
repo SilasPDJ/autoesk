@@ -27,16 +27,15 @@ sh_name = 'GISS'
 class GissGui(WDShorcuts, SetPaths, ExcelToData):
     from selenium.webdriver.common.by import By
 
-    def __init__(self, fname, m_cont, y_cont):
+    def __init__(self, fname, firstcompt):
         from os import chdir, path, getcwd
         from time import sleep
         from smtp_project.init_email import JsonDateWithImprove as Jj
         from functools import partial
 
-        self.calls_write_date = partial(self.write_date, m_cont, y_cont)
-
         json_file = Jj.load_json(fname)
         # input(len(after_READ['CNPJ']))
+
         for eid in json_file.keys():
             print('~'*30)
             print(eid)
@@ -61,45 +60,64 @@ class GissGui(WDShorcuts, SetPaths, ExcelToData):
             print('~'*30, 'SENHAS')
 
             # if _feito not in ["checkar", "ok"]:
-            self.driver = webdriver.Chrome(link)
-            super().__init__(self.driver)
-            driver = self.driver
-            driver.get(weblink)
-            chrome = driver
-            cont_senha = 0
-            while True:
-                # TxtIdent
-                driver.find_element_by_xpath('//input[@name="TxtIdent"]').send_keys(_logar)
-                driver.find_element_by_xpath('//input[@name="TxtSenha"]').send_keys(__senhas[cont_senha])
-                print(f'Senha: {__senhas[cont_senha]}', end=' ')
-                cont_senha += 1
-                driver.find_element_by_link_text("Acessar").click()
-                try:
-                    WebDriverWait(chrome, 5).until(expected_conditions.alert_is_present(),
-                                                   'Timed out waiting for PA creation ' +
-                                                   'confirmation popup to appear.')
-                    alert = chrome.switch_to.alert
-                    alert.accept()
-                    print("estou no try")
-                    driver.execute_script("window.history.go(-1)")
-                except TimeoutException:
-                    print("no alert, sem alerta, exceptado")
-                    break
-                    # holy
-            iframe = driver.find_element_by_xpath("//iframe[@name='header']")
-            driver.switch_to.frame(iframe)
-            if self._construcao.lower().strip() != 'sim':
-                driver.find_element_by_xpath("//img[contains(@src,'images/bt_menu__05_off.jpg')]").click()
+            for loop_compt in self.ate_atual_compt(first_compt=firstcompt):
+                self.driver = webdriver.Chrome(link)
+                super().__init__(self.driver)
+                driver = self.driver
+                driver.get(weblink)
+                chrome = driver
+                cont_senha = 0
+                while True:
+                    # TxtIdent
+                    driver.find_element_by_xpath('//input[@name="TxtIdent"]').send_keys(_logar)
+                    driver.find_element_by_xpath('//input[@name="TxtSenha"]').send_keys(__senhas[cont_senha])
+                    print(f'Senha: {__senhas[cont_senha]}', end=' ')
+                    cont_senha += 1
+                    driver.find_element_by_link_text("Acessar").click()
+                    try:
+                        WebDriverWait(chrome, 5).until(expected_conditions.alert_is_present(),
+                                                       'Timed out waiting for PA creation ' +
+                                                       'confirmation popup to appear.')
+                        alert = chrome.switch_to.alert
+                        alert.accept()
+                        print("estou no try")
+                        driver.execute_script("window.history.go(-1)")
+                    except TimeoutException:
+                        print("no alert, sem alerta, exceptado")
+                        break
+                        # holy
+                """
+                for m in range(m_cont):
+                    # print(self.write_date(m_cont, y_cont))
+                    mes, ano = self.set_get_compt_file(m_cont, y_cont, file_type=False).split('-')
+    
+                    print(mes, ano)
+                input()
+                """
 
-            else:
-                print('Construção Civil?')
-                self.constr_civil()
-            driver.switch_to.default_content()
-            sleep(3.5)
-            if self._construcao.lower() == 'sim':
-                self.fazendo_principal(True)
-            else:
-                self.fazendo_principal()
+                month, year = loop_compt.split('-')
+
+                self.calls_write_date = partial(self.write_date_variascompt, month, year)
+                try:
+                    iframe = driver.find_element_by_xpath("//iframe[@name='header']")
+                    driver.switch_to.frame(iframe)
+                except NoSuchElementException:
+                    driver.execute_script("window.location.href=('/tomador/tomador.asp');")
+
+                if self._construcao.lower().strip() != 'sim':
+                    driver.find_element_by_xpath("//img[contains(@src,'images/bt_menu__05_off.jpg')]").click()
+
+                else:
+                    print('Construção Civil?')
+                    self.constr_civil()
+                driver.switch_to.default_content()
+                sleep(1)
+                if self._construcao.lower() == 'sim':
+                    self.fazendo_principal(True)
+                else:
+                    self.fazendo_principal()
+                driver.implicitly_wait(10)
+            self.driver.close()
         print('GISS encerrado!')
 
     def readnew_lista(self, READ, print_values=False):
@@ -172,26 +190,7 @@ class GissGui(WDShorcuts, SetPaths, ExcelToData):
                     driver.find_element_by_link_text('Menu Principal').click()
                 except NoSuchElementException:
                     driver.find_element_by_link_text('OK').click()
-            # test
 
-            """Se eu quiser reacessar lá, vou precisar desse código abaixo e dar refresh"""
-            """
-            driver.refresh()
-            sleep(2)
-            iframe = driver.find_element_by_xpath("//iframe[@name='header']")
-            driver.switch_to.frame(iframe)
-            driver.find_element_by_xpath('//img[contains(@src,"bt_menu__06_off.jpg")]').click()
-            driver.switch_to.default_content()
-            sleep(2.5)
-            iframe = driver.find_element_by_xpath("//iframe[@name='principal']")
-            driver.switch_to.frame(iframe)
-            a = driver.find_elements_by_tag_name('a')
-            a[4].click()
-            """
-        """~~~~~~~~~~~~~~~~~"""
-        print('ESC p/ continuar')
-        # WINDOW_MANAGEMENT.continua()
-        """~~~~~~~~~~~~~~~~"""
         # pressione "ESC" para continuar
 
     def constr_civil(self):
@@ -246,11 +245,11 @@ class GissGui(WDShorcuts, SetPaths, ExcelToData):
                 # ENCERRADO
                 sleep(5)
 
-    def write_date(self, m_cont, y_cont):
+    def write_date_variascompt(self, mes, ano):
         driver = self.driver
 
-        mes, ano = self.set_get_compt_file(m_cont, y_cont, file_type=False).split('-')
-        print(f'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa {mes}---{ano}')
+        # mes, ano = self.set_get_compt_file(m_cont, y_cont, file_type=False).split('-')
+        # print(f'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa {mes}---{ano}')
 
         sleep(5)
         iframe = driver.find_element_by_xpath("//iframe[@name='principal']")
@@ -266,3 +265,33 @@ class GissGui(WDShorcuts, SetPaths, ExcelToData):
             print(f"\033[1;31m{tag.upper()}\033[m is ready!")
         except TimeoutException:
             input("Loading took too much time!")
+
+    def ate_atual_compt(self, first_compt:str):
+
+
+        comp1st = f'{first_compt[:2]}-{first_compt[2:]}' if len(first_compt) == len(str(self.y()))+2 else lastcompt
+
+        compt_atual = self.compt_and_filename()[0]
+        mes_atual, ano_atual = compt_atual.split('-')
+        mes1st, ano1st = comp1st.split('-')
+        max_month = 13
+
+        mes1st = int(mes1st)
+        ano1st = int(ano1st)
+
+        mes_atual, ano_atual = int(mes_atual), int(ano_atual)
+
+
+        distancia_ano = ano_atual - ano1st
+        for anocont in range(ano1st, ano_atual+1):
+
+            if anocont == ano1st:
+                for mes in range(mes1st, max_month):
+                    result = f'{mes:02d}-{anocont}'
+                    yield result
+
+            else:
+
+                for mes in range(1, max_month):
+                    result = f'{mes:02d}-{anocont}'
+                    yield result

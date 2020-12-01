@@ -32,18 +32,6 @@ class DisplaySheets(QWidget, SetPaths, ExcelToData):
         self.atual_compt_and_file = self.get_atual_compt_set(1, past_only=True)
         self.sh_names_only = list(self.parse_sh_name(False))
 
-    def parse_sh_name(self, data_required=True):
-
-        compt, excel_file_name = self.atual_compt_and_file
-        xls = pd.ExcelFile(excel_file_name)
-        sheet_names = iter(xls.sheet_names)
-        for e, sh in enumerate(sheet_names):
-            # if e > 0:
-            if data_required:
-                yield xls.parse(sh, dtype=str)
-            else:
-                yield sh
-
     # Create tables
     def create_tables(self, table, dataframes, df_id):
         tw, df = table, list(dataframes)[df_id]
