@@ -97,7 +97,7 @@ class SetPaths(Now):
 
         except FileNotFoundError:
             raise FileNotFoundError('\033[1;31mfile not existence\033[m')
-        finally:
+        else:
             return compt, excel_file_name
 
     def __file_wtp_oesk(self, n=-1):

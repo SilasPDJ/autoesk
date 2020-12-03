@@ -4,3 +4,5 @@
 *.pyc
 new-site.html
 *.json
+*.log
+*.png

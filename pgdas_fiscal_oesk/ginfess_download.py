@@ -142,7 +142,7 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
                     driver.implicitly_wait(5)
 
                     # handelling select
-
+                    compt = self.compt_and_filename()[0]
                     mes, ano = compt.split('-')
                     mes = self.nome_mes(int(mes))
 
