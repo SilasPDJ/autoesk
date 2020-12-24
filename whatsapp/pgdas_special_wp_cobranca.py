@@ -2,12 +2,14 @@ from default import talk2cli
 from time import sleep
 from smtp_project.init_email import JsonDateWithImprove
 
+from selenium.common.exceptions import NoSuchElementException
+
 from default.data_treatment import ExcelToData
 from .init_wp import MainWP
 VENCIMENTO_DAS = JsonDateWithImprove.vencimento_das()
 
 
-class PgdasWP(MainWP, ExcelToData):
+class PgdasCobrancaWP(MainWP, ExcelToData):
 
     def __init__(self):
         print('Este driver está localizado em MainWP, pois ele faz caminhos diferentes, checar depois')
@@ -65,31 +67,34 @@ class PgdasWP(MainWP, ExcelToData):
                             responsavel = CLIENTE
                             print(responsavel)
 
-                        if JA_DECLARED in ['S'] and wpenv not in ['S', 'OK']:
+                        if JA_DECLARED not in ['S', 'OK'] and wpenv not in ['S', 'OK']:
                             # responsavel = 'Pai'
                             self.driver = self.whatsapp_DRIVER(CLIENTE, True)
 
                             driver = self.driver
                             super().__init__(driver=driver)
                             print(f'\033[1;34mCLIENTE: {CLIENTE}\033[m')
-                            pdf_files = self.files_get_anexos(CLIENTE, year=True, file_type='pdf', upload=True)
-                            print(len(pdf_files))
-
-                            print(pdf_files)
 
                             self.access_whatsapp_site()
+                            # responsavel = 'Silas Sala'
 
                             self.search_and_open(responsavel)
 
                             self.write_wp_msg(f'{hora_da_mensagem}, {CLIENTE}! Sou da OESK Contábil, contador Osiel. '
-                                              f'Esta mensagem é referente à apuração da competência {compt}',
-                                              f'Segue boleto PGDAS a vencer no dia {VENCIMENTO_DAS}, sobre valor de {__valor}. '
-                                              f'Segue também protocolos sobre a declaração. ATT',
-                                              f'Também enviei em seu email: {after_READ["email"][i]}',
+                                              '\n',
+                                              'É possível me enviar, durante esta semana, o faturamento para apuração do imposto '
+                                              'PGDAS do Simples Nacional? ',
+                                              f'Referente a {compt}. '
                                               'Atenciosamente.'
                                               )
+                            """
+                            pdf_files = self.files_get_anexos(CLIENTE, year=True, file_type='pdf', upload=True)
+                            print(len(pdf_files))
 
-                            self.anexa_wp_files(*pdf_files)
+                            print(pdf_files)
+                            # self.anexa_wp_files(*pdf_files)
+                            """
+
                             sleep(5)
                             self.quit_session()
 

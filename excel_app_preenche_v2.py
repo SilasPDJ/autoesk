@@ -205,16 +205,7 @@ class YouDidMe(VbaUtilities):
                             # celE.Value = 'OK'
 
 
-
-
-
 ydm = YouDidMe()
-# ydm.atiby_name(2) # ---> WORKS!
-# ydm.preenche_iss_valores()
-ydm.checka_declaracoes_e_valida()
-
-# Lendo excel sem pandas... direto do VBA
-# AS.Range('A:A').Select()
 
 
 

@@ -93,7 +93,12 @@ class MainWP(WDShorcuts, SetPaths):
             self.send_keys_anywhere(Keys.DOWN)
             self.send_keys_anywhere(Keys.ENTER)
         else:
-            self.abre_conversa(contact)
+            try:
+                self.abre_conversa(contact)
+            except NoSuchElementException:
+                self.send_keys_anywhere(Keys.DOWN)
+                self.send_keys_anywhere(Keys.ENTER)
+
 
     def procura_contato(self, nome):
         """

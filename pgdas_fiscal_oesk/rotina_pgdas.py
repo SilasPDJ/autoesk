@@ -726,7 +726,6 @@ class BackPgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
 
 class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
     def __init__(self, compt_file=None):
-
         """
         :param compt_file: from GUI
 
@@ -839,6 +838,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                     driver = self.driver
                     super().__init__(driver)
 
+
                     driver.implicitly_wait(2)
                     # initial = driver.get_window_position()
 
@@ -899,10 +899,12 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                         self.change_ecac_client(CNPJ)
 
                         self.current_url = driver.current_url
+                        self.opta_script() if self.m() == 12 else None
 
                     else:
                         self.loga_simples(CNPJ, CPF, CodSim, CLIENTE)
                         self.current_url = driver.current_url
+                        self.opta_script() if self.m() == 12 else None
                         """
                         if JA_DECLARED == 'GERA31':
                             self.simples_and_ecac_utilities(1, compt)
@@ -913,10 +915,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                     print('ÚNICA declaração')
 
                     print('JA_DECLARED não -> prossegue')
-
-                    # ########### opta
-                    self.opta_script() if self.m() == 12 else None
-                    # driver.execute_script("""window.location.href += 'declaracao?clear=1'""")
+                    driver.execute_script("""window.location.href += 'declaracao?clear=1'""")
                     self.tags_wait('body', 'input')
                     driver.implicitly_wait(10)
                     periodo = driver.find_element_by_id('pa')
@@ -930,6 +929,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
 
                 elif cont_inteligence == -1:
                     if JA_DECLARED not in ['S', 'OK']:
+
 
                         print('estou em sem movimento, vou arrumar ainda')
 
@@ -947,21 +947,18 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                             self.loga_cert()
                             self.change_ecac_client(CNPJ)
                         self.current_url = driver.current_url
+                        self.opta_script() if self.m() == 12 else None
 
                         VALOR = 'zerou'
                         print('JA_DECLARED não -> prossegue')
-
-                        # ########### opta
-                        self.opta_script() if self.m() == 12 else None
-                        # driver.execute_script("""window.location.href += 'declaracao?clear=1'""")
-                        # driver.execute_script("""window.location.href += 'declaracao?clear=1'""")
-
+                        driver.execute_script("""window.location.href += 'declaracao?clear=1'""")
                         self.tags_wait('body', 'input')
                         driver.implicitly_wait(10)
                         periodo = driver.find_element_by_id('pa')
                         periodo.send_keys(compt)
                         self.find_submit_form()
                         self.DECLARA(compt, sh_names.index(sh_name), VALOR, 'zerou', cont_ret_n_ret)
+
 
                 elif not intelligence_existence:
                     # se não existir vai criar.
@@ -1112,7 +1109,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
             cod_caract = driver.find_element_by_id('txtTexto_captcha_serpro_gov_br')
             btn_som = driver.find_element_by_id('btnTocarSom_captcha_serpro_gov_br')
             sleep(2.5)
-            self.click_ac_elementors(btn_som)#.click()
+            btn_som.click()
             sleep(.5)
             cod_caract.click()
             print(f'PRESSIONE ENTER P/ PROSSEGUIR, {CLIENTE}')
@@ -1188,7 +1185,6 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
         driver = self.driver
         after_READ = self.after_READ
         declara_client = self.now_person
-
         try:
             js_confirm = driver.find_element_by_id('jsMsgBoxConfirm')
 
@@ -1222,6 +1218,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
             print('R$', valor_declarado)
 
             inp = driver.find_elements_by_tag_name('input')[0]
+            inp.clear()
             inp.send_keys(valor_declarado)
             for i in range(2):
                 inp.send_keys(Keys.TAB)
@@ -1310,6 +1307,22 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                     self.find_submit_form()
                     sleep(2)
 
+                elif SemRetencao == '' and ComRetencao != '':
+                    print('\033[1;33mSó teve COM RETENÇÃO\033[m')
+                    self.send_keys_anywhere(Keys.TAB, 17 + 2)
+                    # +2 é COM retenção
+                    self.send_keys_anywhere(Keys.ENTER)
+                    self.find_submit_form()  # SUBMITA retenções s/ valor ainda
+                    sleep(2.5)
+
+                    self.send_keys_anywhere(valor_declarado)
+                    self.send_keys_anywhere(Keys.ENTER)  # submita o valor
+                    sleep(2.5)
+
+                    self.send_keys_anywhere(Keys.ENTER)  # calcular
+                    sleep(2.5)
+                    self.find_submit_form()
+                    sleep(2)
                 # o valor já tá sendo tratado acima no IF master, mas ok
                 if valor_declarado != '':
                     sleep(.5)
@@ -1450,37 +1463,42 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
         else:
             tk_msg(f'Tente outra opção, linha 550 +-, opc: {option}')
 
-
     def opta_script(self):
         driver = self.driver
-        # #################################################### opta
-        default_url = driver.current_url
-        driver.execute_script("""window.location.href += '/RegimeApuracao/Optar'""")
-
-        from selenium.webdriver.support.ui import Select
-        anocalendario = Select(driver.find_element_by_id('anocalendario'))
-
-        anocalendario.select_by_value('2021')
-        self.find_submit_form()
-
-        # competencia
-        competencia, caixa = '0', '1'
-
-        driver.find_element_by_css_selector(f"input[type='radio'][value='{competencia}']").click()
-        self.find_submit_form()
-        sleep(2.5)
-        # driver.find_element_by_id('btnSimConfirm').click()
-
         try:
-            driver.implicitly_wait(10)
-            self.click_ac_elementors(driver.find_element_by_class_name('glyphicon-save'))
-        except NoSuchElementException:
-            input('Não consegui')
-        else:
-            print('tudo certo? 5seg')
-            sleep(5)
-        # ########################################################
-            driver.get(default_url)
-            driver.execute_script("""window.location.href += '/declaracao?clear=1'""")
+            # #################################################### opta
+            self.get_sub_site('/RegimeApuracao/Optar', self.current_url)
+            # driver.execute_script("""window.location.href += '/RegimeApuracao/Optar'""")
 
-            print('Passou no else...')
+            from selenium.webdriver.support.ui import Select
+            anocalendario = Select(driver.find_element_by_id('anocalendario'))
+
+            anocalendario.select_by_value('2021')
+            self.find_submit_form()
+
+            # competencia
+            competencia, caixa = '0', '1'
+
+            driver.find_element_by_css_selector(f"input[type='radio'][value='{competencia}']").click()
+            self.find_submit_form()
+            sleep(2.5)
+            # driver.find_element_by_id('btnSimConfirm').click()
+
+            try:
+                driver.implicitly_wait(10)
+                self.click_ac_elementors(driver.find_element_by_class_name('glyphicon-save'))
+            except NoSuchElementException:
+                input('Não consegui')
+            else:
+                print('Não fui exceptado')
+            # ########################################################
+        except NoSuchElementException:
+            pass
+        finally:
+            driver.get(self.current_url)
+            driver.execute_script("""window.location.href += '/declaracao?clear=1'""")
+            sleep(2.5)
+
+
+
+

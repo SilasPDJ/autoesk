@@ -43,7 +43,14 @@ class ExcelToData:
 
     @staticmethod
     def readnew_lista_v_atual(json_part):
-        """ SUrgiu em send_pgdasmail"""
+        """
+        Surgiu em send_pgdasmail
+        #        from smtp_project.init_email import JsonDateWithImprove as Jj
+        #        json_file = Jj.load_json(fname)
+
+        :param json_part: json_file.keys()
+        # It contains dictionary
+        """
         new_dict = {}
 
         for all_items in json_part:

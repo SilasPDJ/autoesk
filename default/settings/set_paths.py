@@ -208,8 +208,9 @@ class SetPaths(Now):
             now_day = business_date.day
             business_date = business_date.replace(day=now_day - 1)
             weekday = business_date.weekday()
-
         returned = business_date.day
+
+        returned -= 1 if month == 12 else returned
         return returned
 
     def first_and_last_day_compt(self, sep='/'):

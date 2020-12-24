@@ -3,19 +3,22 @@ from smtp_project import EmailExecutor
 
 
 class SendDividas(EmailExecutor):
+
+
     def __init__(self):
         import pandas as pd
         super().__init__()
+
+        self.compt_setted = self.set_compt_only(-11, 1, past_only=False)
         # venc_dividas = self.das_venc_data()[3]
 
-        excel_compt, excel_file_name = self.set_get_compt_file(-1)
-        go_get = excel_compt, excel_file_name
-        self.venc_boletos = self.get_vencimento()
+        self.venc_boletos = self.get_dividas_vencimento(self.compt_setted)
 
         print('VENCIMENTO DÍVIDAS: ', self.venc_boletos)
 
         sh_names = ['_Dívidas']
 
+        excel_compt, excel_file_name = self.set_get_compt_file(-1)
         for sh_name in sh_names:
             # agora eu posso fazer downloalds sem me preocupar tendo a variável path
             mshExcelFile = pd.ExcelFile(excel_file_name)
@@ -42,12 +45,14 @@ class SendDividas(EmailExecutor):
                     print(now_email)
                     # print(f'VALOR: {VALOR}')
                     print(f'CLIENTE: {CLIENTE}')
+                    # input(self.set_compt_only(-11, 1, past_only=False))
+                    # FUNCIONA PRA CONTAR PRO MES Q VEM VALIDADO COM ANO
 
                     dividas_pdf_files = self.files_get_anexos_v2(CLIENTE, year=False, file_type='pdf',
-                                                                 wexplorer_tup=(self.set_compt_only(0), excel_file_name))
+                                                                 wexplorer_tup=(self.compt_setted, excel_file_name))
                     # o arg do param em wexplorer_tup (0) significa o mes atual.
                     dividas_png_files = self.files_get_anexos_v2(CLIENTE, year=False, file_type='png',
-                                                                 wexplorer_tup=(self.set_compt_only(0), excel_file_name), upload=True)
+                                                                 wexplorer_tup=(self.compt_setted, excel_file_name), upload=True)
                     # Na dúvida, melhor settar...
                     # após anexar...
 
@@ -95,20 +100,20 @@ Este e-mail é automático. Por gentileza, cheque o nome e o CNPJ ({ntt('span'+r
         """
         return full_mensagem
 
-    def get_vencimento(self):
+    def get_dividas_vencimento(self, compt_setted=None):
         """
-        :param m_cont: quantos meses para trás? (0 atual)
-        :param y_cont: quantos anos para trás?
+        :param compt_setted: from dividas, compt setted
 
         :return: data vencimento formato dia-mes-ano
         """
 
-        mes_ano_folder = self.compt_and_filename()[0]
-        print('Mês, ano, folder', mes_ano_folder)
-        venc_dividas = self.get_last_business_day_of_month()
+        mes, ano = compt_setted.split('-')
+        mes, ano = int(mes), int(ano)
+        # caso precise da compt setted
+        venc_dividas_day = self.get_last_business_day_of_month()
+        # é possível data
 
-        venc = f'{venc_dividas}-{mes_ano_folder}'
-
+        venc = f'{venc_dividas_day:02d}-{self.m():02d}'
         return venc
 
     def dividas_mime_img(self, dividas_png_files: list):

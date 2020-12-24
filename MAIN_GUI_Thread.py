@@ -23,6 +23,7 @@ from pgdas_fiscal_oesk import DownloadGinfessGui
 
 from pgdas_fiscal_oesk import GissGui
 from whatsapp import PgdasWP
+from whatsapp import  PgdasCobrancaWP
 
 from pgdas_fiscal_oesk.main_excel_manager.main_excel_manager import SheetPathManager
 from smtp_project.init_email.jsondate import JsonDateWithImprove
@@ -288,6 +289,12 @@ class MainApp(MainDisplays, TuplasTabelas):
 
         generator_unpacking = self.el_grid_setting(1, 0, start_row=8)
         generator_only1 = list(generator_unpacking)[0]
+        self.whenWhatsappClientsBt = QPushButton('Whatsapp COBRA PGDAS')
+        self.whenWhatsappClientsBt = self.add_elingrid(self.whenWhatsappClientsBt, *generator_only1, obj_name='bt_cobranca')
+        self.add_thread(self.whenWhatsappClientsBt, PgdasCobrancaWP)
+
+        generator_unpacking = self.el_grid_setting(1, 0, start_row=9)
+        generator_only1 = list(generator_unpacking)[0]
         self.whenWhatsappClientsBt = QPushButton('Whatsapp Send PGDAS')
         self.whenWhatsappClientsBt = self.add_elingrid(self.whenWhatsappClientsBt, *generator_only1, obj_name='')
         self.add_thread(self.whenWhatsappClientsBt, PgdasWP)
@@ -407,6 +414,10 @@ QPushButton {
 }
 #bt_shnames {
 background-color: red;
+}
+
+#bt_cobranca{
+background-color: yellow;
 }
 
 #bt_edit_plan, #bt_new_compt:hover{

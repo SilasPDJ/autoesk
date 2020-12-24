@@ -165,7 +165,6 @@ class PgDasmailSender(EmailExecutor):
                     print(now_email)
                     print(f'VALOR: {_valor}')
                     print(f'CLIENTE: {_cliente}')
-
                     message = self.mail_pgdas_msg(_cliente, _cnpj, _icms_or_iss, _valor)
                     # input(message)
                     das_message = self.write_message(message)
