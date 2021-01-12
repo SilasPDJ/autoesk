@@ -4,7 +4,6 @@ from smtp_project import EmailExecutor
 
 class SendDividas(EmailExecutor):
 
-
     def __init__(self):
         import pandas as pd
         super().__init__()
@@ -12,7 +11,8 @@ class SendDividas(EmailExecutor):
         self.compt_setted = self.set_compt_only(-11, 1, past_only=False)
         # venc_dividas = self.das_venc_data()[3]
 
-        self.venc_boletos = self.get_dividas_vencimento(self.compt_setted)
+        # self.venc_boletos = self.get_dividas_vencimento(self.compt_setted)
+        self.venc_boletos = self.vencimento_dividas()
 
         print('VENCIMENTO DÍVIDAS: ', self.venc_boletos)
 

@@ -248,12 +248,16 @@ class GissGui(WDShorcuts, SetPaths, ExcelToData):
                 sleep(5)
 
     def write_date(self):
-        from datetime import datetime
+        from datetime import datetime, date
+        from dateutil.relativedelta import relativedelta
+        # from datetime import timedelta
+
         mes = datetime.now().month
         ano = datetime.now().year
         driver = self.driver
-        mes = f'{mes-1:02d}'
-        ano = str(ano)
+        datageral = date(ano, mes, 1) - relativedelta(months=1)
+        mes = str(datageral.month)
+        ano = str(datageral.year)
         sleep(5)
         iframe = driver.find_element_by_xpath("//iframe[@name='principal']")
         driver.switch_to.frame(iframe)

@@ -6,7 +6,6 @@ from selenium.common.exceptions import NoSuchElementException
 
 from default.data_treatment import ExcelToData
 from .init_wp import MainWP
-VENCIMENTO_DAS = JsonDateWithImprove.vencimento_das()
 
 
 class PgdasCobrancaWP(MainWP, ExcelToData):
@@ -14,8 +13,6 @@ class PgdasCobrancaWP(MainWP, ExcelToData):
     def __init__(self):
         print('Este driver está localizado em MainWP, pois ele faz caminhos diferentes, checar depois')
         import pandas as pd
-        self.VENCIMENTO_DAS = VENCIMENTO_DAS
-        # input(self.VENCIMENTO_DAS)
         sh_names = 'G5_ISS', 'G5_ICMS'
 
         compt, excel_file_name = self.set_get_compt_file(1)
@@ -76,17 +73,17 @@ class PgdasCobrancaWP(MainWP, ExcelToData):
                             print(f'\033[1;34mCLIENTE: {CLIENTE}\033[m')
 
                             self.access_whatsapp_site()
-                            # responsavel = 'Silas Sala'
 
                             self.search_and_open(responsavel)
-
-                            self.write_wp_msg(f'{hora_da_mensagem}, {CLIENTE}! Sou da OESK Contábil, contador Osiel. '
-                                              '\n',
-                                              'É possível me enviar, durante esta semana, o faturamento para apuração do imposto '
-                                              'PGDAS do Simples Nacional? ',
-                                              f'Referente a {compt}. '
-                                              'Atenciosamente.'
-                                              )
+                            if CLIENTE != 'Leusivan Pereira Rodrigues':
+                                self.write_wp_msg(f'{hora_da_mensagem}, {CLIENTE}!',
+                                                  'A OESK Contábil deseja um *FELIZ ANO NOVO.* ',
+                                                  'Quando possível, durante a semana me enviar, por aqui ou via email '
+                                                  '(oesksbfserver@gmail.com OU oesk39@hotmail.com) o faturamento para apuração do imposto '
+                                                  'PGDAS do Simples Nacional',
+                                                  f'Referente a {compt}. '
+                                                  'Atenciosamente.'
+                                                  )
                             """
                             pdf_files = self.files_get_anexos(CLIENTE, year=True, file_type='pdf', upload=True)
                             print(len(pdf_files))
@@ -94,7 +91,6 @@ class PgdasCobrancaWP(MainWP, ExcelToData):
                             print(pdf_files)
                             # self.anexa_wp_files(*pdf_files)
                             """
-
                             sleep(5)
                             self.quit_session()
 

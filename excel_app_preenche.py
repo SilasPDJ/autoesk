@@ -2,7 +2,7 @@ import win32com.client as win32
 from pyperclip import paste
 from itertools import count
 import os
-
+from time import sleep
 from default.settings import SetPaths
 
 
@@ -148,9 +148,11 @@ class YouDidMe(VbaUtilities):
         super().__init__(filename='C:/_SIMPLES/MEXENDO.xlsx')
 
     def preenche_iss_valores(self):
+
+
         AS = self.AS
         xlapp = self.DIZPEXCEL
-
+        sleep(2)
         self.atiby_name('G5_ISS')
 
         for (e, row_row) in zip(count(start=0, step=1), self.get_filled_values('A:A')):
@@ -162,25 +164,25 @@ class YouDidMe(VbaUtilities):
                 cli_path = self._files_path_v2(cell_value)
                 # self.__client_path = cli_path
                 total, com_ret, sem_ret = self.tres_valores(cli_path)
-                print(total, com_ret)
+                com_ret = '0' if com_ret is None else com_ret
+                sem_ret = '0' if sem_ret is None else sem_ret
 
-                cell_address.Offset(1, npl('F')).Value = self.trata_3valores_ydm(sem_ret)
+                if com_ret == sem_ret:
+                    sem_ret = com_ret = 'zerou'
+
+                print(sem_ret, com_ret, total)
+
                 cell_address.Offset(1, npl('F')).Select()
+                if xlapp.ActiveCell.Value is None:
+                    cell_address.Offset(1, npl('F')).Value = self.trata_3valores_ydm(sem_ret)
 
-                xlapp.ActiveCell.Offset(1, 2).Value = com_ret
                 xlapp.ActiveCell.Offset(1, 2).Select()
+                if xlapp.ActiveCell.Value is None:
+                    xlapp.ActiveCell.Offset(1, 1).Value = self.trata_3valores_ydm(com_ret)
 
-                xlapp.ActiveCell.Offset(1, 2).Value = total if 0 != total is not None else 'zerou'
-                xlapp.ActiveCell.Offset(1, 2).Select()
-
-                # Tem que selecionar depois de jogar o value... Porque senão, não seleciona
-                # pq? Eu não sei, beleza
-
-                # AS.Cells(1, npl('P')).Value = 'Teste'
+                # removi o total, pois já tem a fórmula
 
     def checka_declaracoes_e_valida(self):
-        from time import sleep
-
         sheets = 'sem_mov', 'G5_ISS', 'G5_ICMS'
 
         for sheet in sheets:
@@ -210,8 +212,13 @@ class YouDidMe(VbaUtilities):
 
 ydm = YouDidMe()
 # ydm.atiby_name(2) # ---> WORKS!
-# ydm.preenche_iss_valores()
-ydm.checka_declaracoes_e_valida()
+for i in range(3):
+    try:
+        ydm.preenche_iss_valores()
+        break
+    except Exception:
+        pass
+# ydm.checka_declaracoes_e_valida()
 
 # Lendo excel sem pandas... direto do VBA
 # AS.Range('A:A').Select()

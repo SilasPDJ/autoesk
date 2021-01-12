@@ -20,14 +20,18 @@ from smtp_project import PgDasmailSender, SendDividas
 from pgdas_fiscal_oesk import PgdasAnyCompt
 from pgdas_fiscal_oesk import DownloadGinfessGui
 
-
 from pgdas_fiscal_oesk import GissGui
 from whatsapp import PgdasWP
-from whatsapp import  PgdasCobrancaWP
+from whatsapp import PgdasCobrancaWP
 
 from pgdas_fiscal_oesk.main_excel_manager.main_excel_manager import SheetPathManager
 from smtp_project.init_email.jsondate import JsonDateWithImprove
 # only static methods from JsonDateWithDataImprove
+
+Jj = JsonDateWithImprove()
+
+print('\033[1;33mVencimento DAS, atualizado: ', Jj.vencimento_das(), '\033[m')
+print('\033[1;31mVencimento Dívidas, atualizado: ', Jj.vencimento_dividas(), '\033[m')
 
 
 class FunctionsManager(QtCore.QObject):
@@ -230,9 +234,11 @@ class MainApp(MainDisplays, TuplasTabelas):
         generator_unpacking = self.el_grid_setting(1, 0, start_row=0)
         generator_only1 = list(generator_unpacking)[0]
         self.whenChangeComptCB = QtWidgets.QComboBox()
+        """
         for i in range(1, 5):
             compt, file = self.set_get_compt_file(i, past_only=True)
             self.whenChangeComptCB.addItem(compt)
+        """
         self.whenChangeComptCB.activated[str].connect(self._gui_cb_set_compt)
         self.whenChangeComptCB.activated.connect(self.rotines_update)
         # two connections

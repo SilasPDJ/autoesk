@@ -144,6 +144,9 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
                     # handelling select
                     compt = self.compt_and_filename()[0]
                     mes, ano = compt.split('-')
+
+                    driver.find_element_by_name('ano').clear()
+                    driver.find_element_by_name('ano').send_keys(ano)
                     mes = self.nome_mes(int(mes))
 
                     driver.find_element_by_xpath(f"//select[@name='mes']/option[text()='{mes}']").click()

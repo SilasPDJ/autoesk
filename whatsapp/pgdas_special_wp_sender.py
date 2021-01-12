@@ -4,7 +4,7 @@ from smtp_project.init_email import JsonDateWithImprove
 
 from default.data_treatment import ExcelToData
 from .init_wp import MainWP
-VENCIMENTO_DAS = JsonDateWithImprove.vencimento_das()
+vencimento_das = JsonDateWithImprove().vencimento_das()
 
 
 class PgdasWP(MainWP, ExcelToData):
@@ -12,7 +12,6 @@ class PgdasWP(MainWP, ExcelToData):
     def __init__(self):
         print('Este driver está localizado em MainWP, pois ele faz caminhos diferentes, checar depois')
         import pandas as pd
-        self.VENCIMENTO_DAS = VENCIMENTO_DAS
         # input(self.VENCIMENTO_DAS)
         sh_names = 'G5_ISS', 'G5_ICMS'
 
@@ -83,7 +82,7 @@ class PgdasWP(MainWP, ExcelToData):
 
                             self.write_wp_msg(f'{hora_da_mensagem}, {CLIENTE}! Sou da OESK Contábil, contador Osiel. '
                                               f'Esta mensagem é referente à apuração da competência {compt}',
-                                              f'Segue boleto PGDAS a vencer no dia {VENCIMENTO_DAS}, sobre valor de {__valor}. '
+                                              f'Segue boleto PGDAS a vencer no dia {vencimento_das}, sobre valor de {__valor}. '
                                               f'Segue também protocolos sobre a declaração. ATT',
                                               f'Também enviei em seu email: {after_READ["email"][i]}',
                                               'Atenciosamente.'

@@ -10,7 +10,7 @@ class OldPgDasmailSender(EmailExecutor):
         from smtp_project.init_email import JsonDateWithImprove as Jj
         from default.interact import press_keys_v4, press_key_b4
         super().__init__()
-        venc = self.VENCIMENTO_DAS
+        self.venc_das = self.vencimento_das()
         sh_names = 'sem_mov', 'G5_ISS', 'G5_ICMS'
 
         compt, excel_file_name = self.set_get_compt_file(1)
@@ -62,8 +62,8 @@ class OldPgDasmailSender(EmailExecutor):
                         das_message = self.write_message(message)
 
                         das_anx_files = self.files_get_anexos(CLIENTE)
-                        # self.main_send_email('silsilinhas@gmail.com', mail_header, das_message, das_anx_files)
-                        self.main_send_email(now_email, mail_header, das_message, das_anx_files)
+                        self.main_send_email('silsilinhas@gmail.com', mail_header, das_message, das_anx_files)
+                        # self.main_send_email(now_email, mail_header, das_message, das_anx_files)
                         """a partir do terceiro argumento, só há mensagens attachedas"""
 
             if sh_name == sh_names[-1]:
@@ -93,7 +93,7 @@ sobre faturamento de {ntt('span style="background-color:yellow; color:green"', '
             {
     f'''
     <h3>
-        -> A data de vencimento do boleto é: {ntt('span' + red, self.VENCIMENTO_DAS)}
+        -> A data de vencimento do boleto é: {ntt('span' + red, self.venc_das)}
     </h3>
     <h4> 
         -> O arquivo do boleto contém as iniciais "{ntt('span'+red,'PGDASD-DAS')}"
@@ -126,7 +126,8 @@ class PgDasmailSender(EmailExecutor):
         from smtp_project.init_email import JsonDateWithImprove as Jj
         from default.interact import press_keys_v4, press_key_b4
         super().__init__()
-        venc = self.VENCIMENTO_DAS
+
+        self.venc_das = self.vencimento_das()
         # sh_names = 'sem_mov', 'G5_ISS', 'G5_ICMS'
 
         if compt_file is None:
@@ -170,8 +171,8 @@ class PgDasmailSender(EmailExecutor):
                     das_message = self.write_message(message)
 
                     das_anx_files = self.files_get_anexos(_cliente)
-                    self.main_send_email(now_email, mail_header, das_message, das_anx_files)
-                    # self.main_send_email('silsilinhas@gmail.com', mail_header, das_message, das_anx_files)
+                    # self.main_send_email(now_email, mail_header, das_message, das_anx_files)
+                    self.main_send_email('silsilinhas@gmail.com', mail_header, das_message, das_anx_files)
                     """a partir do terceiro argumento, só há mensagens attachedas"""
 
                     print('Enviado...')
@@ -199,7 +200,7 @@ sobre faturamento de {ntt('span style="background-color:yellow; color:green"', '
             {
     f'''
     <h3>
-        -> A data de vencimento do boleto é: {ntt('span' + red, self.VENCIMENTO_DAS)}
+        -> A data de vencimento do boleto é: {ntt('span' + red, self.venc_das)}
     </h3>
     <h4> 
         -> O arquivo do boleto contém as iniciais "{ntt('span'+red,'PGDASD-DAS')}"

@@ -1,25 +1,67 @@
 import json
+
 # from smtp_project import *
 
 
 class JsonDateWithImprove:
-    def __init__(self, display=True):
-        """
-        :param display: display prints, USE FALSE FOR STATIC METHODS
-        """
-        # se eu colocar a class parent de parâmetro no super, ele vai ignorar o init dela
-        self.VENCIMENTO_DAS = self.das_venc_data()[0]
-        if display:
-            # Ao ser chamado, ele ta chamando 2x devido às instâncias, mas não se preocupe, só vencimento das passa False de argumento!
-            self.last_portal_update()
-            print(f'Data de vencimento (PGDAS): {self.VENCIMENTO_DAS} (JsonDateWithImprove)')
-        # input(self.VENCIMENTO_DAS)
 
-    @staticmethod
-    def vencimento_das(n=0):
+    def vencimento_das(self):
         # pega o vencimento do site pra puxar em outro lugar, muito legal
-        self = JsonDateWithImprove(False)
-        return self.das_venc_data()[n]
+        if self.check_venc_precisao():
+            return self.das_venc_data()[0]
+
+        return self.__calcula_venc_precisao()
+
+    def vencimento_dividas(self):
+        # pega o vencimento do site pra puxar em outro lugar, muito legal
+        return self.__calcula_venc_precisao(False)
+
+    def __calcula_venc_precisao(self, das_or_dividas=True):
+        """
+        # finalmente cheguei ao que eu queria
+        :param das_or_dividas: True: se trata do DAS, False=> se trata das dívidas
+        não checka => False e vai para a etapa de decidir o vencimento no último dia útil...
+        :return: False => Site não está de acordo com o vencimento atual, preencha manualmente uma vez;
+                 True  => Está de acordo, exemplo, mes de agora é 01, logo vence 30/01... Assim adiante
+        """
+        from dateutil.relativedelta import relativedelta
+        from datetime import datetime as dt
+        from datetime import date, timedelta
+        m = dt.now().month
+        try:
+            from default.settings.now import Now
+        except (ImportWarning, ImportError) as e:
+            raise e('Erro de import...')
+        else:
+
+            def __business_day(calcday):
+                while True:
+                    if calcday.weekday() == 6:
+                        calcday += timedelta(days=1)
+                    elif calcday.weekday() == 5:
+                        calcday -= timedelta(days=1)
+                    else:
+                        # calc_days
+                        return Now.date2date_brazil(calcday)
+
+            date_explicit = date(dt.now().year, m+1, 1)
+            # calcula o último dia util do mês (sendme)
+            calc_day = date_explicit - timedelta(days=1)
+
+            if das_or_dividas is False:
+                # DÍVIDAS
+                calc_day = calc_day - relativedelta(days=1)
+                return __business_day(calc_day)
+            else:
+                # DAS
+                calc_day = calc_day + relativedelta(day=20)
+                """    
+                for i in range(1, 13):
+                    print(__business_day(date(2021, i, 20)))
+                print(__business_day(calc_day))
+                input('test')
+                """
+                return __business_day(calc_day)
 
     def inside_me_others(self, inside_me, *others):
         """
@@ -163,6 +205,27 @@ class JsonDateWithImprove:
                 return att
 
         # return True pra de acordo e False pra nova atualização????????????????????????????
+
+    def check_venc_precisao(self):
+        """
+        Checka se a precisão do vencimento NO PORTAL está de acordo com a competência
+        :return:
+        """
+        from dateutil.relativedelta import relativedelta
+        from datetime import datetime as dt
+        from datetime import date, timedelta
+        m = dt.now().month
+        date_explicit = date(dt.now().year, m, 1)
+
+        venc_anterior = date_explicit - relativedelta(months=1)
+
+        vd = self.das_venc_data()[0]
+
+        VENCIMENTO_DAS_mes = vd[3:5]
+        # Se ainda está ultrapassado NA WEB...
+        if int(VENCIMENTO_DAS_mes) == int(venc_anterior.month):
+            return False
+        return True
 
     def date_only(self, venc_text):
         """

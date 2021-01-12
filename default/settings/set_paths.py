@@ -155,8 +155,11 @@ class SetPaths(Now):
             m_cont = m_cont * (-1) if m_cont > 0 else m_cont
             y_cont = y_cont * (-1) if y_cont > 0 else y_cont
             # force to be negative
+        lastmonth = month + m_cont == 0
+        if lastmonth:
+            year -= 1
         month = month + m_cont if m_cont < month and 0 < (m_cont + month) <= 12 \
-            else IndexError('m_cont must not be greater than 12 nor greater than dt.now().month')
+            else 12 if lastmonth else IndexError('m_cont must not be greater than 12 nor greater than dt.now().month')
         if not isinstance(month, int):
             raise month
 
@@ -187,7 +190,6 @@ class SetPaths(Now):
         year += y_cont
         compt = f'{month:02d}{sep}{year}'
         return compt
-
 
     # @staticmethod
     def get_last_business_day_of_month(self, month=None, year=None):
@@ -223,13 +225,18 @@ class SetPaths(Now):
         :return: ÚLTIMO DIA DO MES
         """
         from datetime import date, timedelta
+        from dateutil.relativedelta import relativedelta
 
         compt, file_name = self.compt_and_filename()
         mes, ano = compt.split('-') if '-' in compt else '/'
-        mes, ano = int(mes) + 1, int(ano)
+        mes, ano = int(mes), int(ano)
 
-        last_now = date(ano, mes, 1) - timedelta(days=1)
-        first_now = date(ano, mes-1, 1)
+        #  - timedelta(days=1)
+        # + relativedelta(months=1)
+
+        last_now = date(ano, mes, 1) + relativedelta(months=1)
+        last_now -= timedelta(days=1)
+        first_now = date(ano, mes, 1)
 
         z, a = last_now, first_now
         br1st = f'{a.day:02d}{sep}{a.month:02d}{sep}{a.year}'

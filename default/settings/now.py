@@ -41,3 +41,14 @@ class Now:
             return nomes[0]
         else:
             return nomes[mes]
+
+    @staticmethod
+    def date2date_brazil(dd, sep='/'):
+        try:
+            dia = dd.day
+            mes = dd.month
+            ano = dd.year
+        except (AttributeError, NameError) as e:
+            raise e('Deu ruim!!! date2date_brazil')
+        else:
+            return f'{dia:02d}{sep}{mes:02d}{sep}{ano}'
