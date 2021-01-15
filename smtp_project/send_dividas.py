@@ -8,7 +8,7 @@ class SendDividas(EmailExecutor):
         import pandas as pd
         super().__init__()
 
-        self.compt_setted = self.set_compt_only(-11, 1, past_only=False)
+        self.compt_setted = self.get_compt_only(-11, 1, past_only=False)
         # venc_dividas = self.das_venc_data()[3]
 
         # self.venc_boletos = self.get_dividas_vencimento(self.compt_setted)

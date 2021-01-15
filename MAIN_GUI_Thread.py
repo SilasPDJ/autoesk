@@ -348,7 +348,7 @@ class MainApp(MainDisplays, TuplasTabelas):
         if v is not None:
             # print(f'Oi, sou o número da competência que errei: {v}')
             # observação, se o mês atual for adicionado, remove esse "+1"
-            self.set_get_compt_file(v+1)
+            self.set_get_compt_file(v+1, file_type=None)
 
     def center(self):
         qr = self.frameGeometry()

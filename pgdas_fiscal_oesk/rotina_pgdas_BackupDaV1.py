@@ -20,12 +20,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
 
         sh_names = 'sem_mov', 'G5_ISS', 'G5_ICMS'
         if compt_file is None:
-
-            """# Atualização, 14/01/2021"""
-            # self.set_compt_only() == self.set_get_compt_file(file_type=None)
-            # a = self.set_get_compt_file(file_type=None, m_cont=12)
-            # descobri como fazer..
-
+            # compt, excel_file_name = self.get_atual_compt_set(1)
             compt_file = self.compt_and_filename()
             compt, excel_file_name = compt_file
         else:
@@ -191,21 +186,22 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                         self.loga_simples(CNPJ, CPF, CodSim, CLIENTE)
                         self.current_url = driver.current_url
                         self.opta_script() if self.m() == 12 else None
+                        """
+                        if JA_DECLARED == 'GERA31':
+                            self.simples_and_ecac_utilities(1, compt)
 
-                    self.compt_typist(compt)
+                        input('CUIDADO COM A UNICA DECLARAÇÃO')
+                        """
 
-                    # faz outras declaracoes se necessarias
-                    if self.check_make_pendencies():
-                        for compt_p2 in self.check_make_pendencies():
-                            print(compt_p2, 'compt_p2')
-                            self.compt_typist(compt_p2, '/'.join(driver.current_url.split('/')[:-1]))
-                            self.DECLARA(compt_p2, sh_names.index(sh_name), '', False,
-                                         cont_ret_n_ret)
-                            # # CRIAR NOVA PASTA, SALVAR NO LUGAR CERTO POIS NÃO TA SALVANDO ENFIM, CONFERIR O DECLARA ONDE ESTÁ SALVANDO
-                        self.compt_typist(compt, '/'.join(driver.current_url.split('/')[:-1]))
-                    else:
-                        self.compt_typist(compt)
+                    print('ÚNICA declaração')
 
+                    print('JA_DECLARED não -> prossegue')
+                    driver.execute_script("""window.location.href += 'declaracao?clear=1'""")
+                    self.tags_wait('body', 'input')
+                    driver.implicitly_wait(10)
+                    periodo = driver.find_element_by_id('pa')
+                    periodo.send_keys(compt)
+                    self.find_submit_form()
                     self.DECLARA(compt, sh_names.index(sh_name), VALOR, my_new_3valores, cont_ret_n_ret)
 
                     print('CLOSE DRIVE EM 5 SEGS')
@@ -214,6 +210,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
 
                 elif cont_inteligence == -1:
                     if JA_DECLARED not in ['S', 'OK']:
+
 
                         print('estou em sem movimento, vou arrumar ainda')
 
@@ -234,21 +231,15 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                         self.opta_script() if self.m() == 12 else None
 
                         VALOR = 'zerou'
-                        print('!!!ZEROU!!!')
-
-                        self.compt_typist(compt)
-                        # faz outras declaracoes se necessarias
-                        if self.check_make_pendencies():
-                            for compt_p2 in self.check_make_pendencies():
-                                print(compt_p2, 'compt_p2')
-                                self.compt_typist(compt_p2, '/'.join(driver.current_url.split('/')[:-1]))
-                                self.DECLARA(compt_p2, sh_names.index(sh_name), '', False,
-                                             cont_ret_n_ret)
-                            self.compt_typist(compt, '/'.join(driver.current_url.split('/')[:-1]))
-                        else:
-                            self.compt_typist(compt)
-
+                        print('JA_DECLARED não -> prossegue')
+                        driver.execute_script("""window.location.href += 'declaracao?clear=1'""")
+                        self.tags_wait('body', 'input')
+                        driver.implicitly_wait(10)
+                        periodo = driver.find_element_by_id('pa')
+                        periodo.send_keys(compt)
+                        self.find_submit_form()
                         self.DECLARA(compt, sh_names.index(sh_name), VALOR, 'zerou', cont_ret_n_ret)
+
 
                 elif not intelligence_existence:
                     # se não existir vai criar.
@@ -477,58 +468,6 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
         driver.get(
             'https://sinac.cav.receita.fazenda.gov.br/simplesnacional/aplicacoes/atspo/pgdasd2018.app/')
         driver.implicitly_wait(5)
-
-    def compt_typist(self, compt, came_from=None):
-        """
-        :param compt: competência, format: 'MM-YYYY'
-        :param came_from: link where it comes from (multiples DECLARAÇÕES)
-        :return: the unica declaração
-        """
-        driver = self.driver
-        print('ÚNICA DECLARACAO')
-        print('JA_DECLARED não -> prossegue')
-        onlif = 'declaracao'
-        if came_from:
-            came_from = came_from.replace(came_from[0], '') if came_from[0] == '/' else came_from
-            driver.get(came_from+'/'+onlif)
-        else:
-            if onlif not in driver.current_url:
-                driver.execute_script(f"""window.location.href += '{onlif}?clear=1'""")
-        self.tags_wait('body', 'input')
-        driver.implicitly_wait(10)
-        sleep(2.5)
-        try:
-            periodo = driver.find_element_by_id('pa')
-            periodo.send_keys(compt)
-
-            self.find_submit_form()
-        except NoSuchElementException:
-            pass
-
-    def check_make_pendencies(self):
-        driver = self.driver
-        try:
-            error_msg = driver.find_elements_by_class_name('errorMsg')
-            if len(error_msg) == 2:
-                compt_pendencias = error_msg[0].text
-                # tam_ano = len(str(self.y()))
-                compt_pendencias = compt_pendencias.split(':')
-                compt_pendencias = ''.join(compt_pendencias).split(',')
-                compt_pendencias = ''.join(compt_pendencias).split('.')
-                compt_pendencias = ''.join(compt_pendencias).split(' ')
-                compt_pendencias = [vv for vv in compt_pendencias if '/' in vv]
-                compt_pendencias = [vv.replace('/', '-') for vv in compt_pendencias]
-                print(compt_pendencias)
-
-                if len(compt_pendencias) <= 11:
-                    print('\033[1;31mPOR PADRÃO, check_make_pendencies irá zerar o valor...\033[m')
-                    return compt_pendencias
-                else:
-                    return False
-                    # raise IOError('FAZER COMPETÊNCIAS PASSADAS...')
-
-        except NoSuchElementException as e:
-            raise e
 
     def DECLARA(self, compt, sheet_id, valor_declarado, my_new_3valores, cont_ret_n_ret):
         driver = self.driver
@@ -851,5 +790,3 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
             driver.get(self.current_url)
             driver.execute_script("""window.location.href += '/declaracao?clear=1'""")
             sleep(2.5)
-
-

@@ -136,35 +136,21 @@ class SetPaths(Now):
                 sh_management.new_xlsxcompt_from_padrao_if_not_exists()
                 # Cria planilha se não existente
 
-    def set_get_compt_file(self, m_cont=-1, y_cont=0, past_only=True, file_type='xlsx'):
+    def set_get_compt_file(self=None, m_cont=0, y_cont=0, past_only=True, file_type='xlsx'):
         """
         :param int m_cont: quantos meses para trás? (0 atual)
         :param int y_cont: quantos anos para trás?  (0 atual)
-        :param any file_type: None -> (((DOES NOT))) update self.__get_atual_competencia_file
-        :param bool past_only: True -> somente passado (multiplica por -1), False: não faz multiplicação
+                :param bool past_only: True -> somente passado (multiplica por -1), False: não faz multiplicação
+        :param any file_type: None -> (((DOES NOTHING))) update self.__get_atual_competencia_file
+
         :return: competencia & excel_path
 
         # responsivo, retorna também o caminho e a competencia para a variável PATH de self._files_path_v2
 
         """
-        from datetime import datetime as dt
-        month = dt.now().month
-        year = dt.now().year
+        compt = self.get_compt_only(m_cont, y_cont, past_only)
         path = self.__file_wtp_oesk(0)
-        if past_only:
-            m_cont = m_cont * (-1) if m_cont > 0 else m_cont
-            y_cont = y_cont * (-1) if y_cont > 0 else y_cont
-            # force to be negative
-        lastmonth = month + m_cont == 0
-        if lastmonth:
-            year -= 1
-        month = month + m_cont if m_cont < month and 0 < (m_cont + month) <= 12 \
-            else 12 if lastmonth else IndexError('m_cont must not be greater than 12 nor greater than dt.now().month')
-        if not isinstance(month, int):
-            raise month
 
-        year += y_cont
-        compt = f'{month:02d}-{year}'
         if file_type:
             excel_file_path_updated = r'{}/{}.{}'.format(path, compt, file_type)
             with open(self.__get_atual_competencia_file(), 'w') as f:
@@ -174,20 +160,24 @@ class SetPaths(Now):
             return compt, excel_file_path_updated
         return compt
 
-    def set_compt_only(self, m_cont=-1, y_cont=0, past_only=True, sep='-'):
+    def get_compt_only(self, m_cont=-1, y_cont=0, past_only=True, sep='-'):
         from datetime import datetime as dt
+        from datetime import date, timedelta
+        from dateutil.relativedelta import relativedelta
+
         month = dt.now().month
         year = dt.now().year
+
+        now_date = date(year, month, 1)
+
         if past_only:
             m_cont = m_cont * (-1) if m_cont > 0 else m_cont
             y_cont = y_cont * (-1) if y_cont > 0 else y_cont
             # force to be negative
-        month = month + m_cont if m_cont < month and 0 < (m_cont + month) <= 12 \
-            else IndexError('m_cont must not be greater than 12 nor greater than dt.now().month')
-        if not isinstance(month, int):
-            raise month
 
-        year += y_cont
+        now_date = now_date + relativedelta(months=m_cont)
+        now_date = now_date + relativedelta(years=y_cont)
+        month, year = now_date.month, now_date.year
         compt = f'{month:02d}{sep}{year}'
         return compt
 
