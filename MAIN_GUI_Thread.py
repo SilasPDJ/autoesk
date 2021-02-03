@@ -134,7 +134,7 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
             w_cliente = ''.join(custom_values[0])
             # input(_cliente)
 
-            op_path = self._files_path_v2(w_cliente, wexplorer_tup=self._this_compt_and_file)
+            op_path = self._files_path_v3(w_cliente, wexplorer_tup=self._this_compt_and_file)
             Popen(f'explorer "{op_path}"')
         print('Fim')
 

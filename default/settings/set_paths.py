@@ -5,7 +5,15 @@ class SetPaths(Now):
     # the class Now IS NOT large
 
     def __get_atual_competencia_file(self):
-        return 'get_atual_competencia.txt'
+        import os
+
+        f = '\\get_atual_competencia.txt'
+        dir_only = os.path.dirname(__file__)
+        project_dir = '\\'.join(dir_only.split('\\')[:-2])
+        # Contar de trás pra frente, pois vai que um dia eu coloque ele num diretorio raiz
+
+        tot = project_dir + f
+        return tot
 
     def files_get_anexos(self, client, file_type='pdf', year=True, upload=False):
         """
@@ -22,7 +30,7 @@ class SetPaths(Now):
 
         # compt, excel_file_name = self.compt_and_filename()
         compt_and_file = self.compt_and_filename()
-        path = self._files_path_v2(client, year=year, wexplorer_tup=compt_and_file)
+        path = self._files_path_v3(client, wexplorer_tup=compt_and_file)
         # print(path, '\nPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATH', year)
         volta = os.getcwd()
 
@@ -62,7 +70,7 @@ class SetPaths(Now):
             compt_and_file_anexos = self.compt_and_filename()
         else:
             compt_and_file_anexos = wexplorer_tup
-        path = self._files_path_v2(client, year=year, wexplorer_tup=compt_and_file_anexos)
+        path = self._files_path_v3(client, wexplorer_tup=compt_and_file_anexos)
         # print(path, '\nPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATH', year)
         volta = os.getcwd()
 
@@ -96,67 +104,83 @@ class SetPaths(Now):
                 compt, excel_file_name = f.read().splitlines()
 
         except FileNotFoundError:
-            raise FileNotFoundError('\033[1;31mfile not existence\033[m')
+            # raise FileNotFoundError('\033[1;31mfile not existence\033[m')
+            self.set_get_compt_file()
         else:
             return compt, excel_file_name
 
-    def __file_wtp_oesk(self, n=-1):
-        """
-        :param int n:
-        :return: Create sheets path if not exists and new oesk_compt_excel file from the default if not exists also
-        """
+    def file_wtp_only1(self):
         import os
-        from pgdas_fiscal_oesk.main_excel_manager.main_excel_manager import SheetPathManager
-
         filepath = os.path.realpath(__file__)
         os.path.join('\\'.join(filepath.split('\\')[:-1]))
+        file_with_name = 'with_titlePATH.txt'
+        try:
+            f = open(f'{file_with_name}', 'r')
+            a = f.read()
+            a = a.split('/')
+            a = '/'.join(a)
+            returned = a
+            f.close()
+        except FileNotFoundError:
+            FileExistsError('WITH TITLE PATH NOT EXISTENTE ')
+            returned = self.select_sheets_path_if_not_exists()
+
+        return returned
+
+    def select_sheets_path_if_not_exists(self):
+        from tkinter import Tk, filedialog, messagebox
+        root = Tk()
+        root.withdraw()
+        root = Tk()
+        root.withdraw()
 
         file_with_name = 'with_titlePATH.txt'
-        sh_management = SheetPathManager(file_with_name)
+        # sh_management = SheetPathManager(file_with_name)
 
-        while True:
-            try:
-                f = open(f'{file_with_name}', 'r')
-                a = f.read()
-                a = a.split('/')
-                if n != 0:
-                    a = a[:n]
-                else:
-                    a = a[:]
-                a = '/'.join(a)
-                returned = a
-                f.close()
-            except FileNotFoundError:
-                FileExistsError('WITH TITLE PATH NOT EXISTENTE ')
-                sh_management.select_sheets_path_if_not_exists()
+        way = None
+        while way is None:
+            way = filedialog.askdirectory(title='SELECIONE ONDE ESTÃO SUAS PLANILHAS')
+            if len(way) <= 0:
+                way = None
+                resp = messagebox.askokcancel('ATENÇÃO!', message='Favor, selecione uma pasta ou clique em CANCELAR.')
+                if not resp:
+                    break
             else:
-                return returned
-            finally:
-                # executes even after return
-                sh_management.new_xlsxcompt_from_padrao_if_not_exists()
-                # Cria planilha se não existente
+                wf = open(file_with_name, 'w')
+                wf.write(way)
+                root.quit()
+                return way
 
-    def set_get_compt_file(self=None, m_cont=0, y_cont=0, past_only=True, file_type='xlsx'):
+    def set_get_compt_file(self=None, m_cont=0, y_cont=0, past_only=True, file_type='xlsx', open_excel=False):
         """
         :param int m_cont: quantos meses para trás? (0 atual)
         :param int y_cont: quantos anos para trás?  (0 atual)
                 :param bool past_only: True -> somente passado (multiplica por -1), False: não faz multiplicação
         :param any file_type: None -> (((DOES NOTHING))) update self.__get_atual_competencia_file
-
+        :param open_excel: if True => OPENS EXCEL FILE
         :return: competencia & excel_path
 
         # responsivo, retorna também o caminho e a competencia para a variável PATH de self._files_path_v2
 
         """
         compt = self.get_compt_only(m_cont, y_cont, past_only)
-        path = self.__file_wtp_oesk(0)
 
+        path = self.file_wtp_only1()
+
+        # é o mesmo do de cima, mas to tentando
         if file_type:
             excel_file_path_updated = r'{}/{}.{}'.format(path, compt, file_type)
             with open(self.__get_atual_competencia_file(), 'w') as f:
                 for line in [compt, excel_file_path_updated]:
                     # print(compt)
                     f.write(line + '\n')
+
+            from pgdas_fiscal_oesk.main_excel_manager.main_excel_manager import SheetPathManager
+            spm = SheetPathManager()
+            spm.new_xlsxcompt_from_padrao_if_not_exists((compt, excel_file_path_updated))
+            if open_excel:
+                spm.save_after_changes((compt, excel_file_path_updated))
+
             return compt, excel_file_path_updated
         return compt
 
@@ -234,7 +258,7 @@ class SetPaths(Now):
         print(br1st, brlast)
         return br1st, brlast
 
-    def _files_path_v2(self, pasta_client, year=True, wexplorer_tup=None):
+    def _files_path_v3(self, pasta_client, wexplorer_tup=None):
         """
         :param pasta_client: client_name
         :param year: True -> folder contains year, False -> folder DOES NOT contain year
@@ -249,25 +273,19 @@ class SetPaths(Now):
         ano = [compt.split(v)[-1] for v in compt if not v.isdigit()]
         ano = ano[0]
 
-        possible_folders = ['G5', 'passa_valor', 'sem_mov', '_Dívidas']
+        possible_folders = ['_Dívidas']
         # preciso melhorar, deixar mais responsivo talvez, porém, ele já tá contando com dívidas e responsivo com anos
 
         PATH = '/'.join(excel_file_name.split('/')[:-2])
         pasta_client = pasta_client.strip()
         volta = os.getcwd()
-        for folder in possible_folders:
+
+        for acp in [PATH, ano, compt, pasta_client]:
             try:
-                os.chdir(PATH)
-                os.chdir(r'{}'.format(folder))
-                if year:
-                    os.chdir(r'{}/{}/{}'.format(pasta_client, ano, compt))
-                else:
-                    os.chdir(r'{}/{}'.format(pasta_client, compt))
-                # print('inside _path loop')
-                print(os.getcwd())
-                break
+                os.chdir(acp)
             except FileNotFoundError:
-                pass
+                os.mkdir(acp)
+                os.chdir(acp)
 
         salva_path = os.getcwd()
         # print(salva_path)

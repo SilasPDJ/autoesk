@@ -159,7 +159,7 @@ class YouDidMe(VbaUtilities):
                 cell_value, cell_address = row_row
                 cell_address = AS.Range(cell_address)
 
-                cli_path = self._files_path_v2(cell_value)
+                cli_path = self._files_path_v3(cell_value)
                 # self.__client_path = cli_path
                 total, com_ret, sem_ret = self.tres_valores(cli_path)
                 print(total, com_ret)
@@ -191,7 +191,7 @@ class YouDidMe(VbaUtilities):
                     cell_value, cell_address = row_row
                     cell_address = self.AS.Range(cell_address)
 
-                    cli_path = self._files_path_v2(cell_value)
+                    cli_path = self._files_path_v3(cell_value)
 
                     celE = cell_address.Offset(1, npl('E'))
                     celE.Select()

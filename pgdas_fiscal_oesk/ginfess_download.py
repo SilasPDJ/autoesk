@@ -4,7 +4,7 @@ from default.settings import SetPaths
 from default.data_treatment import ExcelToData
 
 from default.webdriver_utilities.pre_drivers import ginfess_driver
-
+from openpyxl import Workbook
 
 class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
 
@@ -17,7 +17,7 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
         if compt_file is None:
             # compt, excel_file_name = self.set_get_compt_file(1)
             compt_file = self.set_get_compt_file(1)
-
+        print('teste ginfess')
         json_file = Jj.load_json(fname)
         # input(len(after_READ['CNPJ']))
         print('-='*30)
@@ -40,7 +40,7 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
             _city = ''.join(values[-4])
             print(_ginfess_cod, _city)
             # mesma coisa de self.any_to_str, só que ele aceita args desempacotados
-            client_path = self._files_path_v2(_cliente, wexplorer_tup=compt_file)
+            client_path = self._files_path_v3(_cliente, wexplorer_tup=compt_file)
             self.client_path = client_path
 
             # Checa se já existe certificado
@@ -451,16 +451,20 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
         len_tables = prossigo[1]
         # input(f'{prossigo}, {len_tables}, {_prossigo}')
         sleep(5)
-        from openpyxl import Workbook
         if _prossigo:
-            arq = f'relação_notas_canceladas-{cliente}.xlsx'
+            arq = f'rnc-{cliente}.xlsx'
+            if len(arq) > 32:
+                arq = f'rnc-{cliente.split()[0]}.xlsx'
             x, y = pygui.position()
             arq = f'{client_path}/{arq}' if '/' in client_path else f'{client_path}\\{arq}'
             # not really necessary, but i want to
             try:
                 wb = Workbook()
                 sh_name = client_path.split('/')[-1] if '\\' not in client_path else client_path.split('\\')[-1]
-                ws1 = wb.create_sheet(sh_name)
+                sh_name = sh_name[:10]
+                # limitando
+                wb.create_sheet(sh_name)
+                wb.active = 1
                 wb.remove(wb['Sheet'])
                 wb.save(arq)
             except FileExistsError:

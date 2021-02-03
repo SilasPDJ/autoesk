@@ -8,8 +8,8 @@ class PgDasmailSender(EmailExecutor):
 
     def __init__(self, fname, compt_file: tuple):
         """
-
-        :param compt_file:
+        :param fname: nome do json
+        :param compt_file: compt_file...
         """
         from smtp_project.init_email import JsonDateWithImprove as Jj
         from default.interact import press_keys_v4, press_key_b4

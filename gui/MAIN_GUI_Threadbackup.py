@@ -128,7 +128,7 @@ class MainDisplays(QWidget, SetPaths, ExcelToData):
             # print(custom_values[0])
             _cliente = ''.join(custom_values[0])
             # input(_cliente)
-            op_path = self._files_path_v2(_cliente)
+            op_path = self._files_path_v3(_cliente)
             Popen(f'explorer "{op_path}"')
             # exec(b)
 

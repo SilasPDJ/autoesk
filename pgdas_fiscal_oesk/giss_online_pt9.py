@@ -49,7 +49,7 @@ class GissGui(WDShorcuts, SetPaths, ExcelToData):
             values = [v.values() for v in list_with_dic[:]]
             _cliente, _feito, _logar, self._construcao, _notes = self.any_to_str(*values[:5])
 
-            client_path = self._files_path_v2(_cliente, wexplorer_tup=compt_file)
+            client_path = self._files_path_v3(_cliente, wexplorer_tup=compt_file)
             self.client_path = client_path
             self.volta = getcwd()
 

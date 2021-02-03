@@ -59,7 +59,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                 cont_ret_n_ret = i
 
                 self.now_person = CLIENTE
-                self.client_path = self._files_path_v2(CLIENTE, wexplorer_tup=compt_file)
+                self.client_path = self._files_path_v3(CLIENTE, wexplorer_tup=compt_file)
 
                 # if not existe o arquivo my_wised_check_path_file -> no momento atual, existe
                 def cria_inteligence():

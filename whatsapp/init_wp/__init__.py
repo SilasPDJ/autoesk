@@ -106,7 +106,7 @@ class MainWP(WDShorcuts, SetPaths):
         :return:
         """
         driver = self.driver
-        self.click_elements_by_tt('Procurar ou começar uma nova conversa')
+        self.click_elements_by_tt('Pesquisar ou começar uma nova conversa')
 
         self.send_keys_anywhere('')
         driver.implicitly_wait('2.5')
@@ -330,7 +330,7 @@ class MainWP(WDShorcuts, SetPaths):
         else:
             if client is None:
                 raise AttributeError
-            path = self._files_path_v2(client)
+            path = self._files_path_v3(client)
             new_path = '\\'.join(__padrao.split('\\')[:-1])
             profile_path = f'{new_path}\\__PROFILES__\\{str(client)}'
             try:

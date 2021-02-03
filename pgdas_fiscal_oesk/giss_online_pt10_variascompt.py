@@ -27,7 +27,7 @@ sh_name = 'GISS'
 class GissGui(WDShorcuts, SetPaths, ExcelToData):
     from selenium.webdriver.common.by import By
 
-    def __init__(self, fname, firstcompt):
+    def __init__(self, fname, firstcompt=None):
         from os import chdir, path, getcwd
         from time import sleep
         from smtp_project.init_email import JsonDateWithImprove as Jj
@@ -268,10 +268,9 @@ class GissGui(WDShorcuts, SetPaths, ExcelToData):
 
     def ate_atual_compt(self, first_compt:str):
 
-
-        comp1st = f'{first_compt[:2]}-{first_compt[2:]}' if len(first_compt) == len(str(self.y()))+2 else lastcompt
-
         compt_atual = self.compt_and_filename()[0]
+        comp1st = f'{first_compt[:2]}-{first_compt[2:]}' if len(first_compt) == len(str(self.y()))+2 else compt_atual
+
         mes_atual, ano_atual = compt_atual.split('-')
         mes1st, ano1st = comp1st.split('-')
         max_month = 13

@@ -77,7 +77,6 @@ class PgdasCobrancaWP(MainWP, ExcelToData):
                             self.search_and_open(responsavel)
                             if CLIENTE != 'Leusivan Pereira Rodrigues':
                                 self.write_wp_msg(f'{hora_da_mensagem}, {CLIENTE}!',
-                                                  'A OESK Contábil deseja um *FELIZ ANO NOVO.* ',
                                                   'Quando possível, durante a semana me enviar, por aqui ou via email '
                                                   '(oesksbfserver@gmail.com OU oesk39@hotmail.com) o faturamento para apuração do imposto '
                                                   'PGDAS do Simples Nacional',

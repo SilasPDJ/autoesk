@@ -97,8 +97,9 @@ class JsonDateWithImprove:
         try:
             with open(file, 'r') as f:
                 return json.load(f)
-        except (decoder.JSONDecodeError, FileNotFoundError):
-            return False
+        except (decoder.JSONDecodeError, FileNotFoundError) as e:
+            raise e
+            # return False
     @staticmethod
     def dump_json(objeto, file, ensure_ascii=False):
         """
