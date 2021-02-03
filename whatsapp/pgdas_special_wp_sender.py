@@ -71,7 +71,7 @@ class PgdasWP(MainWP, ExcelToData):
                             driver = self.driver
                             super().__init__(driver=driver)
                             print(f'\033[1;34mCLIENTE: {CLIENTE}\033[m')
-                            pdf_files = self.files_get_anexos(CLIENTE, year=True, file_type='pdf', upload=True)
+                            pdf_files = self.files_get_anexos(CLIENTE, file_type='pdf', upload=True)
                             print(len(pdf_files))
 
                             print(pdf_files)

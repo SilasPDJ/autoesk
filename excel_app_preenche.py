@@ -6,15 +6,6 @@ from time import sleep
 from default.settings import SetPaths
 
 
-def first():
-    xl = win32.gencache.EnsureDispatch('Excel.Application')
-    xl.Visible = True
-    ss = xl.Workbooks.Add()
-    wb = ss.ActiveSheet
-    ActiveSheet = wb
-    ActiveSheet.Cells(5, 4).Select()
-
-
 def npl(letra):
     # npl = numero_pra_letra
     letra = letra.upper()
@@ -95,6 +86,7 @@ class VbaUtilities(SetPaths):
     DIZPEXCEL.Visible = True
 
     def __init__(self, filename):
+        self.filename = filename
         self.wb = self.DIZPEXCEL.Workbooks.Open(filename)
         self.AS = self.wb.ActiveSheet
 
@@ -149,7 +141,6 @@ class YouDidMe(VbaUtilities):
 
     def preenche_iss_valores(self):
 
-
         AS = self.AS
         xlapp = self.DIZPEXCEL
         sleep(2)
@@ -181,6 +172,7 @@ class YouDidMe(VbaUtilities):
                     xlapp.ActiveCell.Offset(1, 1).Value = self.trata_3valores_ydm(com_ret)
 
                 # removi o total, pois já tem a fórmula
+        self.DIZPEXCEL.Quit()
 
     def checka_declaracoes_e_valida(self):
         sheets = 'sem_mov', 'G5_ISS', 'G5_ICMS'
@@ -205,26 +197,9 @@ class YouDidMe(VbaUtilities):
                         else:
                             pass
                             # celE.Value = 'OK'
-
-
-
-
-
-ydm = YouDidMe()
-# ydm.atiby_name(2) # ---> WORKS!
-for i in range(3):
-    try:
-        ydm.preenche_iss_valores()
-        break
-    except Exception:
-        pass
-# ydm.checka_declaracoes_e_valida()
-
-# Lendo excel sem pandas... direto do VBA
-# AS.Range('A:A').Select()
-
-
-
+        self.wb.Close()
+        # self.wb.Close(SaveChanges=False)
+        self.DIZPEXCEL.Quit()
 
 
 

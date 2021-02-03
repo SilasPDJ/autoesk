@@ -110,8 +110,8 @@ class WDShorcuts:
 
     def find_submit_form(self):
         driver = self.__arg_driver
-        self.tags_wait('form')
         driver.implicitly_wait(5)
+        self.tags_wait('form')
         driver.find_element_by_tag_name("form").submit()
 
     def get_sub_site(self, url, main_url):

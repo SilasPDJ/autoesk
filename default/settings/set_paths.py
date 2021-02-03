@@ -15,7 +15,7 @@ class SetPaths(Now):
         tot = project_dir + f
         return tot
 
-    def files_get_anexos(self, client, file_type='pdf', year=True, upload=False):
+    def files_get_anexos(self, client, file_type='pdf', upload=False):
         """
         :param client: nome da pasta onde estão os arquivos organizados por data dd-mm-yyyy
         :param year: True -> folder contains year, False -> folder DOES NOT contain year
@@ -51,7 +51,7 @@ class SetPaths(Now):
         print(os.getcwd())
         return pdf_files
 
-    def files_get_anexos_v2(self, client, file_type='pdf', wexplorer_tup=None, year=True, upload=False):
+    def files_get_anexos_v2(self, client, file_type='pdf', wexplorer_tup=None, upload=False):
         """
         :param client: nome da pasta onde estão os arquivos organizados por data dd-mm-yyyy
         :param year: True -> folder contains year, False -> folder DOES NOT contain year
@@ -174,11 +174,10 @@ class SetPaths(Now):
                 for line in [compt, excel_file_path_updated]:
                     # print(compt)
                     f.write(line + '\n')
-
-            from pgdas_fiscal_oesk.main_excel_manager.main_excel_manager import SheetPathManager
-            spm = SheetPathManager()
-            spm.new_xlsxcompt_from_padrao_if_not_exists((compt, excel_file_path_updated))
             if open_excel:
+                from pgdas_fiscal_oesk.main_excel_manager.main_excel_manager import SheetPathManager
+                spm = SheetPathManager()
+                spm.new_xlsxcompt_from_padrao_if_not_exists((compt, excel_file_path_updated))
                 spm.save_after_changes((compt, excel_file_path_updated))
 
             return compt, excel_file_path_updated

@@ -300,8 +300,13 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
 
         t = Thread(target=initial.click)
         t.start()
-        tt = Thread(target=sleep(5))
+        tt = Thread(target=sleep(2.5))
         tt.start()
+        # B4 enter, ir pra baixo por causa do certificado do castilho
+        tb4 = Thread(target=hotkey('down'))
+        tb4.start()
+        tt2 = Thread(target=sleep(2))
+        tt2.start()
         t2 = Thread(target=hotkey('enter'))
         t2.start()
 
@@ -638,7 +643,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                     sleep(2.5)
 
                     self.send_keys_anywhere(Keys.ENTER)  # calcular
-                    sleep(2.5)
+                    sleep(3)
                     self.find_submit_form()
                     sleep(2)
                 elif SemRetencao != '' and ComRetencao != '':
@@ -653,9 +658,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                     self.send_keys_anywhere(Keys.TAB, 9)
                     self.send_keys_anywhere(ComRetencao)
                     self.send_keys_anywhere(Keys.ENTER)  # calcular
-                    sleep(2.5)
-
-                    self.tags_wait('form')
+                    sleep(3)
                     self.find_submit_form()
                     sleep(2)
 
@@ -672,7 +675,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                     sleep(2.5)
 
                     self.send_keys_anywhere(Keys.ENTER)  # calcular
-                    sleep(2.5)
+                    sleep(3)
                     self.find_submit_form()
                     sleep(2)
                 # o valor já tá sendo tratado acima no IF master, mas ok

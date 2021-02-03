@@ -9,7 +9,6 @@ import sys
 from pgdas_fiscal_oesk.giss_online_pt10_variascompt import GissGui as GissGuiv2
 from pgdas_fiscal_oesk.giss_online_pt9 import GissGui
 
-from pgdas_fiscal_oesk.main_excel_manager.main_excel_manager import SheetPathManager
 
 HERE = '\\'.join(os.path.abspath(__file__).split('\\')[:-1])
 
@@ -17,7 +16,6 @@ file = '\\pgdas_fiscal_oesk\\data_clients_files\\clients_now_selection.json'
 # necessário para acessar externamente
 file = HERE + file
 
-print(file)
 
 def giss_online():
     # GissGuiv2(file, '102007')
@@ -48,10 +46,14 @@ def save_after_changes():
     # novo argumento open_excel True abre o excel...
 
 
+def preenche_iss_valores():
+    # TENHO QUE IMPORTAR SÓ DURANTE A CHAMADA ESSE EAP SE NÃO ELE ABRE EXCEL...
+    import excel_app_preenche as eap
+    ydm = eap.YouDidMe()
+    ydm.preenche_iss_valores()
+    save_after_changes()
+
+
 if __name__ == '__main__':
     globals()[sys.argv[1]]()
 
-# explanation:
-# https://stackoverflow.com/questions/3987041/run-function-from-the-command-line
-
-download_ginfess()
