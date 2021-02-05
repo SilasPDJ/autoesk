@@ -104,7 +104,8 @@ class SetPaths(Now):
 
         except FileNotFoundError:
             # raise FileNotFoundError('\033[1;31mfile not existence\033[m')
-            self.set_get_compt_file(m_cont=-1)
+
+            return self.set_get_compt_file(m_cont=-1)
         else:
             return compt, excel_file_name
 

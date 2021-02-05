@@ -85,9 +85,7 @@ class Fantasia(SetPaths, ExcelToData):
                     # Se tem 3valores[excel], tem XML. Se não tem, não tem (pois o xml e excel vem do ginfess_download)....
                     if meus_3_valores_atuais:
                         all_xls_inside = self.files_get_anexos_v2(CLIENTE, file_type='xlsx', wexplorer_tup=compt_file)
-
                         relacao_notas = all_xls_inside[0] if len(all_xls_inside) == 1 else IndexError()
-                        print(NfCanceled(relacao_notas))
 
                         self.activating_client(self.formatar_cnpj(CNPJ))
                         # Agora vai ser por cnpj...
@@ -153,7 +151,7 @@ class Fantasia(SetPaths, ExcelToData):
                         pygui.hotkey('right', 'down', 'enter', 'enter', interval=.5)
                         sleep(2)
                         print('NF canceled')
-                        NfCanceled(self.client_path)
+                        NfCanceled(relacao_notas)
                         # p.hotkey('alt', 'tab')
                         print('NF canceled FORA')
 
