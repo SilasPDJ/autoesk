@@ -102,10 +102,9 @@ class NfCanceled:
             wanted = open(self.file_needed, 'w')
 
             for enu, row in enumerate(ws.iter_rows(max_col=1)):  # tem o max_row ainda
-                cont_cell = 0
+
                 if enu > 0:
                     for cell in row:
-                        cont_cell += 1
                         print(cell.value, end=' ')
                         color_in_hex = cell.fill.start_color.index  # this gives you Hexadecimal value of the color
                         if color_in_hex != '00000000':
@@ -120,7 +119,7 @@ class NfCanceled:
                             print('\033[1;31m FALSE\033[m')
                             pode_breakar = True
                 if pode_breakar:
-                    return cont_cell
+                    return enu
                     # break
             canceled.close()
             wanted.close()

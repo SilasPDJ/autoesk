@@ -92,7 +92,7 @@ class Fantasia(SetPaths, ExcelToData):
 
                         # access ISS lançamento
                         pygui.hotkey('right', 'down', 'enter', 'up', 'up', 'enter', interval=.1)
-                        sleep(2)
+                        sleep(3.5)
 
                         foritab(2, 'down')
                         # busca XML
@@ -129,8 +129,10 @@ class Fantasia(SetPaths, ExcelToData):
                         qtd_els = nfcanceladas.conta_qtd_nfs()
                         print('SLEEPING PARA IMPORTAR')
                         self.importa_nfs()
+                        input(qtd_els)
                         sleep(qtd_els)
                         pygui.hotkey('enter')
+
                         # vai sleepar dependendo da quantidade de notas, programar ainda isso
 
                         # #### recente
