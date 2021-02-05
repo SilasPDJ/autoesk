@@ -52,3 +52,13 @@ class Now:
             raise e('Deu ruim!!! date2date_brazil')
         else:
             return f'{dia:02d}{sep}{mes:02d}{sep}{ano}'
+
+    @staticmethod
+    def most_recent_file(path=r'C:\tmp'):
+        import glob
+        import os
+
+        list_of_files = glob.glob(path+'\\*')  # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getctime)
+        print(latest_file)
+        return latest_file

@@ -54,7 +54,6 @@ class SetPaths(Now):
     def files_get_anexos_v2(self, client, file_type='pdf', wexplorer_tup=None, upload=False):
         """
         :param client: nome da pasta onde estão os arquivos organizados por data dd-mm-yyyy
-        :param year: True -> folder contains year, False -> folder DOES NOT contain year
         :param file_type: file annexed type
         :param wexplorer_tup: ... ctrl+F me
         :param upload: False -> email it! True: upload it!
@@ -81,7 +80,7 @@ class SetPaths(Now):
 
         for fname in list_returned:
             if fname.lower().endswith(f'.{file_type}'):
-                if not upload:
+                if upload:
                     file_opened = MIMEApplication(open(fname, 'rb').read())
                     file_opened.add_header('Content-Disposition', 'attachment', filename=fname)
                     pdf_files.append(file_opened)

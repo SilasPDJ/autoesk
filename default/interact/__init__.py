@@ -1,10 +1,12 @@
+# SyntaxWarning: import * only allowed at module level
 def press_key_b4(key: str):
+    from keyboard import is_pressed
     """
     Só dá break quando uma tecla específica é pressionada, e então, continua o código
     :param key:
     :return:
     """
-    from keyboard import is_pressed
+
     while True:
         #
         if is_pressed(key):
@@ -15,12 +17,11 @@ def press_key_b4(key: str):
 
 
 def press_keys_v4(*keys: str):
+    from keyboard import is_pressed
     """
     :param keys: any key you wish
     :return:
     """
-    import keyboard
-    from keyboard import is_pressed
     while True:
         for key in keys:
             if is_pressed(key):
@@ -29,6 +30,61 @@ def press_keys_v4(*keys: str):
             else:
                 pass
                 # print(key)
+
+def foritab(n, hkey, interval=.13):
+    import pyautogui as pygui
+    """
+    :param int n: how many times
+    :param str hkey: hotkey
+    :param float interval:
+    :return:
+    """
+    for ii in range(n):
+        pygui.hotkey(hkey, interval=interval)
+
+
+def all_keys(*keys, interval=.13, only1_by1=True):
+    import pyautogui as pygui
+    from time import sleep
+    """
+    :param str keys: Any
+    :param float interval:
+    :param bool only1_by1: True [safe/DEFAULT]; False => Allows hotkeys with write
+    :return:
+
+    # Quando tiver hotkey, aparentemente sempre vai começar com ctrl, shift, alguma coisa do tipo... por isso
+    # if cont > 0 and only_by1 True, break
+    """
+    full_hotkey_list = pygui.KEYBOARD_KEYS
+    for cont, key in enumerate(keys):
+        if key in full_hotkey_list:
+            if cont > 0 and only1_by1:
+                raise UserWarning("Security warning, SET only1_by1 as False [then you'll be able to use hotkeys with write]")
+
+            list_keys = []
+            for kd in keys:
+                pygui.keyDown(kd, _pause=interval)
+                list_keys.append(kd)
+            list_keys.reverse()
+            for k in list_keys:
+                pygui.keyUp(k)
+            if only1_by1:
+                break
+        else:
+            pygui.write(key)
+            sleep(interval)
+
+
+def contmatic_select_by_name(name):
+    import os
+
+    p1path = os.getenv('APPDATA')
+    CONTMATIC_PATH = p1path + r'\Microsoft\Windows\Start Menu\Programs\Contmatic Phoenix'
+    print(CONTMATIC_PATH)
+    for file in os.listdir(CONTMATIC_PATH):
+        if name.lower() in file.lower():
+            return os.path.abspath(file)
+        print(file)
 
 
 def activate_window(title, where=''):
@@ -39,7 +95,6 @@ def activate_window(title, where=''):
 
     # done
     """
-    from time import sleep
     from pyautogui import getWindowsWithTitle, hotkey, getActiveWindow, keyUp, keyDown
     # my_window = getWindowsAt(-1055, 0)[0]
 

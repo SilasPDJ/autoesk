@@ -49,7 +49,7 @@ class SendDividas(EmailExecutor):
                     # FUNCIONA PRA CONTAR PRO MES Q VEM VALIDADO COM ANO
 
                     dividas_pdf_files = self.files_get_anexos_v2(CLIENTE, file_type='pdf',
-                                                                 wexplorer_tup=(self.compt_setted, excel_file_name))
+                                                                 wexplorer_tup=(self.compt_setted, excel_file_name), upload=True)
                     # o arg do param em wexplorer_tup (0) significa o mes atual.
                     dividas_png_files = self.files_get_anexos_v2(CLIENTE, file_type='png',
                                                                  wexplorer_tup=(self.compt_setted, excel_file_name), upload=True)
