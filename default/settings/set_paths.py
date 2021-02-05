@@ -311,31 +311,14 @@ class SetPaths(Now):
             res = self.__new_path_set(f'{und_disco}:/{date_folder}')
         return res
 
-    def move_file(self, where_from, destiny, *filenames):
+    def move_file(self, where_from, destiny):
         """
         :param where_from: where the files come from
         :param destiny: where they're going to
-        :param filenames: file names
-        :return: Files moved from a place[where_from] to another[destiny]
+        :return: File moved from a place[where_from] to another[destiny]
         """
         from shutil import move
-
-        def trata_b4(vrv):
-            vrv = vrv.replace('/', '\\')
-            vrv = vrv.split('\\')
-            vrv = [v for v in vrv if None is not v != '']
-            vrv = '\\'.join(vrv)
-            return vrv
-        for file in filenames:
-            file = trata_b4(file)
-            wf_loop = f'{where_from}\\{file}'
-            dstloop = f'{destiny}\\{file}'
-
-            wf_loop = trata_b4(wf_loop)
-            dstloop = trata_b4(dstloop)
-            input(wf_loop)
-
-            move(wf_loop, dstloop)
+        move(where_from, destiny)
 
     def __new_path_set(self, path=''):
         """

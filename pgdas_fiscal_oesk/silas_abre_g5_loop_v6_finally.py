@@ -82,8 +82,12 @@ class Fantasia(SetPaths, ExcelToData):
 
                 elif sh_name == 'G5_ISS' and sh_name in possible:
                     meus_3_valores_atuais = tres_valores_faturados(self.client_path)
-                    # Se tem 3valores[excel], tem XML. Se não tem, não tem (pois o xml e excel vem do ginfess_download)....
-                    if meus_3_valores_atuais:
+                    # Se tem 3valores[excel], tem XML. Se não tem, não tem
+                    # (pois o xml e excel vem do ginfess_download)....
+
+                    registronta = self.registronta(CLIENTE, compt_file)
+                    print(CLIENTE)
+                    if meus_3_valores_atuais and registronta:
                         all_xls_inside = self.files_get_anexos_v2(CLIENTE, file_type='xlsx', wexplorer_tup=compt_file)
                         relacao_notas = all_xls_inside[0] if len(all_xls_inside) == 1 else IndexError()
                         self.activating_client(self.formatar_cnpj(CNPJ))
@@ -126,7 +130,6 @@ class Fantasia(SetPaths, ExcelToData):
                             pygui.hotkey('alt', 'f4')
 
                         nfcanceladas = NfCanceled(relacao_notas)
-
 
                         print('SLEEPING PARA IMPORTAR')
                         self.importa_nfs()
@@ -172,14 +175,18 @@ class Fantasia(SetPaths, ExcelToData):
                         sleep(5)
                         # self.most_recent_file()
 
-                        all_keys('ctrl', 'shift', 's')
-                        sleep(3)
-                        all_keys('ctrl', 'x')
-                        [pygui.hotkey('alt', 'f4') for i in range(2)]
-                        path_file_temp_file = f"C:\\tmp"
+                        print('estou contando com o Adobe, pois o PDF do G5 é aberto nele...')
 
-                        filenewname = f'{self.client_path}\\Registro_ISS-{CNPJ}'
-                        self.move_file(path_file_temp_file, filenewname, paste())
+                        all_keys('ctrl', 'shift', 's')
+                        sleep(5)
+                        all_keys('enter')
+                        sleep(1)
+                        all_keys('ctrl', 'x')
+                        [(pygui.hotkey('alt', 'f4'), sleep(1)) for i in range(2)]
+                        path_file_temp_file = f"C:\\tmp\\{paste()}"
+
+                        filenewname = f'{self.client_path}\\Registro_ISS-{CNPJ}.pdf'
+                        self.move_file(path_file_temp_file, filenewname)
 
                         """save in adobe"""
 
@@ -198,6 +205,21 @@ class Fantasia(SetPaths, ExcelToData):
         cnpj = f'{cnpj[:2]}.{cnpj[2:5]}.{cnpj[5:8]}/{cnpj[8:12]}-{cnpj[12:]}'
         print(cnpj)  # 123.456.789-00
         return cnpj
+
+    def registronta(self, client, compt_file):
+        """
+        :param client: CLIENTE
+        :param compt_file: compt_file
+        :return: se tiver pdf que tem ISS e REGISTRO
+        """
+        registronta = False
+        for f in self.files_get_anexos_v2(client, file_type='pdf', wexplorer_tup=compt_file):
+            if 'ISS' in f.upper():
+                registronta = False
+                break
+            else:
+                registronta = True
+        return registronta
 
     def abre_programa(self, name, path=False):
         if path is False:
