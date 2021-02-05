@@ -126,11 +126,15 @@ class Fantasia(SetPaths, ExcelToData):
                             pygui.hotkey('alt', 'f4')
 
                         nfcanceladas = NfCanceled(relacao_notas)
-                        qtd_els = nfcanceladas.conta_qtd_nfs()
+
+
                         print('SLEEPING PARA IMPORTAR')
                         self.importa_nfs()
-                        input(qtd_els)
-                        sleep(qtd_els)
+                        try:
+                            qtd_els = nfcanceladas.conta_qtd_nfs()
+                            sleep(qtd_els)
+                        except TypeError:
+                            sleep(5.5)
                         pygui.hotkey('enter')
 
                         # vai sleepar dependendo da quantidade de notas, programar ainda isso
