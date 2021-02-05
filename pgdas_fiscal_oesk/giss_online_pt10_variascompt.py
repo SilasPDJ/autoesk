@@ -280,7 +280,6 @@ class GissGui(WDShorcuts, SetPaths, ExcelToData):
 
         mes_atual, ano_atual = int(mes_atual), int(ano_atual)
 
-
         distancia_ano = ano_atual - ano1st
         for anocont in range(ano1st, ano_atual+1):
 

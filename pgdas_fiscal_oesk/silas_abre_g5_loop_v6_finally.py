@@ -7,7 +7,7 @@ from default.settings import SetPaths
 from default.data_treatment import ExcelToData
 
 from pgdas_fiscal_oesk.relacao_nfs import tres_valores_faturados, NfCanceled
-
+from pyperclip import paste
 # from default.webdriver_utilities import *
 
 """
@@ -53,7 +53,7 @@ class Fantasia(SetPaths, ExcelToData):
 
 
         # ###############################
-        # self.abre_programa('G5')
+        self.abre_programa('G5')
         # ###############################
         for sh_name in sh_names:
             # agora eu posso fazer downloalds sem me preocupar tendo a variável path
@@ -68,7 +68,7 @@ class Fantasia(SetPaths, ExcelToData):
             for i, CNPJ in enumerate(after_READ['CNPJ']):
 
                 # ####################### A INTELIGENCIA EXCEL ESTÁ SEM OS SEM MOVIMENTOS NO MOMENTO
-                CLIENTE = after_READ['Razão Social'][i+8]
+                CLIENTE = after_READ['Razão Social'][i]
                 JA_DECLARED = after_READ['Declarado'][i].upper().strip()
                 CodSim = after_READ['Código Simples'][i]
                 CPF = after_READ['CPF'][i]
@@ -86,7 +86,6 @@ class Fantasia(SetPaths, ExcelToData):
                     if meus_3_valores_atuais:
                         all_xls_inside = self.files_get_anexos_v2(CLIENTE, file_type='xlsx', wexplorer_tup=compt_file)
                         relacao_notas = all_xls_inside[0] if len(all_xls_inside) == 1 else IndexError()
-
                         self.activating_client(self.formatar_cnpj(CNPJ))
                         # Agora vai ser por cnpj...
                         self.start_walk_menu()
@@ -97,7 +96,6 @@ class Fantasia(SetPaths, ExcelToData):
 
                         foritab(2, 'down')
                         # busca XML
-                        input('-----------------------------------------')
                         pygui.write(self.get_xml(CLIENTE))
 
                         """IMPORTA ITENS OU NÃO"""
@@ -127,14 +125,13 @@ class Fantasia(SetPaths, ExcelToData):
                             sleep(1)
                             pygui.hotkey('alt', 'f4')
 
-                            self.importa_nfs()
-
-                        else:
-                            print('SLEEPING PARA IMPORTAR')
-                            self.importa_nfs()
-                            sleep(10)
-                            pygui.hotkey('enter')
-                            # vai sleepar dependendo da quantidade de notas, programar ainda isso
+                        nfcanceladas = NfCanceled(relacao_notas)
+                        qtd_els = nfcanceladas.conta_qtd_nfs()
+                        print('SLEEPING PARA IMPORTAR')
+                        self.importa_nfs()
+                        sleep(qtd_els)
+                        pygui.hotkey('enter')
+                        # vai sleepar dependendo da quantidade de notas, programar ainda isso
 
                         # #### recente
                         sleep(1)
@@ -151,55 +148,60 @@ class Fantasia(SetPaths, ExcelToData):
                         pygui.hotkey('right', 'down', 'enter', 'enter', interval=.5)
                         sleep(2)
                         print('NF canceled')
-                        NfCanceled(relacao_notas)
+
+                        nfcanceladas.action()
+                        # Cancela
+
                         # p.hotkey('alt', 'tab')
                         print('NF canceled FORA')
 
-                        sleep(.5)
+                        sleep(1)
                         # generate PDF relat. Prestados 51
                         self.start_walk_menu()
                         foritab(3, 'right')
                         foritab(6, 'down')
 
                         foritab(5, 'enter', interval=.25)
-                        """após escolher certo é só dar enter até abrir :D"""
                         # generate pdf
                         sleep(5)
+                        # self.most_recent_file()
 
+                        all_keys('ctrl', 'shift', 's')
+                        sleep(3)
+                        all_keys('ctrl', 'x')
+                        [pygui.hotkey('alt', 'f4') for i in range(2)]
+                        path_file_temp_file = f"C:\\tmp"
+
+                        filenewname = f'{self.client_path}\\Registro_ISS-{CNPJ}'
+                        self.move_file(path_file_temp_file, filenewname, paste())
 
                         """save in adobe"""
-                        self.most_recent_file()
-                        pygui.hotkey('enter')
-                        """save in adobe"""
-
-                        """ ~~~~~~~~~~~~~~~~~~~~~~~~ IMPORTING ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"""
-                        # VOU TER QUE TRATAR TODOS OS CLICKS COM A MINHA LÓGICA AINDA
-                        """ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ LE_NF_CANCELADAS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"""
-
-
-                        sleep(15)
 
     def get_xml(self, cliente):
         b = self.files_get_anexos_v2(cliente, file_type='xml', upload=False)
         b = b[0]
         b = b.split('\\')
         file = f'\\\\{b[-1]}'
-        final = '\\'.join(b[:-2]) + file
+        final = '\\'.join(b[:-1]) + file
         return final
 
     def formatar_cnpj(self, cnpj):
         cnpj = str(cnpj)
         if len(cnpj) < 14:
             cnpj = cnpj.zfill(11)
-        cpf = f'{cnpj[:2]}.{cnpj[2:5]}.{cnpj[5:8]}/{cnpj[8:12]}-{cnpj[12:]}'
-        print(cpf)  # 123.456.789-00
+        cnpj = f'{cnpj[:2]}.{cnpj[2:5]}.{cnpj[5:8]}/{cnpj[8:12]}-{cnpj[12:]}'
+        print(cnpj)  # 123.456.789-00
+        return cnpj
 
-    def abre_programa(self, name):
-        programa = contmatic_select_by_name(name)
+    def abre_programa(self, name, path=False):
+        if path is False:
+            programa = contmatic_select_by_name(name)
+        else:
+            programa = name
 
         senha = '240588140217'
         sleep(1)
-        pygui.hotkey('winleft')
+        pygui.hotkey('winleft', 'r')
         # pesquisador
         sleep(1)
         pygui.write(programa)
@@ -221,7 +223,7 @@ class Fantasia(SetPaths, ExcelToData):
         sleep(.7)
         # ativa empresa
 
-        comp = self.first_and_last_day_compt('/')[1]
+        comp = self.first_and_last_day_compt('')[1]
         pygui.write(comp)
 
         foritab(6, 'tab') # PESQUISA

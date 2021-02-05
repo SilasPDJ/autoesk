@@ -3,7 +3,7 @@ import pyautogui as pygui
 import pyperclip as ppclip
 
 
-class RetidosNorRetidos():
+class RetidosNorRetidos:
     def __init__(self):
         sleep(2)
         pygui.hotkey('enter')

@@ -83,7 +83,7 @@ def contmatic_select_by_name(name):
     print(CONTMATIC_PATH)
     for file in os.listdir(CONTMATIC_PATH):
         if name.lower() in file.lower():
-            return os.path.abspath(file)
+            return CONTMATIC_PATH + f'\\{file}'
         print(file)
 
 

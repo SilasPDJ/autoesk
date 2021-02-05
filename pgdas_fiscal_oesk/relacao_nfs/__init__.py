@@ -75,24 +75,37 @@ class NfCanceled:
     def __init__(self, path_cliente_plan):
         openpyxl = self.openpyxl
         pygui = self.pygui
+        self.path_cliente_plan = path_cliente_plan
+        self.folder = self.os.path.dirname(path_cliente_plan)
+        self.file_canceladas = f'{self.folder}\\NF_canceladas.txt'
+        self.file_needed = f'{self.folder}\\NF-needed.txt'
+
+        # print('RGB =', tuple(int(color_in_hex[i:i + 2],
+
+    def __faz_tudo_por_todos(self):
+
+        openpyxl = self.openpyxl
+        pygui = self.pygui
+        path_cliente_plan = self.path_cliente_plan
 
         folder = self.os.path.dirname(path_cliente_plan)
         self.file_canceladas = f'{folder}\\NF_canceladas.txt'
         self.file_needed = f'{folder}\\NF-needed.txt'
-
         try:
             wb = openpyxl.load_workbook(path_cliente_plan)
             pode_breakar = False
-            nome_excel_atual = None
             # ws = wb[nome_excel_atual]
             wsnames = wb.sheetnames[0]
             ws = wb[wsnames]
 
             canceled = open(self.file_canceladas, 'w')
             wanted = open(self.file_needed, 'w')
+
             for enu, row in enumerate(ws.iter_rows(max_col=1)):  # tem o max_row ainda
+                cont_cell = 0
                 if enu > 0:
                     for cell in row:
+                        cont_cell += 1
                         print(cell.value, end=' ')
                         color_in_hex = cell.fill.start_color.index  # this gives you Hexadecimal value of the color
                         if color_in_hex != '00000000':
@@ -107,17 +120,19 @@ class NfCanceled:
                             print('\033[1;31m FALSE\033[m')
                             pode_breakar = True
                 if pode_breakar:
-                    break
+                    return cont_cell
+                    # break
             canceled.close()
             wanted.close()
-            input('nothing')
-            self.action()
         except FileNotFoundError:
             input('NÃO CONSEGUI ENCONTRAR, inputing LE_NF_CANCELADAS, Provavelmente ALMEIDA, enter somente............................')
             pygui.hotkey('alt', 'tab')
-        # print('RGB =', tuple(int(color_in_hex[i:i + 2],
+
+    def conta_qtd_nfs(self):
+        return self.__faz_tudo_por_todos()
 
     def action(self):
+        self.__faz_tudo_por_todos()
         sleep = self.sleep
         pygui = self.pygui
         file = open(self.file_canceladas, 'r')
