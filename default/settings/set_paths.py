@@ -260,7 +260,6 @@ class SetPaths(Now):
     def _files_path_v3(self, pasta_client, wexplorer_tup=None):
         """
         :param pasta_client: client_name
-        :param year: True -> folder contains year, False -> folder DOES NOT contain year
         :param wexplorer_tup: the tuple containing the self.compt_and_file_name()
         :return: salva_path (save_path)
         """
