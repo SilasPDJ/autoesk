@@ -174,7 +174,6 @@ class Fantasia(SetPaths, ExcelToData):
                         # generate pdf
                         sleep(5)
                         # self.most_recent_file()
-
                         print('estou contando com o Adobe, pois o PDF do G5 é aberto nele...')
 
                         all_keys('ctrl', 'shift', 's')
