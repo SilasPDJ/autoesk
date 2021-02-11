@@ -17,8 +17,7 @@ import pandas as pd
 
 link = "ChromeDriver/chromedriver.exe"
 possible = ['GIA']
-import img2pdf
-img2pdf.convert()
+
 
 class GIA(WDShorcuts, SetPaths, ExcelToData):
 
@@ -54,7 +53,6 @@ class GIA(WDShorcuts, SetPaths, ExcelToData):
                 r_social = after_READ['Razão Social'][i]
                 transmitida = after_READ['transmitida'][i]
                 feita = after_READ['GIA'][i]
-
                 ie = after_READ['CNPJ'][i]
                 my_print = login
                 print(my_print)
@@ -99,10 +97,10 @@ class GIA(WDShorcuts, SetPaths, ExcelToData):
                     ssn.clear()
                     ssn.send_keys(senha)
 
-                    self.send_keys_anywhere(driver, Keys.TAB)
-                    self.send_keys_anywhere(driver, Keys.ENTER)
+                    self.send_keys_anywhere(Keys.TAB)
+                    self.send_keys_anywhere(Keys.ENTER)
                     print('pressione f7 p/ continuar após captcha')
-                    press_key_b4('f7')
+                    press_key_b4('f8')
                     # self.find_submit_form()
                     # enter entrar
                     sleep(5)
@@ -134,16 +132,17 @@ class GIA(WDShorcuts, SetPaths, ExcelToData):
     def save_save_img2pdf(self):
         from PIL import Image
         path1 = f'{self._client_path}/GiaScreenShoot.png'
-        path2 = f'{self._client_path}/Recibo_{self.compt_and_filename()[0]}'
+        path2 = f'{self._client_path}/Recibo_{self.compt_and_filename()[0]}.pdf'
         self.driver.save_screenshot(path1)
         image1 = Image.open(path1)
-        im1 = image1.convert('rbg')
+        try:
+            im1 = image1.convert('rbg')
+        except ValueError:
+            im1 = image1
         im1.save(path2)
 
     def save_novagia_pdf(self):
-        pygui.keyDown('shift')
-        [pygui.hotkey('tab') for i in range(6)]
-        pygui.keyUp('shift')
+        foritab(6, 'tab')
         sleep(.5)
         pygui.hotkey('enter')
 
@@ -158,6 +157,9 @@ class GIA(WDShorcuts, SetPaths, ExcelToData):
         sleep(3.5)
 
     def pt1_gia_software(self, ie, cpt_write):
+        cpt_write = "".join(cpt_write.split('-'))
+        print(cpt_write
+              )
         menuX, menuY = 20, 27
         [pygui.click(menuX, menuY, duration=2.5) for i in range(1)]
         sleep(2)
@@ -173,16 +175,12 @@ class GIA(WDShorcuts, SetPaths, ExcelToData):
         sleep(.2)
         pygui.hotkey('left', 'enter', 'enter', 'tab', 'enter', interval=.25)
 
-    def clieninput_filepath(self):
+    def clieninput_filepath(self, filetype='sfz'):
 
-        for file in os.listdir(self._client_path):
-            if file.lower().endswith('sfz'):
-                return os.path.realpath(file)
-        else:
-            return False
-        # "self._client_path"
+        dir_searched_now = self._client_path
+        file = [os.path.join(dir_searched_now, fname) for fname in os.listdir(dir_searched_now) if fname.lower().endswith(filetype)]
 
-
+        return file[0] if len(file)==1 else False
 
     def exec_list(self, **args):
         """
