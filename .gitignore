@@ -7,3 +7,4 @@ new-site.html
 *.log
 *.png
 *.pyc
+/venv/
