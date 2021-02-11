@@ -8,3 +8,4 @@ new-site.html
 *.png
 *.pyc
 /venv/
+*.pyc

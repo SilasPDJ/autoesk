@@ -62,7 +62,8 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                 CodSim = after_READ['Código Simples'][i]
                 CPF = after_READ['CPF'][i]
                 cont_ret_n_ret = i
-
+                if CLIENTE == '':
+                    break
                 self.now_person = CLIENTE
                 self.client_path = self._files_path_v3(CLIENTE, wexplorer_tup=compt_file)
 
