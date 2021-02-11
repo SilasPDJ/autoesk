@@ -35,6 +35,7 @@ class GIA(WDShorcuts, SetPaths, ExcelToData):
 
         #
         # mudei do for pra ca
+        self.abre_programa(self.get_env_for_path('\\Desktop\\GIA.exe'), path=True)
         for sh_name in possible:
             msh = mshExcelFile.parse(sheet_name=str(sh_name))
             col_str_dic = {column: str for column in list(msh)}
@@ -63,7 +64,6 @@ class GIA(WDShorcuts, SetPaths, ExcelToData):
                 _client_path = self._client_path
 
                 if 'sim' != feita.strip().lower() != 'ok':
-                    self.abre_programa(self.get_env_for_path('\\Desktop\\GIA.exe'), path=True)
                     try:
                         fecha_janela_contribuintes_gia()
                     except IndexError:
@@ -79,8 +79,8 @@ class GIA(WDShorcuts, SetPaths, ExcelToData):
                     pygui.hotkey('enter')
                     pygui.click(x=836, y=394)
                     foritab(7, 'tab')
-                    pygui.hotkey('enter', 'left', 'enter', interval=.25)
-
+                    pygui.hotkey('enter', 'enter', interval=.25)
+                    pygui.hotkey('enter')
                     self.save_novagia_pdf()
 
                 if 'sim' != transmitida.strip().lower() != 'ok':
@@ -125,6 +125,7 @@ class GIA(WDShorcuts, SetPaths, ExcelToData):
                     """
                     self.save_save_img2pdf()
                     driver.close()
+                    sleep(5)
                     # pygui.hotkey('enter')
                     # ############################################ parei daqui
 
@@ -136,25 +137,19 @@ class GIA(WDShorcuts, SetPaths, ExcelToData):
         self.driver.save_screenshot(path1)
         image1 = Image.open(path1)
         try:
-            im1 = image1.convert('rbg')
+            im1 = image1.convert('RGB')
         except ValueError:
             im1 = image1
         im1.save(path2)
 
     def save_novagia_pdf(self):
-        foritab(6, 'tab')
-        sleep(.5)
-        pygui.hotkey('enter')
+        from shutil import copy
+        pathinit = r'C:\Users\user\Documents\SEFAZ\GIA\TNormal'
+        pathinit += f'\\{os.listdir(pathinit)[0]}'
+        # copy(r"C:\Users\User\Documents\SEFAZ\GIA\TNormal\{}".format(os.listdir(r"C:\Users\User\Documents\SEFAZ\GIA\TNormal")[0]), r"C:\Users\user\OneDrive\_FISCAL-2021\2021\01-2021\GIA_Tharles Marli")
+        copy(pathinit, self._client_path)
 
-        sleep(1)
-        pygui.write(self._client_path, interval=.05)
-        sleep(1)
-        pygui.hotkey('enter')
-        sleep(1)
-        [pygui.hotkey('tab') for i in range(6)]
-        sleep(1)
-        [pygui.hotkey('enter') for i in range(3)]
-        sleep(3.5)
+
 
     def pt1_gia_software(self, ie, cpt_write):
         cpt_write = "".join(cpt_write.split('-'))
@@ -238,4 +233,3 @@ class GIA(WDShorcuts, SetPaths, ExcelToData):
         return p1path
 
         # CONTMATIC_PATH = p1path + r'\Microsoft\Windows\Start Menu\Programs\Contmatic Phoenix'
-
