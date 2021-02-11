@@ -1,7 +1,4 @@
 # SyntaxWarning: import * only allowed at module level
-from time import sleep
-
-
 def press_key_b4(key: str):
     from keyboard import is_pressed
     """
@@ -34,7 +31,7 @@ def press_keys_v4(*keys: str):
                 pass
                 # print(key)
 
-def foritab(n, *hkeys, interval=.13):
+def foritab(n, hkey, interval=.13):
     import pyautogui as pygui
     """
     :param int n: how many times
@@ -43,8 +40,7 @@ def foritab(n, *hkeys, interval=.13):
     :return:
     """
     for ii in range(n):
-        for hkey in hkeys:
-            pygui.hotkey(hkey, interval=interval)
+        pygui.hotkey(hkey, interval=interval)
 
 
 def all_keys(*keys, interval=.13, only1_by1=True):

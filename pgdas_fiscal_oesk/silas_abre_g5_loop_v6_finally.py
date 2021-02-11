@@ -19,6 +19,8 @@ from datetime import datetime
 import os
 """
 
+"""DESEJA EDTAR O ARQUIVO TROLLS_n_eh_troll.txt ?"""
+
 possible = ['G5_ISS', 'G5_ICMS']
 # um por um?
 # vai p/ NEEDED_PANDAS
@@ -175,13 +177,13 @@ class Fantasia(SetPaths, ExcelToData):
                         print('estou contando com o Adobe, pois o PDF do G5 é aberto nele...')
 
                         all_keys('ctrl', 'shift', 's')
-                        sleep(6)
+                        sleep(5)
                         all_keys('enter')
                         sleep(1)
                         all_keys('ctrl', 'x')
                         [(pygui.hotkey('alt', 'f4'), sleep(1)) for i in range(2)]
                         path_file_temp_file = f"C:\\tmp\\{paste()}"
-                        sleep(2)
+
                         filenewname = f'{self.client_path}\\Registro_ISS-{CNPJ}.pdf'
                         self.move_file(path_file_temp_file, filenewname)
 
@@ -219,12 +221,6 @@ class Fantasia(SetPaths, ExcelToData):
         return registronta
 
     def abre_programa(self, name, path=False):
-        """
-        :param name: path/to/nameProgram
-        :param path: False => contmatic, True => any path
-        :return: winleft+r open
-        """
-
         if path is False:
             programa = contmatic_select_by_name(name)
         else:
