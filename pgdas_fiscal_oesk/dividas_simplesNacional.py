@@ -7,7 +7,7 @@ from default.data_treatment import ExcelToData
 
 from selenium.webdriver.common.by import By
 
-
+# dale
 
 class Dividas(WDShorcuts, SetPaths, ExcelToData):
     def __init__(self, compt_file=None):
