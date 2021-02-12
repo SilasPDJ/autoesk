@@ -71,14 +71,17 @@ class Fantasia(SetPaths, ExcelToData):
                 CodSim = after_READ['Código Simples'][i]
                 CPF = after_READ['CPF'][i]
                 cont_ret_n_ret = i
-                self.client_path = self._files_path_v3(CLIENTE, wexplorer_tup=compt_file)
 
                 datageral = self.first_and_last_day_compt('/')[1]
                 # print(datageral)
+                if CLIENTE == '':
+                    break
+
                 if sh_name == 'G5_ICMS' and sh_name in possible:
                     pass
 
                 elif sh_name == 'G5_ISS' and sh_name in possible:
+                    self.client_path = self._files_path_v3(CLIENTE, wexplorer_tup=compt_file)
                     meus_3_valores_atuais = tres_valores_faturados(self.client_path)
                     # Se tem 3valores[excel], tem XML. Se não tem, não tem
                     # (pois o xml e excel vem do ginfess_download)....

@@ -126,6 +126,7 @@ def activate_window(title, where=''):
                 keyDown('alt')
                 for tab in tabs:
                     hotkey(tab)
+                sleep(.5)
                 keyUp('alt')
                 tabs.append('tab')
         except AttributeError:
