@@ -8,8 +8,11 @@ class SendDividas(EmailExecutor):
         import pandas as pd
         super().__init__()
 
-        self.compt_setted = self.get_compt_only(-11, 1, past_only=False)
+        # self.compt_setted = self.get_compt_only(-11, 1, past_only=False)
+
         # venc_dividas = self.das_venc_data()[3]
+
+
 
         # self.venc_boletos = self.get_dividas_vencimento(self.compt_setted)
         self.venc_boletos = self.vencimento_dividas()
@@ -48,11 +51,11 @@ class SendDividas(EmailExecutor):
                     # input(self.set_compt_only(-11, 1, past_only=False))
                     # FUNCIONA PRA CONTAR PRO MES Q VEM VALIDADO COM ANO
 
-                    dividas_pdf_files = self.files_get_anexos_v2(CLIENTE, file_type='pdf',
-                                                                 wexplorer_tup=(self.compt_setted, excel_file_name), upload=True)
+                    dividas_pdf_files = self.files_get_anexos_v2("Dívidas_Simples_"+CLIENTE, file_type='pdf',
+                                                                 wexplorer_tup=(excel_compt, excel_file_name), upload=True)
                     # o arg do param em wexplorer_tup (0) significa o mes atual.
-                    dividas_png_files = self.files_get_anexos_v2(CLIENTE, file_type='png',
-                                                                 wexplorer_tup=(self.compt_setted, excel_file_name), upload=True)
+                    dividas_png_files = self.files_get_anexos_v2("Dívidas_Simples_"+CLIENTE, file_type='png',
+                                                                 wexplorer_tup=(excel_compt, excel_file_name), upload=True)
                     # Na dúvida, melhor settar...
                     # após anexar...
 

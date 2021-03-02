@@ -63,6 +63,7 @@ class GissGui(WDShorcuts, SetPaths, ExcelToData):
 
             # if _feito not in ["checkar", "ok"]:
             self.driver = webdriver.Chrome(link)
+            self.driver.minimize_window()
             super().__init__(self.driver)
             driver = self.driver
             driver.get(weblink)

@@ -102,7 +102,7 @@ def ginfess_driver(path=''):
     link = "Chromedriver/chromedriver.exe"
     chrome_options = Options()
 
-    chrome_options.add_argument("--headless")
+    # chrome_options.add_argument("--headless")
     chrome_options.add_argument("--disable-notifications")
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--verbose')
@@ -115,8 +115,11 @@ def ginfess_driver(path=''):
         "safebrowsing_for_trusted_sources_enabled": False,
         "safebrowsing.enabled": True,
         'download.extensions_to_open': 'xml',
-        'profile.default_content_setting_values.automatic_downloads': 1
+        "plugins.always_open_pdf_externally": True,
+        # download PDF automaticamente acima
+        'profile.default_content_setting_values.automatic_downloads': 1,
     })
+
 
     # options.add_argument("disable-infobars")
     chrome_options.add_argument("--disable-extensions")

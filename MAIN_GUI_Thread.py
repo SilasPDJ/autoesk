@@ -18,7 +18,7 @@ from PyQt5.QtWidgets import QPushButton, QLineEdit, QSizePolicy, QPlainTextEdit
 # from whatsapp import PgdasWP
 from smtp_project import PgDasmailSender, SendDividas
 from pgdas_fiscal_oesk import PgdasAnyCompt
-from pgdas_fiscal_oesk import DownloadGinfessGui
+from pgdas_fiscal_oesk.ginfess_download_vpdf_download import DownloadGinfessGui
 
 from pgdas_fiscal_oesk import GissGui
 from whatsapp import PgdasWP

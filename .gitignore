@@ -9,3 +9,5 @@ new-site.html
 *.pyc
 /venv/
 *.pyc
+*.pyc
+*.pyc

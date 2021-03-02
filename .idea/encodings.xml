@@ -2,9 +2,10 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/pgdas_fiscal_oesk/clients_now_selection.json" charset="ISO-8859-1" />
-    <file url="file://$PROJECT_DIR$/pgdas_fiscal_oesk/data_clients_files/clients_now_selection.json" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/pgdas_fiscal_oesk/data_clients_files/clients_now_selection.json" charset="ISO-8859-1" />
-    <file url="file://$PROJECT_DIR$/pgdas_fiscal_oesk/data_clients_files/clients_now_selection.json" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/pgdas_fiscal_oesk/data_clients_files/example_giss.json" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/pgdas_fiscal_oesk/data_clients_files/example_icms.json" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/pgdas_fiscal_oesk/data_clients_files/example_iss.json" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/smtp_project/ultima_att_agenda.txt" charset="windows-1252" />
   </component>
 </project>
