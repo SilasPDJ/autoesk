@@ -19,7 +19,7 @@ def press_key_b4(key: str):
             ...
 
 
-def press_keys_v4(*keys: str):
+def press_keys_b4(*keys: str):
     from keyboard import is_pressed
     """
     :param keys: any key you wish

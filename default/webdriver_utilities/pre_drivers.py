@@ -8,6 +8,7 @@ from whatsapp.dialog_profile_path import profiles_main_folder
 import os
 volta = os.getcwd()
 # continuar a desenvolver a def real_path, p/ driver
+link = "Chromedriver/chromedriver.exe"
 
 
 def real_path_for_chromedriver():
@@ -32,7 +33,6 @@ def default_qrcode_driver(path=''):
     path = path.replace('/', '\\')
     # o try já tá dentro de replace
 
-    link = "Chromedriver/chromedriver.exe"
     chrome_options = Options()
     # chrome_options.add_argument("--headless")
     chrome_options.add_argument("--disable-notifications")
@@ -52,6 +52,9 @@ def default_qrcode_driver(path=''):
     })
 
     chromedriver = link
+    real_path_for_chromedriver()
+    # vindo do ginfess_driver [magic]
+
     driver = webdriver.Chrome(executable_path=chromedriver, options=chrome_options)
 
     # self.tags_wait('body', 'input', 'div')
@@ -66,7 +69,6 @@ def pgdas_driver(path=''):
     :return: o driver para fechar no loop
     """
 
-    link = "Chromedriver/chromedriver.exe"
     chrome_options = Options()
     # chrome_options.add_argument("--headless")
     chrome_options.add_argument("--disable-notifications")
@@ -85,6 +87,9 @@ def pgdas_driver(path=''):
     })
 
     chromedriver = link
+    real_path_for_chromedriver()
+    # vindo do ginfess_driver [magic]
+
     driver = webdriver.Chrome(executable_path=chromedriver, options=chrome_options)
     # self.tags_wait('body', 'input', 'div')
 
@@ -96,10 +101,12 @@ def ginfess_driver(path=''):
     """
     :param path: default path atual
     :return: o driver para fechar no loop
+
+    "plugins.always_open_pdf_externally": True,
+    download PDF automatic
+
     """
     print('\033[1;33m Headless\033[m')
-
-    link = "Chromedriver/chromedriver.exe"
     chrome_options = Options()
 
     # chrome_options.add_argument("--headless")
@@ -137,3 +144,92 @@ def ginfess_driver(path=''):
 
     # sleep(5)
     return driver
+
+
+def proffile_noqr_driver(path='', profile_path=''):
+    """
+    # Fazendo DEFIS
+    # Driver que armazena perfil e recebi caminho para download
+
+    :param path: default path atual (downloads)
+    :param profile_path: caminho para o perfil
+    :return: o driver.
+    """
+
+    __padrao = profile_path
+
+    path = path.replace('/', '\\')
+    # o try já tá dentro de replace
+
+    chrome_options = Options()
+    # chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-notifications")
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--verbose')
+    chrome_options.add_argument(f"user-data-dir={__padrao}")
+    # carrega o perfil padrão com o qr_code
+    chrome_options.add_argument('--ignore-certificate-errors')
+    chrome_options.add_experimental_option("prefs", {
+        "download.default_directory": path,
+        "download.prompt_for_download": False,
+        "download.directory_upgrade": True,
+        "safebrowsing_for_trusted_sources_enabled": False,
+        "safebrowsing.enabled": True,
+        "plugins.always_open_pdf_externally": True,
+        'profile.default_content_setting_values.automatic_downloads': 1,
+
+
+    })
+
+    chromedriver = link
+    real_path_for_chromedriver()
+    # vindo do ginfess_driver [magic]
+
+    driver = webdriver.Chrome(executable_path=chromedriver, options=chrome_options)
+
+    # self.tags_wait('body', 'input', 'div')
+
+    # sleep(5)
+    return driver
+
+
+def jucesp_simple_driver():
+    """
+    # Fazendo DEFIS
+    # Driver que armazena perfil e recebi caminho para download
+
+    :return: o driver.
+    """
+
+    # __padrao = profile_path
+
+    # o try já tá dentro de replace
+
+    chrome_options = Options()
+    # chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-notifications")
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--verbose')
+    # chrome_options.add_argument(f"user-data-dir={__padrao}")
+    # carrega o perfil padrão com o qr_code
+    chrome_options.add_argument('--ignore-certificate-errors')
+    chrome_options.add_experimental_option("prefs", {
+        "download.prompt_for_download": False,
+        "download.directory_upgrade": True,
+        "safebrowsing_for_trusted_sources_enabled": False,
+        "safebrowsing.enabled": True,
+        "plugins.always_open_pdf_externally": True,
+        'profile.default_content_setting_values.automatic_downloads': 1,
+    })
+
+    chromedriver = link
+    real_path_for_chromedriver()
+    # vindo do ginfess_driver [magic]
+
+    driver = webdriver.Chrome(executable_path=chromedriver, options=chrome_options)
+
+    # self.tags_wait('body', 'input', 'div')
+
+    # sleep(5)
+    return driver
+

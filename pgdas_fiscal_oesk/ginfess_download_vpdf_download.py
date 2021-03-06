@@ -1,5 +1,5 @@
 from default.webdriver_utilities import *
-from default.interact import press_keys_v4, press_key_b4
+from default.interact import press_keys_b4, press_key_b4
 from default.settings import SetPaths
 from default.data_treatment import ExcelToData
 
@@ -536,13 +536,13 @@ class DownloadGinfessGui(WDShorcuts, SetPaths, ExcelToData):
 
     def captcha_hacking(self):
         """
-        :param driver:
         :return:
         SbFConverter() -> class called
 
         Tremembé... rs
         """
         driver = self.driver
+
         class SbFConverter:
             """
             MUITO OBRIGADO, SENHOR

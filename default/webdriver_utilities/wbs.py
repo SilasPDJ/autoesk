@@ -1,6 +1,7 @@
 from default.webdriver_utilities import *
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.ui import WebDriverWait
 # wbs = web driver shortcuts
 
 
@@ -144,3 +145,20 @@ class WDShorcuts:
             print('Elemento não encontrado em self.del_dialog_box')
         else:
             print('certo')
+
+    def webdriverwait_by_id(self, el_id, time=10):
+
+        driver = self.__arg_driver
+        WebDriverWait(driver, 10).until(expected_conditions.presence_of_element_located((By.ID, el_id)))
+
+    def enable_download_in_headless_chrome(self, download_dir):
+        """
+        :param download_dir: where do you want to download it?
+        :return: change download_dir any moment during driver execution
+        """
+        driver = self.__arg_driver
+        # add missing support for chrome "send_command"  to selenium webdriver
+        driver.command_executor._commands["send_command"] = ("POST", '/session/$sessionId/chromium/send_command')
+
+        params = {'cmd': 'Page.setDownloadBehavior', 'params': {'behavior': 'allow', 'downloadPath': download_dir}}
+        command_result = driver.execute("send_command", params)

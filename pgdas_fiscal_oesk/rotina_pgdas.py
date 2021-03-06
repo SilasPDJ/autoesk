@@ -196,6 +196,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                     self.compt_typist(compt)
 
                     # faz outras declaracoes se necessarias
+                    """NÃO FUNCIONANDO CORRETAMENTE AINDA"""
                     if self.check_make_pendencies():
                         for compt_p2 in self.check_make_pendencies():
                             print(compt_p2, 'compt_p2')
@@ -550,7 +551,7 @@ class PgdasAnyCompt(WDShorcuts, SetPaths, ExcelToData):
                    '\nF11 Para passar para o próximo cliente \n\n'
                    'Espere ou clique OK', 10)
             # não consegui callback em mensagem
-            which_one = press_keys_v4('f2', 'f4', 'f10', 'f11')
+            which_one = press_keys_b4('f2', 'f4', 'f10', 'f11')
             print(type(which_one))
             print(which_one)
 

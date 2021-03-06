@@ -12,7 +12,7 @@ class PgDasmailSender(EmailExecutor):
         :param compt_file: compt_file...
         """
         from smtp_project.init_email import JsonDateWithImprove as Jj
-        from default.interact import press_keys_v4, press_key_b4
+        from default.interact import press_keys_b4, press_key_b4
         super().__init__()
 
         self.venc_das = self.vencimento_das()

@@ -290,6 +290,38 @@ class SetPaths(Now):
         os.chdir(volta)
         return salva_path
 
+    def _files_path_defis(self, pasta_client, tup_path, ano=None):
+        """
+        :param pasta_client: client name
+        :param tup_path: like wexplorer_tup
+        :return:
+        # THE FUTURE OF THE SOFTWARE
+        """
+        # insyear: inside this year...
+        import os
+        from pathlib import Path
+
+        if ano is None:
+            ano = str(self.y())
+        insyear, excel_file_name = tup_path
+
+        defis_path = Path(os.path.dirname(excel_file_name))
+        defis_path = defis_path.parent
+
+        defis_path_final = [defis_path, ano, insyear, pasta_client]
+        volta = os.getcwd()
+        for acp in defis_path_final:
+            try:
+                os.chdir(acp)
+            except FileNotFoundError:
+                os.mkdir(acp)
+                os.chdir(acp)
+
+        salva_path = os.getcwd()
+        os.chdir(volta)
+
+        return salva_path
+
     def mkdir_hoje(self, und_disco, relative_path=None):
         """
         :param und_disco: A, B, C, D, E, F, G, H, I, J, K ... ETC

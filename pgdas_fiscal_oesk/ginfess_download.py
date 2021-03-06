@@ -1,5 +1,5 @@
 from default.webdriver_utilities import *
-from default.interact import press_keys_v4, press_key_b4
+from default.interact import press_keys_b4, press_key_b4
 from default.settings import SetPaths
 from default.data_treatment import ExcelToData
 
